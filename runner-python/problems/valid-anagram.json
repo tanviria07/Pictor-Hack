@@ -1,0 +1,46 @@
+{
+  "id": "valid-anagram",
+  "title": "Valid Anagram",
+  "difficulty": "easy",
+  "description": "Given two strings `s` and `t`, return `True` if `t` is an anagram of `s`, and `False` otherwise.\n\nAn anagram is a word or phrase formed by rearranging the letters of a different word or phrase, using all the original letters exactly once.",
+  "examples": [
+    {
+      "input": "s = \"anagram\", t = \"nagaram\"",
+      "output": "true"
+    },
+    {
+      "input": "s = \"rat\", t = \"car\"",
+      "output": "false"
+    }
+  ],
+  "constraints": [
+    "1 <= len(s), len(t) <= 5 * 10^4",
+    "s and t consist of lowercase English letters"
+  ],
+  "function_name": "is_anagram",
+  "parameters": [
+    { "name": "s", "type": "str" },
+    { "name": "t", "type": "str" }
+  ],
+  "expected_return_type": "bool",
+  "visible_tests": [
+    { "args": ["anagram", "nagaram"], "expected": true },
+    { "args": ["rat", "car"], "expected": false },
+    { "args": ["listen", "silent"], "expected": true }
+  ],
+  "hidden_tests": [
+    { "args": ["a", "a"], "expected": true },
+    { "args": ["ab", "ba"], "expected": true },
+    { "args": ["abc", "def"], "expected": false },
+    { "args": ["hello", "olleh"], "expected": true },
+    { "args": ["x", "xx"], "expected": false }
+  ],
+  "hint_plan": {
+    "level_1": "Anagrams have identical character counts when lengths match.",
+    "level_2": "Compare frequency tables or sorted tuples of characters.",
+    "level_3": "If lengths differ, return false early; otherwise count letters for both strings and compare.",
+    "level_4": "Use a dict or collections.Counter; ensure counts for every character match between s and t."
+  },
+  "canonical_solution_summary": "Count characters in both strings (or sort) and compare; short-circuit on length mismatch.",
+  "disallowed_full_solution_exposure": true
+}

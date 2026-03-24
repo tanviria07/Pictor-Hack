@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StructuredEvaluation",
+  "type": "object",
+  "required": [
+    "status",
+    "syntax_ok",
+    "function_found",
+    "signature_ok",
+    "passed_visible_tests",
+    "total_visible_tests",
+    "passed_hidden_tests",
+    "total_hidden_tests",
+    "error_type",
+    "error_message",
+    "failing_case_summary",
+    "likely_stage",
+    "feedback_targets"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "syntax_error",
+        "runtime_error",
+        "incomplete",
+        "partial",
+        "wrong",
+        "correct"
+      ]
+    },
+    "syntax_ok": { "type": "boolean" },
+    "function_found": { "type": "boolean" },
+    "signature_ok": { "type": "boolean" },
+    "passed_visible_tests": { "type": "integer", "minimum": 0 },
+    "total_visible_tests": { "type": "integer", "minimum": 0 },
+    "passed_hidden_tests": { "type": "integer", "minimum": 0 },
+    "total_hidden_tests": { "type": "integer", "minimum": 0 },
+    "error_type": { "type": ["string", "null"] },
+    "error_message": { "type": ["string", "null"] },
+    "failing_case_summary": { "type": ["string", "null"] },
+    "likely_stage": { "type": "string" },
+    "feedback_targets": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
