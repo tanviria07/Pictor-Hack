@@ -1,6 +1,6 @@
 /**
  * Shared API contracts for Jose-Morinho AI (frontend ↔ backend).
- * Mirror structs live in backend-go/internal/api/types.go
+ * Mirror structs live in backend-go/internal/dto/dto.go
  */
 
 export type ProblemStatus =

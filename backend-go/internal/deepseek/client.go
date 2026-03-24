@@ -1,3 +1,5 @@
+// Package deepseek calls the DeepSeek chat API for interviewer-style wording only.
+// It must never be used to infer correctness; evaluation JSON is authoritative.
 package deepseek
 
 import (
@@ -5,39 +7,34 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 	"time"
+
+	"josemorinho/backend/internal/config"
 )
 
+// Client is configured from backend env (API key never exposed to browsers).
 type Client struct {
-	APIKey     string
-	BaseURL    string
-	HTTPClient *http.Client
-	Model      string
+	apiKey     string
+	baseURL    string
+	httpClient *http.Client
+	model      string
 }
 
-func NewFromEnv() *Client {
-	base := os.Getenv("DEEPSEEK_API_URL")
-	if base == "" {
-		base = "https://api.deepseek.com"
-	}
-	key := os.Getenv("DEEPSEEK_API_KEY")
-	model := os.Getenv("DEEPSEEK_MODEL")
-	if model == "" {
-		model = "deepseek-chat"
-	}
+// New builds a client from loaded config.
+func New(cfg config.Config) *Client {
 	return &Client{
-		APIKey:  key,
-		BaseURL: strings.TrimRight(base, "/"),
-		HTTPClient: &http.Client{
+		apiKey:  cfg.DeepSeekKey,
+		baseURL: cfg.DeepSeekURL,
+		model:   cfg.DeepSeekModel,
+		httpClient: &http.Client{
 			Timeout: 60 * time.Second,
 		},
-		Model: model,
 	}
 }
 
-func (c *Client) Enabled() bool { return c.APIKey != "" }
+// Enabled is true when an API key is present.
+func (c *Client) Enabled() bool { return c.apiKey != "" }
 
 type chatMessage struct {
 	Role    string `json:"role"`
@@ -58,26 +55,30 @@ type chatResponse struct {
 	} `json:"error"`
 }
 
-// CoachFeedback turns deterministic evaluation into interviewer-style notes. Never used for correctness.
+// CoachFeedback requests natural-language interviewer notes or hints.
+// Correctness must not be derived from the model output.
 func (c *Client) CoachFeedback(systemPrompt, userContent string) (string, error) {
 	if !c.Enabled() {
 		return "", fmt.Errorf("deepseek disabled")
 	}
-	payload, _ := json.Marshal(chatRequest{
-		Model: c.Model,
+	payload, err := json.Marshal(chatRequest{
+		Model: c.model,
 		Messages: []chatMessage{
 			{Role: "system", Content: systemPrompt},
 			{Role: "user", Content: userContent},
 		},
 	})
-	req, err := http.NewRequest(http.MethodPost, c.BaseURL+"/v1/chat/completions", bytes.NewReader(payload))
+	if err != nil {
+		return "", err
+	}
+	req, err := http.NewRequest(http.MethodPost, c.baseURL+"/v1/chat/completions", bytes.NewReader(payload))
 	if err != nil {
 		return "", err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+c.APIKey)
+	req.Header.Set("Authorization", "Bearer "+c.apiKey)
 
-	resp, err := c.HTTPClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return "", err
 	}

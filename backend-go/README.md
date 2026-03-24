@@ -1,0 +1,63 @@
+# backend-go — API server
+
+REST orchestration for **Jose-Morinho AI**. This process **does not** execute user Python and **does not** determine submission correctness. The Python runner service owns execution and structured evaluation.
+
+## Responsibilities
+
+| Layer | Role |
+|--------|------|
+| **handler** | Decode JSON, HTTP status mapping, no business rules about test outcomes |
+| **service** | Orchestrate runner + optional DeepSeek phrasing; **never** mutate evaluation fields from the runner |
+| **runner** | HTTP client to `runner-python` — pass-through of `RunResponse` |
+| **deepseek** | Optional LLM calls for interviewer-style **wording** only (system prompts forbid contradicting evaluation JSON) |
+| **store** | SQLite persistence for session code + hint history |
+| **problems** | Embedded JSON metadata (public views hide hidden test inputs) |
+| **config** | Environment-based configuration |
+
+## Correctness boundaries
+
+1. **Python runner** is the only source of truth for `status`, `evaluation`, and `visible_test_results`.
+2. **Go** may only replace or fill `interviewer_feedback` text after a successful runner response, using DeepSeek or deterministic copy — it must **not** change `evaluation` or top-level `status`.
+3. **DeepSeek** is backend-only (API key in env). It must **never** be used to infer pass/fail; prompts in `internal/coach` state that evaluation JSON is authoritative.
+
+## Layout
+
+```
+cmd/server/main.go          # wiring
+internal/config/            # env loader
+internal/dto/               # JSON DTOs (API + runner contract)
+internal/handler/           # HTTP handlers
+internal/httpapi/           # chi router
+internal/middleware/        # CORS
+internal/httpx/             # JSON helpers + API errors
+internal/service/           # run + hint orchestration
+internal/runner/            # runner-python client
+internal/deepseek/          # DeepSeek HTTP client
+internal/store/             # SQLite sessions
+internal/problems/          # embedded problem JSON
+internal/coach/             # LLM system prompts
+```
+
+## Environment
+
+See `.env.example`. Important variables:
+
+| Variable | Purpose |
+|----------|---------|
+| `PORT` | Listen address suffix (default `:8080`) |
+| `DATABASE_PATH` | SQLite file path |
+| `RUNNER_URL` | Base URL of `runner-python` (no trailing slash) |
+| `CORS_ORIGINS` | Comma-separated allowed browser Origins |
+| `DEEPSEEK_API_KEY` | Optional; if unset, feedback uses runner text + seeded hints |
+
+## Run locally
+
+```bash
+go run ./cmd/server
+```
+
+Requires `runner-python` running (e.g. `uvicorn app.main:app --port 8001`) so `/api/run` can reach `/evaluate`.
+
+## Error responses
+
+JSON shape: `{"code":"<machine_code>","message":"<human text>"}` — see `internal/httpx/errors.go` for codes.

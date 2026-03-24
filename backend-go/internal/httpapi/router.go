@@ -1,0 +1,32 @@
+package httpapi
+
+import (
+	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+
+	appmw "josemorinho/backend/internal/middleware"
+	"josemorinho/backend/internal/handler"
+)
+
+// NewRouter mounts API routes and middleware.
+func NewRouter(h *handler.Handler, corsOrigins []string) http.Handler {
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(appmw.CORS(corsOrigins))
+
+	r.Get("/health", h.Health)
+
+	r.Route("/api", func(r chi.Router) {
+		r.Get("/problems", h.ListProblems)
+		r.Get("/problems/{id}", h.GetProblem)
+		r.Post("/run", h.Run)
+		r.Post("/hint", h.Hint)
+		r.Post("/session/save", h.SaveSession)
+		r.Get("/session/{problem_id}", h.GetSession)
+	})
+
+	return r
+}

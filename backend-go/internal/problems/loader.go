@@ -3,13 +3,17 @@ package problems
 import (
 	"embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
 	"strconv"
 	"sync"
 
-	"josemorinho/backend/internal/api"
+	"josemorinho/backend/internal/dto"
 )
+
+// ErrNotFound is returned when a problem id is unknown.
+var ErrNotFound = errors.New("problem not found")
 
 //go:embed data/*.json
 var embedded embed.FS
@@ -25,10 +29,10 @@ type rawProblem struct {
 	Title                      string          `json:"title"`
 	Difficulty                 string          `json:"difficulty"`
 	Description                string          `json:"description"`
-	Examples                   []api.Example   `json:"examples"`
+	Examples                   []dto.Example   `json:"examples"`
 	Constraints                []string        `json:"constraints"`
 	FunctionName               string          `json:"function_name"`
-	Parameters                 []api.Parameter `json:"parameters"`
+	Parameters                 []dto.Parameter `json:"parameters"`
 	ExpectedReturnType         string          `json:"expected_return_type"`
 	VisibleTests               []any           `json:"visible_tests"`
 	HiddenTests                []any           `json:"hidden_tests"`
@@ -70,13 +74,13 @@ func Init() error {
 	return nil
 }
 
-func ListSummaries() []api.ProblemSummary {
+func ListSummaries() []dto.ProblemSummary {
 	mu.RLock()
 	defer mu.RUnlock()
-	out := make([]api.ProblemSummary, 0, len(orderIDs))
+	out := make([]dto.ProblemSummary, 0, len(orderIDs))
 	for _, id := range orderIDs {
 		p := byID[id]
-		out = append(out, api.ProblemSummary{
+		out = append(out, dto.ProblemSummary{
 			ID:           p.ID,
 			Title:        p.Title,
 			Difficulty:   p.Difficulty,
@@ -86,14 +90,14 @@ func ListSummaries() []api.ProblemSummary {
 	return out
 }
 
-func GetPublic(id string) (*api.ProblemDetail, error) {
+func GetPublic(id string) (*dto.ProblemDetail, error) {
 	mu.RLock()
 	p, ok := byID[id]
 	mu.RUnlock()
 	if !ok {
-		return nil, fmt.Errorf("not found")
+		return nil, ErrNotFound
 	}
-	return &api.ProblemDetail{
+	return &dto.ProblemDetail{
 		ID:                 p.ID,
 		Title:              p.Title,
 		Difficulty:         p.Difficulty,
@@ -113,7 +117,7 @@ func GetRaw(id string) (*rawProblem, error) {
 	defer mu.RUnlock()
 	p, ok := byID[id]
 	if !ok {
-		return nil, fmt.Errorf("not found")
+		return nil, ErrNotFound
 	}
 	cp := p
 	return &cp, nil

@@ -1,19 +1,23 @@
+// Package store persists session state (code + hint history) in SQLite.
 package store
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 
-	"josemorinho/backend/internal/api"
+	"josemorinho/backend/internal/dto"
 )
 
+// Store is the concrete SQLite implementation of session persistence.
 type Store struct {
 	db *sql.DB
 }
 
+// Open opens or creates the SQLite database and migrations.
 func Open(path string) (*Store, error) {
 	db, err := sql.Open("sqlite3", path)
 	if err != nil {
@@ -32,9 +36,11 @@ CREATE TABLE IF NOT EXISTS sessions (
 	return &Store{db: db}, nil
 }
 
+// Close releases the database handle.
 func (s *Store) Close() error { return s.db.Close() }
 
-func (s *Store) SaveSession(req api.SessionSaveRequest) error {
+// SaveSession upserts the latest editor snapshot and hint history for a problem.
+func (s *Store) SaveSession(_ context.Context, req dto.SessionSaveRequest) error {
 	b, err := json.Marshal(req.HintHistory)
 	if err != nil {
 		return err
@@ -51,7 +57,8 @@ func (s *Store) SaveSession(req api.SessionSaveRequest) error {
 	return err
 }
 
-func (s *Store) GetSession(problemID string) (*api.SessionState, error) {
+// GetSession returns saved state or (nil, nil) if none.
+func (s *Store) GetSession(_ context.Context, problemID string) (*dto.SessionState, error) {
 	row := s.db.QueryRow(
 		`SELECT code, hint_history_json, updated_at FROM sessions WHERE problem_id=?`,
 		problemID,
@@ -67,7 +74,7 @@ func (s *Store) GetSession(problemID string) (*api.SessionState, error) {
 	if err := json.Unmarshal([]byte(histJSON), &hist); err != nil {
 		hist = nil
 	}
-	return &api.SessionState{
+	return &dto.SessionState{
 		ProblemID:   problemID,
 		Code:        code,
 		HintHistory: hist,
