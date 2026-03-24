@@ -56,7 +56,9 @@ export interface HintRequest {
 }
 
 export interface HintResponse {
+  feedback: string;
   hint: string;
+  next_focus: string;
   hint_level: number;
   interviewer_feedback: string;
 }

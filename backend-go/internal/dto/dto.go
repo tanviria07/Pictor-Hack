@@ -72,11 +72,13 @@ type HintRequest struct {
 	HintLevelRequested   *int                 `json:"hint_level_requested,omitempty"`
 }
 
-// HintResponse is POST /api/hint response.
+// HintResponse is POST /api/hint response (LLM or fallback).
 type HintResponse struct {
-	Hint                 string `json:"hint"`
-	HintLevel            int    `json:"hint_level"`
-	InterviewerFeedback  string `json:"interviewer_feedback"`
+	Feedback            string `json:"feedback"`
+	Hint                string `json:"hint"`
+	NextFocus           string `json:"next_focus"`
+	HintLevel           int    `json:"hint_level"`
+	InterviewerFeedback string `json:"interviewer_feedback"` // Combined note for legacy clients
 }
 
 // SessionSaveRequest persists editor + hint history (local SQLite).

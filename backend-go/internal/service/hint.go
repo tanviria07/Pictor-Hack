@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"encoding/json"
 	"strings"
 
 	"josemorinho/backend/internal/coach"
@@ -24,42 +23,67 @@ func NewHintService(d *deepseek.Client, s store.SessionRepository) *HintService 
 }
 
 // Hint returns a hint for the current problem. Evaluation must come from the last /api/run
-// (Python runner); never reinterpreted here.
+// (Python runner); this service never recomputes correctness.
 func (s *HintService) Hint(ctx context.Context, req dto.HintRequest) (*dto.HintResponse, error) {
-	rp, err := problems.GetPublic(req.ProblemID)
+	sess, _ := s.sessions.GetSession(ctx, req.ProblemID)
+	level := hintLevel(req, sess)
+
+	pctx, err := problems.BuildHintPromptContext(req.ProblemID)
 	if err != nil {
 		return nil, err
 	}
-	sess, _ := s.sessions.GetSession(ctx, req.ProblemID)
-	level := hintLevel(req, sess)
-	hintPlan, _ := problems.HintPlanJSON(req.ProblemID)
-	rawEval, _ := json.MarshalIndent(req.Evaluation, "", "  ")
-	prior := ""
+	hist := []string{}
 	if sess != nil {
-		prior = strings.Join(sess.HintHistory, "\n---\n")
+		hist = sess.HintHistory
 	}
-	user := coach.UserPromptHint(rp.Title, req.ProblemID, level, string(rawEval), prior, hintPlan)
+	codePrefix := truncateCodeHint(req.Code, 320)
+	userMsg, err := coach.BuildHintUserMessage(pctx, level, req.Evaluation, hist, codePrefix)
+	if err != nil {
+		return nil, err
+	}
 
-	hintText := problems.SeededHint(req.ProblemID, level)
-	if hintText == "" {
-		hintText = "Take another pass at the examples, then tighten your invariant."
-	}
-	feedback := hintText
 	if s.deepseek.Enabled() {
-		if h, err := s.deepseek.CoachFeedback(coach.SystemHint, user); err == nil && h != "" {
-			hintText = strings.TrimSpace(h)
-			feedback = hintText
+		raw, err := s.deepseek.HintJSONCompletion(ctx, coach.SystemHintJSON, userMsg)
+		if err == nil && raw != "" {
+			parsed, perr := deepseek.ParseHintJSON(raw)
+			if perr == nil {
+				return mergeHintLLM(parsed, level), nil
+			}
 		}
 	}
+
+	out := buildFallbackHintResponse(level, req.Evaluation, req.ProblemID)
+	return &out, nil
+}
+
+func mergeHintLLM(parsed deepseek.HintJSON, level int) *dto.HintResponse {
+	fb := strings.TrimSpace(parsed.Feedback)
+	h := strings.TrimSpace(parsed.Hint)
+	nf := strings.TrimSpace(parsed.NextFocus)
+	combined := fb
+	if h != "" {
+		if combined != "" {
+			combined += "\n\n"
+		}
+		combined += h
+	}
+	if nf != "" {
+		if combined != "" {
+			combined += "\n\n"
+		}
+		combined += "Next: " + nf
+	}
 	return &dto.HintResponse{
-		Hint:                hintText,
+		Feedback:            fb,
+		Hint:                h,
+		NextFocus:           nf,
 		HintLevel:           level,
-		InterviewerFeedback: feedback,
-	}, nil
+		InterviewerFeedback: strings.TrimSpace(combined),
+	}
 }
 
 func hintLevel(req dto.HintRequest, sess *dto.SessionState) int {
-	if req.HintLevelRequested != nil && *req.HintLevelRequested >= 1 && *req.HintLevelRequested <= 4 {
+	if req.HintLevelRequested != nil && *req.HintLevelRequested >= 1 && *req.HintLevelRequested <= MaxHintLevel {
 		return *req.HintLevelRequested
 	}
 	n := 0
@@ -67,8 +91,16 @@ func hintLevel(req dto.HintRequest, sess *dto.SessionState) int {
 		n = len(sess.HintHistory)
 	}
 	level := n + 1
-	if level > 4 {
-		level = 4
+	if level > MaxHintLevel {
+		level = MaxHintLevel
 	}
 	return level
+}
+
+func truncateCodeHint(s string, n int) string {
+	s = strings.ReplaceAll(s, "\r", "")
+	if len(s) <= n {
+		return s
+	}
+	return s[:n] + "…"
 }

@@ -114,7 +114,10 @@ export function Workspace() {
         code,
         evaluation: run.evaluation,
       });
-      const next = [...hintHistory, `[L${h.hint_level}] ${h.hint}`];
+      const next = [
+        ...hintHistory,
+        `[L${h.hint_level}] Feedback: ${h.feedback}\nHint: ${h.hint}\nNext: ${h.next_focus}`,
+      ];
       setHintHistory(next);
       await persist(code, next);
     } catch (e) {

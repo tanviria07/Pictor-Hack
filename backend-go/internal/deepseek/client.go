@@ -4,8 +4,10 @@ package deepseek
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -28,7 +30,7 @@ func New(cfg config.Config) *Client {
 		baseURL: cfg.DeepSeekURL,
 		model:   cfg.DeepSeekModel,
 		httpClient: &http.Client{
-			Timeout: 60 * time.Second,
+			Timeout: 90 * time.Second,
 		},
 	}
 }
@@ -41,9 +43,15 @@ type chatMessage struct {
 	Content string `json:"content"`
 }
 
+type responseFormat struct {
+	Type string `json:"type"`
+}
+
 type chatRequest struct {
-	Model    string        `json:"model"`
-	Messages []chatMessage `json:"messages"`
+	Model          string            `json:"model"`
+	Messages       []chatMessage     `json:"messages"`
+	ResponseFormat *responseFormat   `json:"response_format,omitempty"`
+	Temperature    *float64          `json:"temperature,omitempty"`
 }
 
 type chatResponse struct {
@@ -55,23 +63,51 @@ type chatResponse struct {
 	} `json:"error"`
 }
 
-// CoachFeedback requests natural-language interviewer notes or hints.
-// Correctness must not be derived from the model output.
+// CoachFeedback requests natural-language interviewer notes for POST /api/run.
 func (c *Client) CoachFeedback(systemPrompt, userContent string) (string, error) {
+	return c.chatCompletion(context.Background(), chatParams{
+		System: systemPrompt,
+		User:   userContent,
+		JSON:   false,
+	})
+}
+
+// HintJSONCompletion requests JSON-only hint output for POST /api/hint.
+func (c *Client) HintJSONCompletion(ctx context.Context, systemPrompt, userContent string) (string, error) {
+	return c.chatCompletion(ctx, chatParams{
+		System: systemPrompt,
+		User:   userContent,
+		JSON:   true,
+	})
+}
+
+type chatParams struct {
+	System string
+	User   string
+	JSON   bool
+}
+
+func (c *Client) chatCompletion(ctx context.Context, p chatParams) (string, error) {
 	if !c.Enabled() {
 		return "", fmt.Errorf("deepseek disabled")
 	}
-	payload, err := json.Marshal(chatRequest{
+	reqBody := chatRequest{
 		Model: c.model,
 		Messages: []chatMessage{
-			{Role: "system", Content: systemPrompt},
-			{Role: "user", Content: userContent},
+			{Role: "system", Content: p.System},
+			{Role: "user", Content: p.User},
 		},
-	})
+	}
+	if p.JSON {
+		reqBody.ResponseFormat = &responseFormat{Type: "json_object"}
+		t := 0.3
+		reqBody.Temperature = &t
+	}
+	payload, err := json.Marshal(reqBody)
 	if err != nil {
 		return "", err
 	}
-	req, err := http.NewRequest(http.MethodPost, c.baseURL+"/v1/chat/completions", bytes.NewReader(payload))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.baseURL+"/v1/chat/completions", bytes.NewReader(payload))
 	if err != nil {
 		return "", err
 	}
@@ -83,9 +119,16 @@ func (c *Client) CoachFeedback(systemPrompt, userContent string) (string, error)
 		return "", err
 	}
 	defer resp.Body.Close()
-	var out chatResponse
-	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
 		return "", err
+	}
+	if resp.StatusCode >= 400 {
+		return "", fmt.Errorf("deepseek http %d: %s", resp.StatusCode, truncate(string(body), 800))
+	}
+	var out chatResponse
+	if err := json.Unmarshal(body, &out); err != nil {
+		return "", fmt.Errorf("decode response: %w", err)
 	}
 	if out.Error != nil {
 		return "", fmt.Errorf("deepseek: %s", out.Error.Message)
@@ -94,4 +137,11 @@ func (c *Client) CoachFeedback(systemPrompt, userContent string) (string, error)
 		return "", fmt.Errorf("deepseek: empty choices")
 	}
 	return strings.TrimSpace(out.Choices[0].Message.Content), nil
+}
+
+func truncate(s string, n int) string {
+	if len(s) <= n {
+		return s
+	}
+	return s[:n] + "…"
 }

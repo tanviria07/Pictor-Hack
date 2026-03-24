@@ -9,7 +9,7 @@ REST orchestration for **Jose-Morinho AI**. This process **does not** execute us
 | **handler** | Decode JSON, HTTP status mapping, no business rules about test outcomes |
 | **service** | Orchestrate runner + optional DeepSeek phrasing; **never** mutate evaluation fields from the runner |
 | **runner** | HTTP client to `runner-python` — pass-through of `RunResponse` |
-| **deepseek** | Optional LLM calls for interviewer-style **wording** only (system prompts forbid contradicting evaluation JSON) |
+| **deepseek** | Chat completions: run feedback (plain text) + **hint** path (`response_format: json_object`) parsed into `feedback` / `hint` / `next_focus` |
 | **store** | SQLite persistence for session code + hint history |
 | **problems** | Embedded JSON metadata (public views hide hidden test inputs) |
 | **config** | Environment-based configuration |
@@ -18,7 +18,8 @@ REST orchestration for **Jose-Morinho AI**. This process **does not** execute us
 
 1. **Python runner** is the only source of truth for `status`, `evaluation`, and `visible_test_results`.
 2. **Go** may only replace or fill `interviewer_feedback` text after a successful runner response, using DeepSeek or deterministic copy — it must **not** change `evaluation` or top-level `status`.
-3. **DeepSeek** is backend-only (API key in env). It must **never** be used to infer pass/fail; prompts in `internal/coach` state that evaluation JSON is authoritative.
+3. **DeepSeek** is backend-only — set `DEEPSEEK_API_KEY` in `.env` (never commit secrets). It must **never** be used to infer pass/fail; `internal/coach/hint_json.go` and `prompts.go` state that evaluation JSON is authoritative.
+4. **POST /api/hint** sends problem title/summary (from `problems.BuildHintPromptContext`), runner evaluation JSON, hint history, allowed level (1–4 from session length), and a code prefix. If the API fails or JSON parsing fails, **fallback** uses seeded `hint_plan` + deterministic lines (`internal/service/hint_fallback.go`).
 
 ## Layout
 
@@ -32,10 +33,10 @@ internal/middleware/        # CORS
 internal/httpx/             # JSON helpers + API errors
 internal/service/           # run + hint orchestration
 internal/runner/            # runner-python client
-internal/deepseek/          # DeepSeek HTTP client
+internal/deepseek/          # client + hint JSON parse
 internal/store/             # SQLite sessions
-internal/problems/          # embedded problem JSON
-internal/coach/             # LLM system prompts
+internal/problems/          # embedded JSON + hint_context (LLM problem summary)
+internal/coach/             # prompts + JSON hint user payload
 ```
 
 ## Environment
@@ -48,7 +49,9 @@ See `.env.example`. Important variables:
 | `DATABASE_PATH` | SQLite file path |
 | `RUNNER_URL` | Base URL of `runner-python` (no trailing slash) |
 | `CORS_ORIGINS` | Comma-separated allowed browser Origins |
-| `DEEPSEEK_API_KEY` | Optional; if unset, feedback uses runner text + seeded hints |
+| `DEEPSEEK_API_KEY` | Optional; if unset, run feedback stays deterministic and hints use seeded plan only |
+| `DEEPSEEK_API_URL` | Default `https://api.deepseek.com` |
+| `DEEPSEEK_MODEL` | Default `deepseek-chat` |
 
 ## Run locally
 
