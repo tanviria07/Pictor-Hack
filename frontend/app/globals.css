@@ -4,8 +4,19 @@
 
 :root {
   color-scheme: dark;
+  --surface-base: #09090b;
+  --surface-raised: #0c0c0f;
+  --surface-panel: #101014;
+  --border-subtle: rgba(63, 63, 70, 0.55);
+  --text-muted: #71717a;
 }
 
 body {
-  @apply bg-[#0b0f14] text-slate-100 antialiased;
+  @apply bg-[var(--surface-base)] text-zinc-200 antialiased;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Focus rings for keyboard users */
+button:focus-visible {
+  @apply outline outline-2 outline-offset-2 outline-zinc-500;
 }

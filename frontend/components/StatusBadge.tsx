@@ -2,33 +2,40 @@
 
 import type { ProblemStatus } from "@/lib/types";
 
+/** Labels match product copy — technical, not playful. */
 const styles: Record<
   ProblemStatus,
   { label: string; className: string }
 > = {
   syntax_error: {
-    label: "Syntax error",
-    className: "bg-rose-950/80 text-rose-200 border border-rose-700/60",
+    label: "Syntax Error",
+    className:
+      "border border-rose-800/70 bg-rose-950/50 text-rose-200/95",
   },
   runtime_error: {
-    label: "Runtime error",
-    className: "bg-orange-950/80 text-orange-200 border border-orange-700/60",
+    label: "Runtime Error",
+    className:
+      "border border-orange-800/60 bg-orange-950/40 text-orange-200/95",
   },
   incomplete: {
     label: "Incomplete",
-    className: "bg-amber-950/80 text-amber-200 border border-amber-700/60",
+    className:
+      "border border-amber-800/50 bg-amber-950/35 text-amber-100/90",
   },
   partial: {
     label: "Partial",
-    className: "bg-sky-950/80 text-sky-200 border border-sky-700/60",
+    className:
+      "border border-sky-800/45 bg-sky-950/30 text-sky-100/90",
   },
   wrong: {
     label: "Wrong",
-    className: "bg-fuchsia-950/80 text-fuchsia-200 border border-fuchsia-700/60",
+    className:
+      "border border-violet-800/45 bg-violet-950/35 text-violet-100/90",
   },
   correct: {
     label: "Correct",
-    className: "bg-emerald-950/80 text-emerald-200 border border-emerald-700/60",
+    className:
+      "border border-emerald-800/50 bg-emerald-950/35 text-emerald-100/90",
   },
 };
 
@@ -36,7 +43,7 @@ export function StatusBadge({ status }: { status: ProblemStatus }) {
   const s = styles[status];
   return (
     <span
-      className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium tracking-wide ${s.className}`}
+      className={`inline-flex items-center rounded px-2 py-0.5 text-2xs font-semibold uppercase tracking-wide ${s.className}`}
     >
       {s.label}
     </span>

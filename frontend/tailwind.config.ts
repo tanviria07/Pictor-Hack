@@ -8,14 +8,27 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        panel: "#0f1419",
-        border: "#1f2a37",
-        accent: "#3b82f6",
-        muted: "#94a3b8",
+        surface: {
+          base: "#09090b",
+          raised: "#0c0c0f",
+          panel: "#101014",
+          code: "#0d0d12",
+        },
+        border: {
+          DEFAULT: "rgba(63, 63, 70, 0.5)",
+          strong: "rgba(82, 82, 91, 0.65)",
+        },
+        accent: {
+          DEFAULT: "#2563eb",
+          muted: "#1d4ed8",
+        },
       },
       fontFamily: {
         sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
         mono: ["var(--font-geist-mono)", "ui-monospace", "monospace"],
+      },
+      fontSize: {
+        "2xs": ["0.625rem", { lineHeight: "0.875rem" }],
       },
     },
   },
