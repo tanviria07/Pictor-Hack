@@ -10,7 +10,7 @@ REST orchestration for **Jose-Morinho AI**. This process **does not** execute us
 | **service** | Orchestrate runner + optional DeepSeek phrasing; **never** mutate evaluation fields from the runner |
 | **runner** | HTTP client to `runner-python` — pass-through of `RunResponse` |
 | **deepseek** | Chat completions: run feedback (plain text) + **hint** path (`response_format: json_object`) parsed into `feedback` / `hint` / `next_focus` |
-| **store** | SQLite persistence for session code + hint history |
+| **store** | SQLite persistence for session code, hint history, optional `practice_status` |
 | **problems** | Embedded JSON metadata (public views hide hidden test inputs) |
 | **config** | Environment-based configuration |
 

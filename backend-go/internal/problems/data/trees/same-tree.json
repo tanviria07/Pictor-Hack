@@ -1,0 +1,47 @@
+{
+  "id": "same-tree",
+  "title": "Same Tree",
+  "difficulty": "easy",
+  "category": "trees",
+  "description": "Given the roots of two binary trees `p` and `q`, write a function to check if they are the same or not.\n\nTwo trees are **the same** if they are structurally identical and nodes have the same value.\n\n**Define a `TreeNode` class** with `val`, `left`, and `right` (defaults `None`). The judge encodes each tree as a **level-order** list (LeetCode style): `null` denotes missing children.",
+  "examples": [
+    {
+      "input": "p = [1,2,3], q = [1,2,3]",
+      "output": "true"
+    },
+    {
+      "input": "p = [1,2], q = [1,null,2]",
+      "output": "false"
+    }
+  ],
+  "constraints": [
+    "The number of nodes in both trees is in the range [0, 100]",
+    "-10^4 <= Node.val <= 10^4"
+  ],
+  "function_name": "same_tree",
+  "parameters": [
+    { "name": "p", "type": "TreeNode" },
+    { "name": "q", "type": "TreeNode" }
+  ],
+  "expected_return_type": "bool",
+  "visible_tests": [
+    { "args": [[1, 2, 3], [1, 2, 3]], "expected": true },
+    { "args": [[1, 2], [1, null, 2]], "expected": false },
+    { "args": [[1], [1]], "expected": true }
+  ],
+  "hidden_tests": [
+    { "args": [[], []], "expected": true },
+    { "args": [[1], [2]], "expected": false },
+    { "args": [[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]], "expected": true },
+    { "args": [[1, 2, 1], [1, 1, 2]], "expected": false },
+    { "args": [[1, null, 2], [1, null, 2]], "expected": true }
+  ],
+  "hint_plan": {
+    "level_1": "Compare roots, then recurse or iterate on left and right subtrees together.",
+    "level_2": "Base case: both None → true; one None → false; values differ → false.",
+    "level_3": "Recursive: same_tree(p,q) iff p.val==q.val and same left children and same right children.",
+    "level_4": "DFS: return same_tree(p.left,q.left) and same_tree(p.right,q.right) after matching values."
+  },
+  "canonical_solution_summary": "Recursive DFS or iterative DFS/BFS pair traversal.",
+  "disallowed_full_solution_exposure": true
+}

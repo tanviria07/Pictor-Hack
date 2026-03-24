@@ -36,10 +36,19 @@ export interface RunResponse {
   interviewer_feedback: string;
 }
 
+/** Curated curriculum bucket (NeetCode-style). */
+export interface CategorySummary {
+  id: string;
+  title: string;
+  problem_count: number;
+}
+
 export interface ProblemSummary {
   id: string;
   title: string;
   difficulty: string;
+  category: string;
+  category_title: string;
   function_name: string;
 }
 
@@ -59,4 +68,14 @@ export interface HintResponse {
   next_focus: string;
   hint_level: number;
   interviewer_feedback: string;
+}
+
+/** Local / session practice progress (not runner evaluation status). */
+export type PracticeProgress = "not_started" | "in_progress" | "solved";
+
+export interface SessionPayload {
+  problem_id: string;
+  code: string;
+  hint_history: string[];
+  practice_status?: PracticeProgress;
 }

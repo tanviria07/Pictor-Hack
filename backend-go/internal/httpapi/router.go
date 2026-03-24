@@ -20,6 +20,7 @@ func NewRouter(h *handler.Handler, corsOrigins []string) http.Handler {
 	r.Get("/health", h.Health)
 
 	r.Route("/api", func(r chi.Router) {
+		r.Get("/categories", h.ListCategories)
 		r.Get("/problems", h.ListProblems)
 		r.Get("/problems/{id}", h.GetProblem)
 		r.Post("/run", h.Run)

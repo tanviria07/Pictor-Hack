@@ -9,7 +9,7 @@ Local MVP for **Python interview practice**: you write every line of solution co
 | `frontend/` | Next.js + TypeScript + Tailwind + Monaco |
 | `backend-go/` | Problems API, SQLite sessions, orchestration, DeepSeek (server-side only) |
 | `runner-python/` | Syntax/safety checks, tests, structured evaluation |
-| `shared/` | Contracts + canonical problem JSON |
+| `shared/` | Contracts + NeetCode-style problem JSON (`shared/problems/{category}/{id}.json`) |
 
 ## Status semantics (evaluator)
 
@@ -46,7 +46,12 @@ Optional: copy `runner-python/.env.example` to `.env` and adjust.
 
 ### 2. Go API
 
-Copy `shared/problems/*.json` into `backend-go/internal/problems/data/` if you change problems (repo keeps them in sync).
+Problem definitions live under `shared/problems/{category}/`. Mirror the whole tree into `backend-go/internal/problems/data/` and `runner-python/problems/` whenever you add or edit problems (same relative paths). Example (Windows):
+
+```powershell
+robocopy shared\problems backend-go\internal\problems\data /E /IS /IT
+robocopy shared\problems runner-python\problems /E /IS /IT
+```
 
 ```bash
 cd backend-go
@@ -62,11 +67,10 @@ Defaults: `PORT=8080`, `RUNNER_URL=http://127.0.0.1:8001`, SQLite at `./data/jos
 ```bash
 cd frontend
 npm install
-copy .env.example .env.local
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Set `NEXT_PUBLIC_API_BASE` if the API is not on `127.0.0.1:8080`.
+Open [http://localhost:3000](http://localhost:3000) (or `http://127.0.0.1:3000`). With the **Go API** on `:8080`, the app calls **`/api` on the same origin** and Next.js proxies to the backend (see `frontend/next.config.mjs`), so you usually **do not** need `NEXT_PUBLIC_API_BASE`. Set `BACKEND_URL` if the API listens somewhere other than `http://127.0.0.1:8080`. Use `NEXT_PUBLIC_API_BASE` only when the browser must talk to a **different host** (split deployments).
 
 ## DeepSeek
 
@@ -80,13 +84,27 @@ The Python runner uses AST checks, restricted builtins, and subprocess timeouts.
 
 ## API (Go)
 
-- `GET /api/problems` — list
-- `GET /api/problems/:id` — public problem (no hidden test inputs)
+- `GET /api/categories` — NeetCode-style curriculum list with `problem_count` per category
+- `GET /api/problems` — list summaries; optional query: `?category=arrays-hashing&difficulty=easy`
+- `GET /api/problems/:id` — public problem (no hidden test payloads; **never** exposes `canonical_solution_summary`)
 - `POST /api/run` — `{ "problem_id", "language": "python", "code" }`
 - `POST /api/hint` — `{ "problem_id", "code", "evaluation" }` (evaluation from last run)
-- `POST /api/session/save` — `{ "problem_id", "code", "hint_history" }`
+- `POST /api/session/save` — `{ "problem_id", "code", "hint_history", "practice_status"?: "not_started"|"in_progress"|"solved" }`
 - `GET /api/session/:problem_id`
 
-## Seeded problems
+## Problem curriculum (NeetCode-style)
 
-Two Sum, Valid Anagram, Top K Frequent Elements, Best Time to Buy and Sell Stock — see `shared/problems/`.
+Categories are fixed in `backend-go/internal/problems/categories.go` (IDs like `arrays-hashing`, `sliding-window`, `dp-1d`, …). Each problem JSON **must** include a `category` field matching one of those IDs.
+
+The UI shows an expandable sidebar, search, difficulty filter, and per-problem progress (`not_started` / `in_progress` / `solved`) stored in **localStorage** and mirrored in SQLite when sessions save.
+
+## Adding a new problem
+
+1. Add `shared/problems/{category-id}/{problem-slug}.json` with the same schema as existing seeds (`id`, `title`, `difficulty`, `category`, `description`, `examples`, `constraints`, `function_name`, `parameters`, `expected_return_type`, `visible_tests`, `hidden_tests`, `hint_plan` with levels 1–4, `canonical_solution_summary` for internal/LLM context only — **not** returned by the API).
+2. Mirror the file into `backend-go/internal/problems/data/` and `runner-python/problems/` (same subfolders).
+3. Rebuild the Go binary so embedded data updates.
+4. For unusual inputs (e.g. linked lists / trees from JSON), add coercion in `runner-python/app/problem_hooks.py` and wire it in `evaluator.py` if needed.
+
+## Seeded problems (11)
+
+Representative set across categories — see `shared/problems/`: Two Sum, Valid Anagram, Product of Array Except Self, Top K Frequent Elements, Best Time to Buy and Sell Stock, Longest Substring Without Repeating Characters, Valid Parentheses, Binary Search, Reverse Linked List, Same Tree, Climbing Stairs.

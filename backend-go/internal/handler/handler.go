@@ -29,9 +29,17 @@ func (h *Handler) Health(w http.ResponseWriter, _ *http.Request) {
 	httpx.JSON(w, http.StatusOK, map[string]string{"status": "ok"})
 }
 
+// ListCategories returns the NeetCode-style curriculum with live counts.
+func (h *Handler) ListCategories(w http.ResponseWriter, _ *http.Request) {
+	httpx.JSON(w, http.StatusOK, problems.ListCategorySummaries())
+}
+
 // ListProblems returns problem summaries (metadata only).
-func (h *Handler) ListProblems(w http.ResponseWriter, _ *http.Request) {
-	httpx.JSON(w, http.StatusOK, problems.ListSummaries())
+// Query: ?category=arrays-hashing&difficulty=easy
+func (h *Handler) ListProblems(w http.ResponseWriter, r *http.Request) {
+	cat := r.URL.Query().Get("category")
+	diff := r.URL.Query().Get("difficulty")
+	httpx.JSON(w, http.StatusOK, problems.ListSummaries(cat, diff))
 }
 
 // GetProblem returns a single problem without hidden test inputs.

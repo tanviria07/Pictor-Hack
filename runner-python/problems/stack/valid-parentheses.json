@@ -1,0 +1,39 @@
+{
+  "id": "valid-parentheses",
+  "title": "Valid Parentheses",
+  "difficulty": "easy",
+  "category": "stack",
+  "description": "Given a string `s` containing just the characters `'('`, `')'`, `'{'`, `'}'`, `'['` and `']'`, determine if the input string is valid.\n\nA string is valid if:\n- Open brackets are closed by the same type of brackets.\n- Open brackets are closed in the correct order.\n- Every close bracket has a corresponding open bracket of the same type.",
+  "examples": [
+    { "input": "s = \"()\"", "output": "true" },
+    { "input": "s = \"()[]{}\"", "output": "true" },
+    { "input": "s = \"(]\"", "output": "false" }
+  ],
+  "constraints": [
+    "1 <= len(s) <= 10^4",
+    "s consists of parentheses only '()[]{}'"
+  ],
+  "function_name": "is_valid",
+  "parameters": [{ "name": "s", "type": "str" }],
+  "expected_return_type": "bool",
+  "visible_tests": [
+    { "args": ["()"], "expected": true },
+    { "args": ["()[]{}"], "expected": true },
+    { "args": ["(]"], "expected": false }
+  ],
+  "hidden_tests": [
+    { "args": ["("], "expected": false },
+    { "args": [")"], "expected": false },
+    { "args": ["{[]}"], "expected": true },
+    { "args": ["([)]"], "expected": false },
+    { "args": ["((()))"], "expected": true }
+  ],
+  "hint_plan": {
+    "level_1": "The last opened bracket must be the first one closed — think LIFO.",
+    "level_2": "Use a stack: push on open, pop and check match on close.",
+    "level_3": "Map closing brackets to opening ones; on mismatch or empty stack, return false.",
+    "level_4": "Iterate characters; on '(','{','[' push; on ')',']','}' pop and compare; end with empty stack."
+  },
+  "canonical_solution_summary": "Stack of expected opening characters; pop on close and verify pairs.",
+  "disallowed_full_solution_exposure": true
+}

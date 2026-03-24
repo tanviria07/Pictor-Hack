@@ -39,7 +39,8 @@ func Load() Config {
 
 	cors := os.Getenv("CORS_ORIGINS")
 	if cors == "" {
-		cors = "http://localhost:3000"
+		// Browsers treat localhost vs 127.0.0.1 as different Origins.
+		cors = "http://localhost:3000,http://127.0.0.1:3000"
 	}
 	origins := strings.Split(cors, ",")
 	for i := range origins {

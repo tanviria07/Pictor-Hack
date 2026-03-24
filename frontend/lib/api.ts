@@ -1,11 +1,28 @@
-import type { HintResponse, ProblemDetail, ProblemSummary, RunResponse } from "./types";
+import type {
+  CategorySummary,
+  HintResponse,
+  ProblemDetail,
+  ProblemSummary,
+  RunResponse,
+  SessionPayload,
+} from "./types";
 
-const base = () =>
-  process.env.NEXT_PUBLIC_API_BASE?.replace(/\/$/, "") || "http://127.0.0.1:8080";
+function withTimeout(signal: AbortSignal | null | undefined, ms: number): AbortSignal {
+  const t = AbortSignal.timeout(ms);
+  return signal ? AbortSignal.any([t, signal]) : t;
+}
+
+const base = () => {
+  const env = process.env.NEXT_PUBLIC_API_BASE?.replace(/\/$/, "");
+  if (env) return env;
+  return "";
+};
 
 async function j<T>(path: string, init?: RequestInit): Promise<T> {
-  const r = await fetch(`${base()}${path}`, {
+  const url = `${base()}${path.startsWith("/") ? path : `/${path}`}`;
+  const r = await fetch(url, {
     ...init,
+    signal: withTimeout(init?.signal, 25_000),
     headers: {
       "Content-Type": "application/json",
       ...(init?.headers || {}),
@@ -18,8 +35,19 @@ async function j<T>(path: string, init?: RequestInit): Promise<T> {
   return r.json() as Promise<T>;
 }
 
-export async function listProblems(): Promise<ProblemSummary[]> {
-  return j("/api/problems");
+export async function listCategories(): Promise<CategorySummary[]> {
+  return j("/api/categories");
+}
+
+export async function listProblems(filters?: {
+  category?: string;
+  difficulty?: string;
+}): Promise<ProblemSummary[]> {
+  const q = new URLSearchParams();
+  if (filters?.category) q.set("category", filters.category);
+  if (filters?.difficulty) q.set("difficulty", filters.difficulty);
+  const qs = q.toString();
+  return j(`/api/problems${qs ? `?${qs}` : ""}`);
 }
 
 export async function getProblem(id: string): Promise<ProblemDetail> {
@@ -43,24 +71,20 @@ export async function getHint(body: {
   return j("/api/hint", { method: "POST", body: JSON.stringify(body) });
 }
 
-export async function saveSession(body: {
-  problem_id: string;
-  code: string;
-  hint_history: string[];
-}): Promise<{ ok: boolean }> {
+export async function saveSession(body: SessionPayload): Promise<{ ok: boolean }> {
   return j("/api/session/save", { method: "POST", body: JSON.stringify(body) });
 }
 
 export async function loadSession(problemId: string) {
-  const r = await fetch(
-    `${base()}/api/session/${encodeURIComponent(problemId)}`,
-  );
+  const url = `${base()}/api/session/${encodeURIComponent(problemId)}`;
+  const r = await fetch(url, { signal: withTimeout(undefined, 25_000) });
   if (r.status === 404) return null;
   if (!r.ok) throw new Error(await r.text());
   return r.json() as Promise<{
     problem_id: string;
     code: string;
     hint_history: string[];
+    practice_status?: import("./types").PracticeProgress;
     updated_at: string;
   }>;
 }

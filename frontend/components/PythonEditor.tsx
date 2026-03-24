@@ -1,6 +1,13 @@
 "use client";
 
-import Editor from "@monaco-editor/react";
+import Editor, { loader } from "@monaco-editor/react";
+
+// Pin to the installed monaco-editor version (npm ls monaco-editor).
+loader.config({
+  paths: {
+    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/min/vs",
+  },
+});
 
 export function PythonEditor({
   value,
@@ -22,7 +29,7 @@ export function PythonEditor({
         readOnly: disabled,
         minimap: { enabled: false },
         fontSize: 14,
-        fontFamily: "var(--font-geist-mono), ui-monospace, monospace",
+        fontFamily: "var(--font-mono), ui-monospace, monospace",
         scrollBeyondLastLine: false,
         automaticLayout: true,
         tabSize: 4,

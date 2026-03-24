@@ -2,6 +2,7 @@
   "id": "top-k-frequent-elements",
   "title": "Top K Frequent Elements",
   "difficulty": "medium",
+  "category": "heap-priority-queue",
   "description": "Given an integer array `nums` and an integer `k`, return the `k` most frequent elements. You may return the answer in any order.",
   "examples": [
     {

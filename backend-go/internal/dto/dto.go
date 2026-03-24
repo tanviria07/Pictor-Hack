@@ -81,19 +81,30 @@ type HintResponse struct {
 	InterviewerFeedback string `json:"interviewer_feedback"` // Combined note for legacy clients
 }
 
+// PracticeStatus is coarse progress for a problem (no auth; optional server mirror).
+type PracticeStatus string
+
+const (
+	PracticeNotStarted PracticeStatus = "not_started"
+	PracticeInProgress PracticeStatus = "in_progress"
+	PracticeSolved     PracticeStatus = "solved"
+)
+
 // SessionSaveRequest persists editor + hint history (local SQLite).
 type SessionSaveRequest struct {
-	ProblemID   string   `json:"problem_id"`
-	Code        string   `json:"code"`
-	HintHistory []string `json:"hint_history"`
+	ProblemID       string         `json:"problem_id"`
+	Code            string         `json:"code"`
+	HintHistory     []string       `json:"hint_history"`
+	PracticeStatus  PracticeStatus `json:"practice_status,omitempty"`
 }
 
 // SessionState is stored and returned for a problem_id.
 type SessionState struct {
-	ProblemID   string   `json:"problem_id"`
-	Code        string   `json:"code"`
-	HintHistory []string `json:"hint_history"`
-	UpdatedAt   string   `json:"updated_at"`
+	ProblemID       string         `json:"problem_id"`
+	Code            string         `json:"code"`
+	HintHistory     []string       `json:"hint_history"`
+	PracticeStatus  PracticeStatus `json:"practice_status"`
+	UpdatedAt       string         `json:"updated_at"`
 }
 
 // Example is embedded problem content.
@@ -109,12 +120,21 @@ type Parameter struct {
 	Type string `json:"type"`
 }
 
-// ProblemSummary is GET /api/problems item.
-type ProblemSummary struct {
+// CategorySummary is GET /api/categories item.
+type CategorySummary struct {
 	ID           string `json:"id"`
 	Title        string `json:"title"`
-	Difficulty   string `json:"difficulty"`
-	FunctionName string `json:"function_name"`
+	ProblemCount int    `json:"problem_count"`
+}
+
+// ProblemSummary is GET /api/problems item.
+type ProblemSummary struct {
+	ID            string `json:"id"`
+	Title         string `json:"title"`
+	Difficulty    string `json:"difficulty"`
+	Category      string `json:"category"`
+	CategoryTitle string `json:"category_title"`
+	FunctionName  string `json:"function_name"`
 }
 
 // ProblemDetail is GET /api/problems/:id (no hidden test payloads).
@@ -122,6 +142,8 @@ type ProblemDetail struct {
 	ID                 string      `json:"id"`
 	Title              string      `json:"title"`
 	Difficulty         string      `json:"difficulty"`
+	Category           string      `json:"category"`
+	CategoryTitle      string      `json:"category_title"`
 	Description        string      `json:"description"`
 	Examples           []Example   `json:"examples"`
 	Constraints        []string    `json:"constraints"`

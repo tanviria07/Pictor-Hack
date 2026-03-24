@@ -18,6 +18,7 @@ from app.incomplete import is_incomplete_function
 from app.models import ProblemMeta, StructuredEvaluation, VisibleTestResult
 from app.problems import load_problem
 from app.safety import SafetyError, assert_code_imports_safe, build_restricted_builtins
+from app.problem_hooks import postprocess_result, prepare_args
 from app.testing import normalize_expected
 
 
@@ -71,13 +72,18 @@ def _arity(fn: Callable[..., Any], expected: int) -> bool:
 
 
 def _all_visible_outputs_none(
-    user_fn: Callable[..., Any], visible_tests: list[dict[str, Any]]
+    user_fn: Callable[..., Any],
+    visible_tests: list[dict[str, Any]],
+    problem_id: str,
+    g: dict[str, Any],
 ) -> bool:
     """Heuristic: every call returns None — likely missing real return logic."""
     for t in visible_tests:
-        args = t["args"]
+        raw = list(t["args"])
         try:
-            got = user_fn(*args)
+            prep = prepare_args(problem_id, raw, g)
+            got = user_fn(*prep)
+            got = postprocess_result(problem_id, got)
         except Exception:
             return False
         if got is not None:
@@ -277,17 +283,16 @@ def evaluate_user_code(code: str, problem: dict[str, Any]) -> StructuredEvaluati
         )
         return ev
 
-    def run_case(args: list[Any]) -> Any:
-        return user_fn(*args)
-
     fail_summary: Optional[str] = None
     v_pass = 0
     for i, t in enumerate(meta.visible_tests):
         args = t["args"]
         exp = t["expected"]
         try:
-            got = run_case(args)
-            ok = normalize_expected(pid, got, exp, args)
+            prep = prepare_args(pid, list(args), g)
+            got = user_fn(*prep)
+            got = postprocess_result(pid, got)
+            ok = normalize_expected(pid, got, exp, prep)
         except Exception as e:
             vr = visible_results + [
                 VisibleTestResult(index=i, passed=False, label=f"visible#{i + 1}")
@@ -320,7 +325,7 @@ def evaluate_user_code(code: str, problem: dict[str, Any]) -> StructuredEvaluati
     if (
         v_pass == 0
         and meta.visible_tests
-        and _all_visible_outputs_none(user_fn, meta.visible_tests)
+        and _all_visible_outputs_none(user_fn, meta.visible_tests, pid, g)
         and any(t.get("expected") is not None for t in meta.visible_tests)
     ):
         ev = StructuredEvaluation(
@@ -349,8 +354,10 @@ def evaluate_user_code(code: str, problem: dict[str, Any]) -> StructuredEvaluati
         args = t["args"]
         exp = t["expected"]
         try:
-            got = run_case(args)
-            ok = normalize_expected(pid, got, exp, args)
+            prep = prepare_args(pid, list(args), g)
+            got = user_fn(*prep)
+            got = postprocess_result(pid, got)
+            ok = normalize_expected(pid, got, exp, prep)
         except Exception as e:
             ev = StructuredEvaluation(
                 status="runtime_error",

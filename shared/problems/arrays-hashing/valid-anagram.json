@@ -2,6 +2,7 @@
   "id": "valid-anagram",
   "title": "Valid Anagram",
   "difficulty": "easy",
+  "category": "arrays-hashing",
   "description": "Given two strings `s` and `t`, return `True` if `t` is an anagram of `s`, and `False` otherwise.\n\nAn anagram is a word or phrase formed by rearranging the letters of a different word or phrase, using all the original letters exactly once.",
   "examples": [
     {

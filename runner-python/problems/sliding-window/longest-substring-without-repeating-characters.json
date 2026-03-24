@@ -1,0 +1,50 @@
+{
+  "id": "longest-substring-without-repeating-characters",
+  "title": "Longest Substring Without Repeating Characters",
+  "difficulty": "medium",
+  "category": "sliding-window",
+  "description": "Given a string `s`, find the length of the **longest substring** without repeating characters.",
+  "examples": [
+    {
+      "input": "s = \"abcabcbb\"",
+      "output": "3",
+      "explanation": "The answer is \"abc\", length 3."
+    },
+    {
+      "input": "s = \"bbbbb\"",
+      "output": "1"
+    },
+    {
+      "input": "s = \"pwwkew\"",
+      "output": "3",
+      "explanation": "The answer is \"wke\", length 3."
+    }
+  ],
+  "constraints": [
+    "0 <= len(s) <= 5 * 10^4",
+    "s consists of English letters, digits, symbols and spaces"
+  ],
+  "function_name": "length_of_longest_substring",
+  "parameters": [{ "name": "s", "type": "str" }],
+  "expected_return_type": "int",
+  "visible_tests": [
+    { "args": ["abcabcbb"], "expected": 3 },
+    { "args": ["bbbbb"], "expected": 1 },
+    { "args": ["pwwkew"], "expected": 3 }
+  ],
+  "hidden_tests": [
+    { "args": [""], "expected": 0 },
+    { "args": ["abcdef"], "expected": 6 },
+    { "args": ["abba"], "expected": 2 },
+    { "args": ["dvdf"], "expected": 3 },
+    { "args": ["a"], "expected": 1 }
+  ],
+  "hint_plan": {
+    "level_1": "A substring without repeats means each character in the window is unique.",
+    "level_2": "Sliding window: expand right; when you see a repeat, shrink left until the window is valid again.",
+    "level_3": "Track last index of each character to jump the left boundary efficiently.",
+    "level_4": "Use a dict or array for last-seen index; for each right, if char seen, move left to max(left, last[char]+1); update answer with window size."
+  },
+  "canonical_solution_summary": "Sliding window with last-seen character indices or a frequency map.",
+  "disallowed_full_solution_exposure": true
+}

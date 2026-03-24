@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import {
   useCallback,
   useEffect,
@@ -10,15 +11,41 @@ import {
 import {
   getHint,
   getProblem,
+  listCategories,
   listProblems,
   loadSession,
   runCode,
   saveSession,
 } from "@/lib/api";
+import {
+  deriveProgress,
+  loadLocalProgress,
+  mergeProgress,
+  setLocalProgress,
+} from "@/lib/progress";
 import { buildStarter } from "@/lib/starter";
-import type { ProblemDetail, ProblemSummary, RunResponse } from "@/lib/types";
-import { PythonEditor } from "./PythonEditor";
+import type {
+  CategorySummary,
+  PracticeProgress,
+  ProblemDetail,
+  ProblemSummary,
+  RunResponse,
+} from "@/lib/types";
+import { DifficultyBadge } from "./DifficultyBadge";
+import { ProblemExplorer } from "./ProblemExplorer";
 import { StatusBadge } from "./StatusBadge";
+
+const PythonEditor = dynamic(
+  () => import("./PythonEditor").then((m) => m.PythonEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-full min-h-[200px] items-center justify-center bg-surface-code text-xs text-zinc-500">
+        Loading editor…
+      </div>
+    ),
+  },
+);
 
 function SectionTitle({ children }: { children: ReactNode }) {
   return (
@@ -29,28 +56,41 @@ function SectionTitle({ children }: { children: ReactNode }) {
 }
 
 export function Workspace() {
+  const [categories, setCategories] = useState<CategorySummary[]>([]);
   const [problems, setProblems] = useState<ProblemSummary[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
   const [problemId, setProblemId] = useState<string | null>(null);
   const [detail, setDetail] = useState<ProblemDetail | null>(null);
   const [code, setCode] = useState("");
   const [run, setRun] = useState<RunResponse | null>(null);
   const [hintHistory, setHintHistory] = useState<string[]>([]);
+  const [progressById, setProgressById] = useState<
+    Record<string, PracticeProgress>
+  >({});
   const [loading, setLoading] = useState<"idle" | "run" | "hint" | "load">(
     "idle",
   );
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
+    setProgressById(loadLocalProgress());
+  }, []);
+
+  useEffect(() => {
     (async () => {
       try {
-        setLoading("load");
-        const list = await listProblems();
-        setProblems(list);
-        if (list[0]) setProblemId(list[0].id);
+        setCatalogLoading(true);
+        const [cats, plist] = await Promise.all([
+          listCategories(),
+          listProblems(),
+        ]);
+        setCategories(cats);
+        setProblems(plist);
+        setProblemId((prev) => prev ?? plist[0]?.id ?? null);
       } catch (e) {
-        setErr(e instanceof Error ? e.message : "Failed to load problems");
+        setErr(e instanceof Error ? e.message : "Failed to load catalog");
       } finally {
-        setLoading("idle");
+        setCatalogLoading(false);
       }
     })();
   }, []);
@@ -64,14 +104,20 @@ export function Workspace() {
         setDetail(d);
         setRun(null);
         setErr(null);
+        const starter = buildStarter(d);
         const sess = await loadSession(problemId);
         if (sess?.code) {
           setCode(sess.code);
           setHintHistory(sess.hint_history || []);
         } else {
-          setCode(buildStarter(d));
+          setCode(starter);
           setHintHistory([]);
         }
+        const merged = mergeProgress(
+          loadLocalProgress()[problemId] ?? "not_started",
+          sess?.practice_status ?? null,
+        );
+        setProgressById((prev) => ({ ...prev, [problemId]: merged }));
       } catch (e) {
         setErr(e instanceof Error ? e.message : "Failed to load problem");
       } finally {
@@ -80,24 +126,39 @@ export function Workspace() {
     })();
   }, [problemId]);
 
+  const starterForCompare = useMemo(
+    () => (detail ? buildStarter(detail) : ""),
+    [detail],
+  );
+
   const persist = useCallback(
-    async (nextCode: string, nextHints: string[]) => {
+    async (
+      nextCode: string,
+      nextHints: string[],
+      explicitStatus?: PracticeProgress,
+    ) => {
       if (!problemId) return;
+      const st =
+        explicitStatus ??
+        deriveProgress(run, nextCode, starterForCompare, nextHints.length > 0);
+      setProgressById((prev) => ({ ...prev, [problemId]: st }));
+      setLocalProgress(problemId, st);
       try {
         await saveSession({
           problem_id: problemId,
           code: nextCode,
           hint_history: nextHints,
+          practice_status: st,
         });
       } catch {
         /* non-fatal */
       }
     },
-    [problemId],
+    [problemId, run, starterForCompare],
   );
 
   const onRun = useCallback(async () => {
-    if (!problemId) return;
+    if (!problemId || !detail) return;
     setLoading("run");
     setErr(null);
     try {
@@ -107,13 +168,19 @@ export function Workspace() {
         code,
       });
       setRun(res);
-      await persist(code, hintHistory);
+      const st = deriveProgress(
+        res,
+        code,
+        starterForCompare,
+        hintHistory.length > 0,
+      );
+      await persist(code, hintHistory, st);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Run failed");
     } finally {
       setLoading("idle");
     }
-  }, [code, hintHistory, persist, problemId]);
+  }, [code, detail, hintHistory, persist, problemId, starterForCompare]);
 
   const onHint = useCallback(async () => {
     if (!problemId || !run) {
@@ -133,7 +200,7 @@ export function Workspace() {
         `[L${h.hint_level}] Feedback: ${h.feedback}\nHint: ${h.hint}\nNext: ${h.next_focus}`,
       ];
       setHintHistory(next);
-      await persist(code, next);
+      await persist(code, next, "in_progress");
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Hint failed");
     } finally {
@@ -143,17 +210,17 @@ export function Workspace() {
 
   const onReset = useCallback(() => {
     if (!detail) return;
-    setCode(buildStarter(detail));
+    const s = buildStarter(detail);
+    setCode(s);
     setRun(null);
     setHintHistory([]);
-    void persist(buildStarter(detail), []);
+    void persist(s, [], "not_started");
   }, [detail, persist]);
 
   const title = useMemo(() => detail?.title ?? "Practice", [detail]);
 
   return (
     <div className="flex h-screen flex-col bg-surface-base text-zinc-200">
-      {/* Top bar */}
       <header className="flex shrink-0 items-center justify-between gap-4 border-b border-border px-4 py-2.5">
         <div className="min-w-0">
           <div className="flex items-baseline gap-2">
@@ -161,30 +228,19 @@ export function Workspace() {
               Jose-Morinho AI
             </span>
             <span className="hidden text-2xs text-zinc-600 sm:inline">
-              Interview prep
+              NeetCode-style
             </span>
           </div>
           <p className="mt-0.5 text-2xs text-zinc-500">
             You write the solution; we run tests and give structured feedback.
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <label htmlFor="problem-select" className="sr-only">
-            Problem
-          </label>
-          <select
-            id="problem-select"
-            className="max-w-[min(100vw-8rem,20rem)] cursor-pointer rounded border border-border bg-surface-panel py-1.5 pl-2.5 pr-8 text-xs text-zinc-200 focus:border-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-600"
-            value={problemId ?? ""}
-            onChange={(e) => setProblemId(e.target.value)}
-          >
-            {problems.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.title} · {p.difficulty}
-              </option>
-            ))}
-          </select>
-        </div>
+        {detail && (
+          <div className="hidden shrink-0 items-center gap-2 sm:flex">
+            <DifficultyBadge difficulty={detail.difficulty} />
+            <span className="text-2xs text-zinc-600">{detail.category_title}</span>
+          </div>
+        )}
       </header>
 
       {err && (
@@ -196,248 +252,254 @@ export function Workspace() {
         </div>
       )}
 
-      {/* Main split: statement | workspace */}
       <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-        {/* Left: problem */}
-        <aside className="flex w-full shrink-0 flex-col border-b border-border lg:w-[min(100%,26rem)] lg:border-b-0 lg:border-r xl:w-[28rem]">
-          <div className="border-b border-border bg-surface-raised/50 px-4 py-2">
-            <h1 className="text-base font-semibold leading-snug text-zinc-100">
-              {loading === "load" && !detail ? "Loading…" : title}
-            </h1>
-            {detail && (
-              <div className="mt-2 flex flex-wrap items-center gap-2">
-                <span className="rounded border border-zinc-700/80 bg-zinc-900/60 px-1.5 py-0.5 text-2xs font-medium uppercase tracking-wide text-zinc-400">
-                  {detail.difficulty}
-                </span>
-                <code className="break-all font-mono text-2xs text-zinc-500">
-                  def {detail.function_name}(
-                  {detail.parameters.map((x) => x.name).join(", ")}) →{" "}
-                  {detail.expected_return_type}
-                </code>
-              </div>
-            )}
-          </div>
-          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
-            {detail && (
-              <>
-                <div className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-300">
-                  {detail.description}
+        <ProblemExplorer
+          categories={categories}
+          problems={problems}
+          progress={progressById}
+          selectedId={problemId}
+          onSelectProblem={setProblemId}
+          loading={catalogLoading}
+        />
+
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col xl:flex-row">
+          <aside className="flex w-full shrink-0 flex-col border-b border-border xl:w-[min(100%,26rem)] xl:border-b-0 xl:border-r xl:max-w-[28rem]">
+            <div className="border-b border-border bg-surface-raised/50 px-4 py-2">
+              <h1 className="text-base font-semibold leading-snug text-zinc-100 transition-opacity">
+                {loading === "load" && !detail ? "Loading…" : title}
+              </h1>
+              {detail && (
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <DifficultyBadge difficulty={detail.difficulty} />
+                  <code className="break-all font-mono text-2xs text-zinc-500">
+                    def {detail.function_name}(
+                    {detail.parameters.map((x) => x.name).join(", ")}) →{" "}
+                    {detail.expected_return_type}
+                  </code>
                 </div>
-                <SectionTitle>Examples</SectionTitle>
-                <ul className="space-y-2">
-                  {detail.examples.map((ex, i) => (
-                    <li
-                      key={i}
-                      className="rounded border border-border bg-surface-panel/80 p-3 font-mono text-xs leading-relaxed text-zinc-300"
-                    >
-                      <div className="text-zinc-500">Input</div>
-                      <div className="text-zinc-200">{ex.input}</div>
-                      <div className="mt-2 text-zinc-500">Output</div>
-                      <div className="text-zinc-200">{ex.output}</div>
-                      {ex.explanation && (
-                        <div className="mt-2 border-t border-border pt-2 text-zinc-500">
-                          {ex.explanation}
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-                <SectionTitle>Constraints</SectionTitle>
-                <ul className="list-disc space-y-1 pl-4 text-xs text-zinc-400">
-                  {detail.constraints.map((c, i) => (
-                    <li key={i}>{c}</li>
-                  ))}
-                </ul>
-              </>
-            )}
-            {loading === "load" && !detail && (
-              <p className="text-sm text-zinc-500">Loading problem…</p>
-            )}
-          </div>
-        </aside>
+              )}
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+              {detail && (
+                <>
+                  <div className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-300">
+                    {detail.description}
+                  </div>
+                  <SectionTitle>Examples</SectionTitle>
+                  <ul className="space-y-2">
+                    {detail.examples.map((ex, i) => (
+                      <li
+                        key={i}
+                        className="rounded border border-border bg-surface-panel/80 p-3 font-mono text-xs leading-relaxed text-zinc-300"
+                      >
+                        <div className="text-zinc-500">Input</div>
+                        <div className="text-zinc-200">{ex.input}</div>
+                        <div className="mt-2 text-zinc-500">Output</div>
+                        <div className="text-zinc-200">{ex.output}</div>
+                        {ex.explanation && (
+                          <div className="mt-2 border-t border-border pt-2 text-zinc-500">
+                            {ex.explanation}
+                          </div>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                  <SectionTitle>Constraints</SectionTitle>
+                  <ul className="list-disc space-y-1 pl-4 text-xs text-zinc-400">
+                    {detail.constraints.map((c, i) => (
+                      <li key={i}>{c}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+              {loading === "load" && !detail && (
+                <p className="text-sm text-zinc-500">Loading problem…</p>
+              )}
+            </div>
+          </aside>
 
-        {/* Right: toolbar + (editor | evaluation grid) */}
-        <main className="flex min-h-0 min-w-0 flex-1 flex-col">
-          {/* Toolbar */}
-          <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border bg-surface-raised/30 px-3 py-2">
-            <button
-              type="button"
-              onClick={() => void onRun()}
-              disabled={loading !== "idle" || !problemId}
-              className="rounded border border-accent bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              {loading === "run" ? "Running…" : "Run Code"}
-            </button>
-            <button
-              type="button"
-              onClick={() => void onHint()}
-              disabled={loading !== "idle" || !run}
-              className="rounded border border-border bg-surface-panel px-3 py-1.5 text-xs font-medium text-zinc-200 hover:bg-zinc-800/80 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              {loading === "hint" ? "Requesting…" : "Get Hint"}
-            </button>
-            <button
-              type="button"
-              onClick={onReset}
-              disabled={!detail}
-              className="rounded px-3 py-1.5 text-xs font-medium text-zinc-500 hover:bg-zinc-800/50 hover:text-zinc-300 disabled:opacity-40"
-            >
-              Reset
-            </button>
-          </div>
-
-          <div className="grid min-h-0 flex-1 grid-rows-[minmax(260px,1fr)_minmax(200px,38%)] border-t border-border/50">
-            {/* Editor — primary focus */}
-            <div className="flex min-h-0 flex-col border-b border-border bg-surface-code">
-              <div className="flex shrink-0 items-center justify-between border-b border-border/80 px-3 py-1.5">
-                <span className="text-2xs font-medium uppercase tracking-wider text-zinc-500">
-                  Code
-                </span>
-                <span className="font-mono text-2xs text-zinc-600">Python</span>
-              </div>
-              <div className="min-h-0 flex-1">
-                <PythonEditor
-                  value={code}
-                  onChange={setCode}
-                  disabled={loading !== "idle"}
-                />
-              </div>
+          <main className="flex min-h-0 min-w-0 flex-1 flex-col">
+            <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border bg-surface-raised/30 px-3 py-2">
+              <button
+                type="button"
+                onClick={() => void onRun()}
+                disabled={loading !== "idle" || !problemId}
+                className="rounded border border-accent bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {loading === "run" ? "Running…" : "Run Code"}
+              </button>
+              <button
+                type="button"
+                onClick={() => void onHint()}
+                disabled={loading !== "idle" || !run}
+                className="rounded border border-border bg-surface-panel px-3 py-1.5 text-xs font-medium text-zinc-200 hover:bg-zinc-800/80 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {loading === "hint" ? "Requesting…" : "Get Hint"}
+              </button>
+              <button
+                type="button"
+                onClick={onReset}
+                disabled={!detail}
+                className="rounded px-3 py-1.5 text-xs font-medium text-zinc-500 hover:bg-zinc-800/50 hover:text-zinc-300 disabled:opacity-40"
+              >
+                Reset
+              </button>
             </div>
 
-            {/* Evaluation + hints */}
-            <div className="flex min-h-0 flex-col overflow-hidden bg-surface-raised/25">
-              <div className="shrink-0 border-b border-border px-3 py-1.5">
-                <span className="text-2xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
-                  Evaluation
-                </span>
+            <div className="grid min-h-0 flex-1 grid-rows-[minmax(260px,1fr)_minmax(200px,38%)] border-t border-border/50">
+              <div className="flex min-h-0 flex-col border-b border-border bg-surface-code">
+                <div className="flex shrink-0 items-center justify-between border-b border-border/80 px-3 py-1.5">
+                  <span className="text-2xs font-medium uppercase tracking-wider text-zinc-500">
+                    Code
+                  </span>
+                  <span className="font-mono text-2xs text-zinc-600">Python</span>
+                </div>
+                <div className="min-h-0 flex-1">
+                  <PythonEditor
+                    value={code}
+                    onChange={setCode}
+                    disabled={loading === "run" || loading === "hint"}
+                  />
+                </div>
               </div>
-              <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
-              {!run && (
-                <p className="text-xs leading-relaxed text-zinc-500">
-                  Run your code to execute visible tests, hidden checks, and
-                  receive interviewer notes. Evaluation is deterministic from
-                  the runner — not from the language model.
-                </p>
-              )}
-              {run && (
-                <div className="space-y-5">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <StatusBadge status={run.status} />
-                    <span className="text-2xs tabular-nums text-zinc-500">
-                      Visible {run.evaluation.passed_visible_tests}/
-                      {run.evaluation.total_visible_tests}
-                      <span className="mx-1.5 text-zinc-700">·</span>
-                      Hidden {run.evaluation.passed_hidden_tests}/
-                      {run.evaluation.total_hidden_tests}
-                      <span className="ml-1 text-zinc-600">(inputs withheld)</span>
-                    </span>
-                  </div>
 
-                  <div>
-                    <SectionTitle>Visible tests</SectionTitle>
-                    <div className="overflow-hidden rounded border border-border">
-                      <table className="w-full text-left font-mono text-2xs">
-                        <thead>
-                          <tr className="border-b border-border bg-surface-panel/60 text-zinc-500">
-                            <th className="px-2 py-1.5 font-medium">Case</th>
-                            <th className="px-2 py-1.5 font-medium">Result</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {run.visible_test_results.map((t) => (
-                            <tr
-                              key={t.index}
-                              className="border-b border-border/60 last:border-0"
-                            >
-                              <td className="px-2 py-1.5 text-zinc-400">
-                                {t.label ?? `#${t.index + 1}`}
-                              </td>
-                              <td
-                                className={
-                                  t.passed
-                                    ? "px-2 py-1.5 text-emerald-400/95"
-                                    : "px-2 py-1.5 text-rose-400/95"
-                                }
-                              >
-                                {t.passed ? "Pass" : "Fail"}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+              <div className="flex min-h-0 flex-col overflow-hidden bg-surface-raised/25">
+                <div className="shrink-0 border-b border-border px-3 py-1.5">
+                  <span className="text-2xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
+                    Evaluation
+                  </span>
+                </div>
+                <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
+                  {!run && (
+                    <p className="text-xs leading-relaxed text-zinc-500">
+                      Run your code to execute visible tests, hidden checks, and
+                      receive interviewer notes. Evaluation is deterministic from
+                      the runner — not from the language model.
+                    </p>
+                  )}
+                  {run && (
+                    <div className="space-y-5">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <StatusBadge status={run.status} />
+                        <span className="text-2xs tabular-nums text-zinc-500">
+                          Visible {run.evaluation.passed_visible_tests}/
+                          {run.evaluation.total_visible_tests}
+                          <span className="mx-1.5 text-zinc-700">·</span>
+                          Hidden {run.evaluation.passed_hidden_tests}/
+                          {run.evaluation.total_hidden_tests}
+                          <span className="ml-1 text-zinc-600">
+                            (inputs withheld)
+                          </span>
+                        </span>
+                      </div>
 
-                  {(run.evaluation.error_type || run.evaluation.error_message) && (
-                    <div>
-                      <SectionTitle>Execution</SectionTitle>
-                      <div className="rounded border border-orange-900/40 bg-orange-950/20 p-2.5 font-mono text-2xs text-orange-100/90">
-                        <div className="font-medium text-orange-200/95">
-                          {run.evaluation.error_type}
+                      <div>
+                        <SectionTitle>Visible tests</SectionTitle>
+                        <div className="overflow-hidden rounded border border-border">
+                          <table className="w-full text-left font-mono text-2xs">
+                            <thead>
+                              <tr className="border-b border-border bg-surface-panel/60 text-zinc-500">
+                                <th className="px-2 py-1.5 font-medium">Case</th>
+                                <th className="px-2 py-1.5 font-medium">Result</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {run.visible_test_results.map((t) => (
+                                <tr
+                                  key={t.index}
+                                  className="border-b border-border/60 last:border-0"
+                                >
+                                  <td className="px-2 py-1.5 text-zinc-400">
+                                    {t.label ?? `#${t.index + 1}`}
+                                  </td>
+                                  <td
+                                    className={
+                                      t.passed
+                                        ? "px-2 py-1.5 text-emerald-400/95"
+                                        : "px-2 py-1.5 text-rose-400/95"
+                                    }
+                                  >
+                                    {t.passed ? "Pass" : "Fail"}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
                         </div>
-                        <pre className="mt-1 max-h-32 overflow-auto whitespace-pre-wrap text-orange-100/75">
-                          {run.evaluation.error_message}
-                        </pre>
+                      </div>
+
+                      {(run.evaluation.error_type ||
+                        run.evaluation.error_message) && (
+                        <div>
+                          <SectionTitle>Execution</SectionTitle>
+                          <div className="rounded border border-orange-900/40 bg-orange-950/20 p-2.5 font-mono text-2xs text-orange-100/90">
+                            <div className="font-medium text-orange-200/95">
+                              {run.evaluation.error_type}
+                            </div>
+                            <pre className="mt-1 max-h-32 overflow-auto whitespace-pre-wrap text-orange-100/75">
+                              {run.evaluation.error_message}
+                            </pre>
+                          </div>
+                        </div>
+                      )}
+
+                      {run.evaluation.failing_case_summary && (
+                        <div>
+                          <SectionTitle>Case note</SectionTitle>
+                          <p className="text-xs leading-relaxed text-zinc-400">
+                            {run.evaluation.failing_case_summary}
+                          </p>
+                        </div>
+                      )}
+
+                      <div>
+                        <SectionTitle>Interviewer notes</SectionTitle>
+                        <p className="text-xs leading-relaxed text-zinc-300">
+                          {run.interviewer_feedback}
+                        </p>
+                      </div>
+
+                      {run.evaluation.feedback_targets.length > 0 && (
+                        <div>
+                          <SectionTitle>Focus areas</SectionTitle>
+                          <ul className="list-disc space-y-1 pl-4 text-xs text-zinc-400">
+                            {run.evaluation.feedback_targets.map((t, i) => (
+                              <li key={i}>{t}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      <div className="border-t border-border pt-4">
+                        <SectionTitle>Hint history</SectionTitle>
+                        {hintHistory.length === 0 ? (
+                          <p className="text-xs text-zinc-500">
+                            After a run, request hints. Each step builds on prior
+                            hints (levels 1–4).
+                          </p>
+                        ) : (
+                          <ol className="space-y-3">
+                            {hintHistory.map((h, i) => (
+                              <li
+                                key={i}
+                                className="border-l-2 border-zinc-700 pl-3 font-mono text-2xs leading-relaxed text-zinc-400"
+                              >
+                                <span className="text-zinc-600">{i + 1}.</span>{" "}
+                                <span className="whitespace-pre-wrap text-zinc-300">
+                                  {h}
+                                </span>
+                              </li>
+                            ))}
+                          </ol>
+                        )}
                       </div>
                     </div>
                   )}
-
-                  {run.evaluation.failing_case_summary && (
-                    <div>
-                      <SectionTitle>Case note</SectionTitle>
-                      <p className="text-xs leading-relaxed text-zinc-400">
-                        {run.evaluation.failing_case_summary}
-                      </p>
-                    </div>
-                  )}
-
-                  <div>
-                    <SectionTitle>Interviewer notes</SectionTitle>
-                    <p className="text-xs leading-relaxed text-zinc-300">
-                      {run.interviewer_feedback}
-                    </p>
-                  </div>
-
-                  {run.evaluation.feedback_targets.length > 0 && (
-                    <div>
-                      <SectionTitle>Focus areas</SectionTitle>
-                      <ul className="list-disc space-y-1 pl-4 text-xs text-zinc-400">
-                        {run.evaluation.feedback_targets.map((t, i) => (
-                          <li key={i}>{t}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  <div className="border-t border-border pt-4">
-                    <SectionTitle>Hint history</SectionTitle>
-                    {hintHistory.length === 0 ? (
-                      <p className="text-xs text-zinc-500">
-                        After a run, request hints. Each step builds on prior
-                        hints (levels 1–4).
-                      </p>
-                    ) : (
-                      <ol className="space-y-3">
-                        {hintHistory.map((h, i) => (
-                          <li
-                            key={i}
-                            className="border-l-2 border-zinc-700 pl-3 font-mono text-2xs leading-relaxed text-zinc-400"
-                          >
-                            <span className="text-zinc-600">{i + 1}.</span>{" "}
-                            <span className="whitespace-pre-wrap text-zinc-300">
-                              {h}
-                            </span>
-                          </li>
-                        ))}
-                      </ol>
-                    )}
-                  </div>
                 </div>
-              )}
               </div>
             </div>
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
     </div>
   );
