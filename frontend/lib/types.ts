@@ -20,6 +20,7 @@ export interface StructuredEvaluation {
   failing_case_summary: string | null;
   likely_stage: string;
   feedback_targets: string[];
+  visible_test_results?: VisibleTestResult[];
 }
 
 export interface VisibleTestResult {

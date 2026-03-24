@@ -12,16 +12,16 @@ def two_sum(nums, target):
         seen[x] = i
     return []
 """
-    ev, vis = evaluate_with_problem_id(code.strip(), "two-sum")
+    ev = evaluate_with_problem_id(code.strip(), "two-sum")
     assert ev.status == "correct"
     assert ev.passed_visible_tests == ev.total_visible_tests
     assert ev.passed_hidden_tests == ev.total_hidden_tests
-    assert all(v.passed for v in vis)
+    assert all(v.passed for v in ev.visible_test_results)
 
 
 def test_syntax_error():
     code = "def two_sum(nums, target):"
-    ev, _ = evaluate_with_problem_id(code, "two-sum")
+    ev = evaluate_with_problem_id(code, "two-sum")
     assert ev.status == "syntax_error"
     assert ev.syntax_ok is False
 
@@ -31,7 +31,16 @@ def test_incomplete_pass_only():
 def two_sum(nums, target):
     pass
 """
-    ev, _ = evaluate_with_problem_id(code.strip(), "two-sum")
+    ev = evaluate_with_problem_id(code.strip(), "two-sum")
+    assert ev.status == "incomplete"
+
+
+def test_incomplete_not_implemented():
+    code = """
+def two_sum(nums, target):
+    raise NotImplementedError("later")
+"""
+    ev = evaluate_with_problem_id(code.strip(), "two-sum")
     assert ev.status == "incomplete"
 
 
@@ -40,7 +49,7 @@ def test_wrong_always():
 def two_sum(nums, target):
     return [0, 0]
 """
-    ev, _ = evaluate_with_problem_id(code.strip(), "two-sum")
+    ev = evaluate_with_problem_id(code.strip(), "two-sum")
     assert ev.status in ("wrong", "partial", "runtime_error")
 
 
@@ -54,7 +63,7 @@ def two_sum(nums, target):
                 return [j, i]
     return []
 """
-    ev, _ = evaluate_with_problem_id(code.strip(), "two-sum")
+    ev = evaluate_with_problem_id(code.strip(), "two-sum")
     assert ev.status == "correct"
 
 
@@ -63,7 +72,7 @@ def test_valid_anagram():
 def is_anagram(s, t):
     return sorted(s) == sorted(t)
 """
-    ev, _ = evaluate_with_problem_id(code.strip(), "valid-anagram")
+    ev = evaluate_with_problem_id(code.strip(), "valid-anagram")
     assert ev.status == "correct"
 
 
@@ -73,6 +82,16 @@ import os
 def two_sum(nums, target):
     return [0,1]
 """
-    ev, _ = evaluate_with_problem_id(code.strip(), "two-sum")
+    ev = evaluate_with_problem_id(code.strip(), "two-sum")
     assert ev.status == "runtime_error"
     assert "SafetyError" in (ev.error_type or "") or "not allowed" in (ev.error_message or "").lower()
+
+
+def test_always_none_incomplete():
+    code = """
+def two_sum(nums, target):
+    x = 1
+    return None
+"""
+    ev = evaluate_with_problem_id(code.strip(), "two-sum")
+    assert ev.status == "incomplete"

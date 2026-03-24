@@ -14,7 +14,15 @@ ProblemStatus = Literal[
 ]
 
 
+class VisibleTestResult(BaseModel):
+    index: int
+    passed: bool
+    label: Optional[str] = None
+
+
 class StructuredEvaluation(BaseModel):
+    """Full deterministic evaluation payload; visible_test_results included for a flat JSON shape."""
+
     status: ProblemStatus
     syntax_ok: bool
     function_found: bool
@@ -28,6 +36,7 @@ class StructuredEvaluation(BaseModel):
     failing_case_summary: Optional[str] = None
     likely_stage: str = ""
     feedback_targets: list[str] = Field(default_factory=list)
+    visible_test_results: list[VisibleTestResult] = Field(default_factory=list)
 
 
 class RunRequest(BaseModel):
@@ -36,16 +45,11 @@ class RunRequest(BaseModel):
     code: str
 
 
-class VisibleTestResult(BaseModel):
-    index: int
-    passed: bool
-    label: Optional[str] = None
-
-
 class RunResponse(BaseModel):
     status: ProblemStatus
     evaluation: StructuredEvaluation
-    visible_test_results: list[VisibleTestResult]
+    # Duplicates evaluation.visible_test_results for clients expecting a top-level field (e.g. Go DTO).
+    visible_test_results: list[VisibleTestResult] = Field(default_factory=list)
     interviewer_feedback: str = ""
 
 

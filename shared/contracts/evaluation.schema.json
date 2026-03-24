@@ -43,6 +43,17 @@
     "feedback_targets": {
       "type": "array",
       "items": { "type": "string" }
+    },
+    "visible_test_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "index": { "type": "integer" },
+          "passed": { "type": "boolean" },
+          "label": { "type": ["string", "null"] }
+        }
+      }
     }
   }
 }

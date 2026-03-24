@@ -30,6 +30,8 @@ type StructuredEvaluation struct {
 	FailingCaseSummary   *string       `json:"failing_case_summary"`
 	LikelyStage          string        `json:"likely_stage"`
 	FeedbackTargets      []string      `json:"feedback_targets"`
+	// Also embedded in evaluation JSON by the runner (duplicates top-level visible_test_results).
+	VisibleTestResults   []VisibleTestResult `json:"visible_test_results,omitempty"`
 }
 
 // VisibleTestResult is produced by the runner.
