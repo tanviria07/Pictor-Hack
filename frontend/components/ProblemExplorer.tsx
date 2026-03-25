@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { deriveCategoriesFromProblems } from "@/lib/catalog";
 import { DifficultyBadge } from "./DifficultyBadge";
 import { PracticeStatusDot } from "./PracticeStatusDot";
 import type { CategorySummary, PracticeProgress, ProblemSummary } from "@/lib/types";
@@ -58,15 +59,21 @@ export function ProblemExplorer({
   const [difficulty, setDifficulty] = useState("");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
+  const displayCategories = useMemo((): CategorySummary[] => {
+    if (categories.length > 0) return categories;
+    if (problems.length === 0) return [];
+    return deriveCategoriesFromProblems(problems);
+  }, [categories, problems]);
+
   useEffect(() => {
     setExpanded((prev) => {
       const next = { ...prev };
-      for (const c of categories) {
+      for (const c of displayCategories) {
         if (next[c.id] === undefined) next[c.id] = true;
       }
       return next;
     });
-  }, [categories]);
+  }, [displayCategories]);
 
   const filtered = useMemo(() => {
     return problems.filter(
@@ -76,13 +83,13 @@ export function ProblemExplorer({
 
   const byCat = useMemo(() => {
     const m = new Map<string, ProblemSummary[]>();
-    for (const c of categories) m.set(c.id, []);
+    for (const c of displayCategories) m.set(c.id, []);
     for (const p of filtered) {
       const arr = m.get(p.category);
       if (arr) arr.push(p);
     }
     return m;
-  }, [categories, filtered]);
+  }, [displayCategories, filtered]);
 
   return (
     <div className="flex h-full min-h-0 w-full shrink-0 flex-col border-b border-border/80 bg-[#0a0a0c] md:w-[min(100%,19rem)] md:border-b-0 md:border-r md:border-border/80 lg:w-[20.5rem]">
@@ -124,9 +131,17 @@ export function ProblemExplorer({
             Loading…
           </p>
         )}
-        {!loading && (
+        {!loading && problems.length === 0 && (
+          <div className="px-4 py-8 text-center text-[13px] leading-relaxed text-zinc-500">
+            <p>No problems loaded.</p>
+            <p className="mt-2 text-[12px] text-zinc-600">
+              Start the Go API on port 8080, then refresh this page.
+            </p>
+          </div>
+        )}
+        {!loading && problems.length > 0 && (
           <div className="divide-y divide-border/40 pb-3">
-            {categories.map((cat) => {
+            {displayCategories.map((cat) => {
               const items = byCat.get(cat.id) ?? [];
               const open = expanded[cat.id] !== false;
               return (

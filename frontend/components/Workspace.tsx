@@ -17,6 +17,8 @@ import {
   runCode,
   saveSession,
 } from "@/lib/api";
+import { deriveCategoriesFromProblems } from "@/lib/catalog";
+import { formatThrownError } from "@/lib/errors";
 import {
   deriveProgress,
   loadLocalProgress,
@@ -77,22 +79,45 @@ export function Workspace() {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
     (async () => {
       try {
         setCatalogLoading(true);
-        const [cats, plist] = await Promise.all([
-          listCategories(),
-          listProblems(),
-        ]);
-        setCategories(cats);
+        let plist: ProblemSummary[] = [];
+        try {
+          plist = await listProblems();
+        } catch (e) {
+          if (!cancelled) {
+            setProblems([]);
+            setCategories([]);
+            setErr(formatThrownError(e));
+          }
+          return;
+        }
+        if (cancelled) return;
+
         setProblems(plist);
+
+        let cats: CategorySummary[] = [];
+        try {
+          const c = await listCategories();
+          cats = Array.isArray(c) ? c : [];
+        } catch {
+          cats = [];
+        }
+        if (cats.length === 0 && plist.length > 0) {
+          cats = deriveCategoriesFromProblems(plist);
+        }
+        setCategories(cats);
         setProblemId((prev) => prev ?? plist[0]?.id ?? null);
-      } catch (e) {
-        setErr(e instanceof Error ? e.message : "Failed to load catalog");
+        setErr(null);
       } finally {
-        setCatalogLoading(false);
+        if (!cancelled) setCatalogLoading(false);
       }
     })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -119,7 +144,7 @@ export function Workspace() {
         );
         setProgressById((prev) => ({ ...prev, [problemId]: merged }));
       } catch (e) {
-        setErr(e instanceof Error ? e.message : "Failed to load problem");
+        setErr(formatThrownError(e));
       } finally {
         setLoading("idle");
       }
@@ -176,7 +201,7 @@ export function Workspace() {
       );
       await persist(code, hintHistory, st);
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Run failed");
+      setErr(formatThrownError(e));
     } finally {
       setLoading("idle");
     }
@@ -202,7 +227,7 @@ export function Workspace() {
       setHintHistory(next);
       await persist(code, next, "in_progress");
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Hint failed");
+      setErr(formatThrownError(e));
     } finally {
       setLoading("idle");
     }
