@@ -1,5 +1,6 @@
 {
-  "name": "jose-morinho-ai-frontend",
+  "name": "pictor-hack-frontend",
+  "description": "Pictor Hack frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {

@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"josemorinho/backend/internal/config"
+	"pictorhack/backend/internal/config"
 )
 
 // Client is configured from backend env (API key never exposed to browsers).
@@ -143,5 +143,5 @@ func truncate(s string, n int) string {
 	if len(s) <= n {
 		return s
 	}
-	return s[:n] + "…"
+	return s[:n] + "â€¦"
 }

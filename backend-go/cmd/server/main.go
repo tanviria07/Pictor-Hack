@@ -5,14 +5,14 @@ import (
 	"net/http"
 	"os"
 
-	"josemorinho/backend/internal/config"
-	"josemorinho/backend/internal/deepseek"
-	"josemorinho/backend/internal/handler"
-	"josemorinho/backend/internal/httpapi"
-	"josemorinho/backend/internal/problems"
-	"josemorinho/backend/internal/runner"
-	"josemorinho/backend/internal/service"
-	"josemorinho/backend/internal/store"
+	"pictorhack/backend/internal/config"
+	"pictorhack/backend/internal/deepseek"
+	"pictorhack/backend/internal/handler"
+	"pictorhack/backend/internal/httpapi"
+	"pictorhack/backend/internal/problems"
+	"pictorhack/backend/internal/runner"
+	"pictorhack/backend/internal/service"
+	"pictorhack/backend/internal/store"
 )
 
 func main() {
@@ -40,6 +40,6 @@ func main() {
 	}
 
 	srv := httpapi.NewRouter(h, cfg.CORSOrigins)
-	log.Println("listening on", cfg.HTTPAddr)
+	log.Println("Pictor Hack API listening on", cfg.HTTPAddr)
 	log.Fatal(http.ListenAndServe(cfg.HTTPAddr, srv))
 }

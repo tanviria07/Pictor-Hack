@@ -10,8 +10,8 @@ import (
 	"net/http"
 	"time"
 
-	"josemorinho/backend/internal/dto"
-	"josemorinho/backend/internal/httpx"
+	"pictorhack/backend/internal/dto"
+	"pictorhack/backend/internal/httpx"
 )
 
 // Client calls runner-python's /evaluate endpoint.
@@ -72,5 +72,5 @@ func truncate(s string, n int) string {
 	if len(s) <= n {
 		return s
 	}
-	return s[:n] + "…"
+	return s[:n] + "â€¦"
 }

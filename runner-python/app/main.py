@@ -16,7 +16,11 @@ from app.problems import load_problem, problem_path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-app = FastAPI(title="Jose-Morinho AI — Python Runner", version="0.1.0")
+app = FastAPI(
+    title="Pictor Hack Python Runner",
+    description="Pictor Hack Python execution and evaluation service.",
+    version="0.1.0",
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -41,7 +45,7 @@ def _run_in_subprocess(req: RunRequest) -> RunResponse:
     Execute evaluation in a child process with a hard timeout.
 
     MVP: separates wall-clock from the API process and absorbs hard crashes.
-    Still not a security boundary — combine with OS-level sandboxing in production.
+    Still not a security boundary - combine with OS-level sandboxing in production.
     """
     payload = {"code": req.code, "problem_id": req.problem_id}
     env = os.environ.copy()
@@ -124,7 +128,7 @@ def _run_in_subprocess(req: RunRequest) -> RunResponse:
             error_message=str(exc),
             failing_case_summary=None,
             likely_stage="internal",
-            feedback_targets=["Internal runner issue — try again after simplifying your submission."],
+            feedback_targets=["Internal runner issue - try again after simplifying your submission."],
             visible_test_results=[],
         )
         return RunResponse(

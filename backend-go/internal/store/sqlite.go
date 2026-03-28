@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 
-	"josemorinho/backend/internal/dto"
+	"pictorhack/backend/internal/dto"
 )
 
 // Store is the concrete SQLite implementation of session persistence.
@@ -20,7 +20,7 @@ type Store struct {
 
 // Open opens or creates the SQLite database and migrations.
 func Open(path string) (*Store, error) {
-	db, err := sql.Open("sqlite3", path)
+	db, err := sql.Open("sqlite", path)
 	if err != nil {
 		return nil, err
 	}

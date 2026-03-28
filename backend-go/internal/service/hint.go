@@ -4,11 +4,11 @@ import (
 	"context"
 	"strings"
 
-	"josemorinho/backend/internal/coach"
-	"josemorinho/backend/internal/deepseek"
-	"josemorinho/backend/internal/dto"
-	"josemorinho/backend/internal/problems"
-	"josemorinho/backend/internal/store"
+	"pictorhack/backend/internal/coach"
+	"pictorhack/backend/internal/deepseek"
+	"pictorhack/backend/internal/dto"
+	"pictorhack/backend/internal/problems"
+	"pictorhack/backend/internal/store"
 )
 
 // HintService builds progressive hints grounded in runner-provided evaluation JSON.
@@ -102,5 +102,5 @@ func truncateCodeHint(s string, n int) string {
 	if len(s) <= n {
 		return s
 	}
-	return s[:n] + "…"
+	return s[:n] + "â€¦"
 }

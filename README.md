@@ -1,6 +1,6 @@
-# Jose-Morinho AI
+# Pictor Hack
 
-Local MVP for **Python interview practice**: you write every line of solution code. The stack evaluates deterministically in the Python runner, then the Go backend optionally calls **DeepSeek** only to phrase **interviewer-style notes and progressive hints** — never to decide correctness.
+Local MVP for **Python interview practice**: you write every line of solution code. The stack evaluates deterministically in the Python runner, then the Go backend optionally calls **DeepSeek** only to phrase **interviewer-style notes and progressive hints** â€” never to decide correctness.
 
 ## Architecture
 
@@ -60,7 +60,7 @@ go build -o bin/server ./cmd/server
 bin\server
 ```
 
-Defaults: `PORT=8080`, `RUNNER_URL=http://127.0.0.1:8001`, SQLite at `./data/josemorinho.db`.
+Defaults: `PORT=8080`, `RUNNER_URL=http://127.0.0.1:8001`, SQLite at `./data/pictorhack.db`.
 
 ### 3. Frontend
 
@@ -80,31 +80,31 @@ Open [http://localhost:3000](http://localhost:3000) (or `http://127.0.0.1:3000`)
 
 ## Safety note
 
-The Python runner uses AST checks, restricted builtins, and subprocess timeouts. **Production** would need OS-level sandboxing (containers, seccomp, cgroup limits, no network) — see comments in `runner-python/app/safety.py` and `runner-python/app/main.py`.
+The Python runner uses AST checks, restricted builtins, and subprocess timeouts. **Production** would need OS-level sandboxing (containers, seccomp, cgroup limits, no network) â€” see comments in `runner-python/app/safety.py` and `runner-python/app/main.py`.
 
 ## API (Go)
 
-- `GET /api/categories` — NeetCode-style curriculum list with `problem_count` per category
-- `GET /api/problems` — list summaries; optional query: `?category=arrays-hashing&difficulty=easy`
-- `GET /api/problems/:id` — public problem (no hidden test payloads; **never** exposes `canonical_solution_summary`)
-- `POST /api/run` — `{ "problem_id", "language": "python", "code" }`
-- `POST /api/hint` — `{ "problem_id", "code", "evaluation" }` (evaluation from last run)
-- `POST /api/session/save` — `{ "problem_id", "code", "hint_history", "practice_status"?: "not_started"|"in_progress"|"solved" }`
+- `GET /api/categories` â€” NeetCode-style curriculum list with `problem_count` per category
+- `GET /api/problems` â€” list summaries; optional query: `?category=arrays-hashing&difficulty=easy`
+- `GET /api/problems/:id` â€” public problem (no hidden test payloads; **never** exposes `canonical_solution_summary`)
+- `POST /api/run` â€” `{ "problem_id", "language": "python", "code" }`
+- `POST /api/hint` â€” `{ "problem_id", "code", "evaluation" }` (evaluation from last run)
+- `POST /api/session/save` â€” `{ "problem_id", "code", "hint_history", "practice_status"?: "not_started"|"in_progress"|"solved" }`
 - `GET /api/session/:problem_id`
 
 ## Problem curriculum (NeetCode-style)
 
-Categories are fixed in `backend-go/internal/problems/categories.go` (IDs like `arrays-hashing`, `sliding-window`, `dp-1d`, …). Each problem JSON **must** include a `category` field matching one of those IDs.
+Categories are fixed in `backend-go/internal/problems/categories.go` (IDs like `arrays-hashing`, `sliding-window`, `dp-1d`, â€¦). Each problem JSON **must** include a `category` field matching one of those IDs.
 
 The UI shows an expandable sidebar, search, difficulty filter, and per-problem progress (`not_started` / `in_progress` / `solved`) stored in **localStorage** and mirrored in SQLite when sessions save.
 
 ## Adding a new problem
 
-1. Add `shared/problems/{category-id}/{problem-slug}.json` with the same schema as existing seeds (`id`, `title`, `difficulty`, `category`, `description`, `examples`, `constraints`, `function_name`, `parameters`, `expected_return_type`, `visible_tests`, `hidden_tests`, `hint_plan` with levels 1–4, `canonical_solution_summary` for internal/LLM context only — **not** returned by the API).
+1. Add `shared/problems/{category-id}/{problem-slug}.json` with the same schema as existing seeds (`id`, `title`, `difficulty`, `category`, `description`, `examples`, `constraints`, `function_name`, `parameters`, `expected_return_type`, `visible_tests`, `hidden_tests`, `hint_plan` with levels 1â€“4, `canonical_solution_summary` for internal/LLM context only â€” **not** returned by the API).
 2. Mirror the file into `backend-go/internal/problems/data/` and `runner-python/problems/` (same subfolders).
 3. Rebuild the Go binary so embedded data updates.
 4. For unusual inputs (e.g. linked lists / trees from JSON), add coercion in `runner-python/app/problem_hooks.py` and wire it in `evaluator.py` if needed.
 
 ## Seeded problems (11)
 
-Representative set across categories — see `shared/problems/`: Two Sum, Valid Anagram, Product of Array Except Self, Top K Frequent Elements, Best Time to Buy and Sell Stock, Longest Substring Without Repeating Characters, Valid Parentheses, Binary Search, Reverse Linked List, Same Tree, Climbing Stairs.
+Representative set across categories â€” see `shared/problems/`: Two Sum, Valid Anagram, Product of Array Except Self, Top K Frequent Elements, Best Time to Buy and Sell Stock, Longest Substring Without Repeating Characters, Valid Parentheses, Binary Search, Reverse Linked List, Same Tree, Climbing Stairs.

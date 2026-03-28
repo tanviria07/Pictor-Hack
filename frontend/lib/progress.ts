@@ -1,6 +1,6 @@
 import type { PracticeProgress, RunResponse } from "./types";
 
-const STORAGE_KEY = "josemorinho.practice.v1";
+const STORAGE_KEY = "pictorhack.practice.v1";
 
 const rank: Record<PracticeProgress, number> = {
   not_started: 0,

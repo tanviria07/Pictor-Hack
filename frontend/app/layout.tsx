@@ -12,8 +12,13 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Jose-Morinho AI",
-  description: "Python interview practice — run, evaluate, coach.",
+  title: "Pictor Hack",
+  description: "Python interview practice - run, evaluate, coach.",
+  openGraph: {
+    title: "Pictor Hack",
+    description: "Python interview practice - run, evaluate, coach.",
+    siteName: "Pictor Hack",
+  },
 };
 
 export default function RootLayout({

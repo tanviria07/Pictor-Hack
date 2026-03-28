@@ -1,5 +1,5 @@
 // Package handler contains HTTP handlers for the REST API.
-// Handlers validate input, call services, and map errors to HTTP — they never judge code correctness.
+// Handlers validate input, call services, and map errors to HTTP â€” they never judge code correctness.
 package handler
 
 import (
@@ -10,11 +10,11 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"josemorinho/backend/internal/dto"
-	"josemorinho/backend/internal/httpx"
-	"josemorinho/backend/internal/problems"
-	"josemorinho/backend/internal/service"
-	"josemorinho/backend/internal/store"
+	"pictorhack/backend/internal/dto"
+	"pictorhack/backend/internal/httpx"
+	"pictorhack/backend/internal/problems"
+	"pictorhack/backend/internal/service"
+	"pictorhack/backend/internal/store"
 )
 
 // Handler wires HTTP handlers to services.

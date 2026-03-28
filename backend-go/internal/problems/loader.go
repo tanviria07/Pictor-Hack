@@ -11,7 +11,7 @@ import (
 	"strings"
 	"sync"
 
-	"josemorinho/backend/internal/dto"
+	"pictorhack/backend/internal/dto"
 )
 
 // ErrNotFound is returned when a problem id is unknown.

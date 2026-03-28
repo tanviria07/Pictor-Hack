@@ -3,8 +3,8 @@ package service
 import (
 	"strings"
 
-	"josemorinho/backend/internal/dto"
-	"josemorinho/backend/internal/problems"
+	"pictorhack/backend/internal/dto"
+	"pictorhack/backend/internal/problems"
 )
 
 // MaxHintLevel caps progressive hints (1..MaxHintLevel).
@@ -38,7 +38,7 @@ func buildFallbackHintResponse(
 func feedbackLineFromEval(eval dto.StructuredEvaluation) string {
 	switch eval.Status {
 	case dto.StatusCorrect:
-		return "All checks passed — no hint needed."
+		return "All checks passed â€” no hint needed."
 	case dto.StatusSyntaxError:
 		return "Fix syntax first; the runner cannot execute until the file parses."
 	case dto.StatusRuntimeError:

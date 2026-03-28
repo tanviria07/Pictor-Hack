@@ -10,7 +10,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("[Jose-Morinho UI]", error);
+    console.error("[Pictor Hack UI]", error);
   }, [error]);
 
   return (

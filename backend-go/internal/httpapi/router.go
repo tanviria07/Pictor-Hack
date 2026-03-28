@@ -6,8 +6,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
-	appmw "josemorinho/backend/internal/middleware"
-	"josemorinho/backend/internal/handler"
+	appmw "pictorhack/backend/internal/middleware"
+	"pictorhack/backend/internal/handler"
 )
 
 // NewRouter mounts API routes and middleware.

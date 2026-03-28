@@ -3,7 +3,7 @@ package store
 import (
 	"context"
 
-	"josemorinho/backend/internal/dto"
+	"pictorhack/backend/internal/dto"
 )
 
 // SessionRepository abstracts local persistence for tests or alternate backends.

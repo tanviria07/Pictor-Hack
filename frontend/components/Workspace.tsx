@@ -43,7 +43,7 @@ const PythonEditor = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex h-full min-h-[200px] items-center justify-center bg-surface-code text-xs text-zinc-500">
-        Loading editor…
+        Loading editorâ€¦
       </div>
     ),
   },
@@ -250,7 +250,7 @@ export function Workspace() {
         <div className="min-w-0">
           <div className="flex items-baseline gap-2">
             <span className="truncate text-sm font-semibold tracking-tight text-zinc-100">
-              Jose-Morinho AI
+              Pictor Hack
             </span>
             <span className="hidden text-2xs text-zinc-600 sm:inline">
               NeetCode-style
@@ -291,14 +291,14 @@ export function Workspace() {
           <aside className="flex w-full shrink-0 flex-col border-b border-border xl:w-[min(100%,26rem)] xl:border-b-0 xl:border-r xl:max-w-[28rem]">
             <div className="border-b border-border bg-surface-raised/50 px-4 py-2">
               <h1 className="text-base font-semibold leading-snug text-zinc-100 transition-opacity">
-                {loading === "load" && !detail ? "Loading…" : title}
+                {loading === "load" && !detail ? "Loadingâ€¦" : title}
               </h1>
               {detail && (
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   <DifficultyBadge difficulty={detail.difficulty} />
                   <code className="break-all font-mono text-2xs text-zinc-500">
                     def {detail.function_name}(
-                    {detail.parameters.map((x) => x.name).join(", ")}) →{" "}
+                    {detail.parameters.map((x) => x.name).join(", ")}) â†’{" "}
                     {detail.expected_return_type}
                   </code>
                 </div>
@@ -338,7 +338,7 @@ export function Workspace() {
                 </>
               )}
               {loading === "load" && !detail && (
-                <p className="text-sm text-zinc-500">Loading problem…</p>
+                <p className="text-sm text-zinc-500">Loading problemâ€¦</p>
               )}
             </div>
           </aside>
@@ -351,7 +351,7 @@ export function Workspace() {
                 disabled={loading !== "idle" || !problemId}
                 className="rounded border border-accent bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                {loading === "run" ? "Running…" : "Run Code"}
+                {loading === "run" ? "Runningâ€¦" : "Run Code"}
               </button>
               <button
                 type="button"
@@ -359,7 +359,7 @@ export function Workspace() {
                 disabled={loading !== "idle" || !run}
                 className="rounded border border-border bg-surface-panel px-3 py-1.5 text-xs font-medium text-zinc-200 hover:bg-zinc-800/80 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                {loading === "hint" ? "Requesting…" : "Get Hint"}
+                {loading === "hint" ? "Requestingâ€¦" : "Get Hint"}
               </button>
               <button
                 type="button"
@@ -399,7 +399,7 @@ export function Workspace() {
                     <p className="text-xs leading-relaxed text-zinc-500">
                       Run your code to execute visible tests, hidden checks, and
                       receive interviewer notes. Evaluation is deterministic from
-                      the runner — not from the language model.
+                      the runner â€” not from the language model.
                     </p>
                   )}
                   {run && (
@@ -409,7 +409,7 @@ export function Workspace() {
                         <span className="text-2xs tabular-nums text-zinc-500">
                           Visible {run.evaluation.passed_visible_tests}/
                           {run.evaluation.total_visible_tests}
-                          <span className="mx-1.5 text-zinc-700">·</span>
+                          <span className="mx-1.5 text-zinc-700">Â·</span>
                           Hidden {run.evaluation.passed_hidden_tests}/
                           {run.evaluation.total_hidden_tests}
                           <span className="ml-1 text-zinc-600">
@@ -500,7 +500,7 @@ export function Workspace() {
                         {hintHistory.length === 0 ? (
                           <p className="text-xs text-zinc-500">
                             After a run, request hints. Each step builds on prior
-                            hints (levels 1–4).
+                            hints (levels 1â€“4).
                           </p>
                         ) : (
                           <ol className="space-y-3">

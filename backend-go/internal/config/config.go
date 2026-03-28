@@ -28,7 +28,7 @@ func Load() Config {
 
 	db := os.Getenv("DATABASE_PATH")
 	if db == "" {
-		db = "./data/josemorinho.db"
+		db = "./data/pictorhack.db"
 	}
 
 	runner := os.Getenv("RUNNER_URL")

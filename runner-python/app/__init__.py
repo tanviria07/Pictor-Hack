@@ -1,1 +1,1 @@
-# Jose-Morinho AI — Python execution & evaluation service
+# Pictor Hack - Python execution and evaluation service

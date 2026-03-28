@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"strings"
 
-	"josemorinho/backend/internal/coach"
-	"josemorinho/backend/internal/deepseek"
-	"josemorinho/backend/internal/dto"
-	"josemorinho/backend/internal/problems"
-	"josemorinho/backend/internal/runner"
+	"pictorhack/backend/internal/coach"
+	"pictorhack/backend/internal/deepseek"
+	"pictorhack/backend/internal/dto"
+	"pictorhack/backend/internal/problems"
+	"pictorhack/backend/internal/runner"
 )
 
 // RunService orchestrates POST /api/run: Python runner is authoritative for execution
@@ -25,7 +25,7 @@ func NewRunService(r *runner.Client, d *deepseek.Client) *RunService {
 }
 
 // Execute forwards to the runner and returns its response. DeepSeek never changes
-// evaluation, status, or test counts — only the optional natural-language feedback string.
+// evaluation, status, or test counts â€” only the optional natural-language feedback string.
 func (s *RunService) Execute(ctx context.Context, req dto.RunRequest) (*dto.RunResponse, error) {
 	if req.Language != "" && req.Language != "python" {
 		return nil, ErrUnsupportedLanguage
@@ -57,5 +57,5 @@ func truncateCode(s string, n int) string {
 	if len(s) <= n {
 		return s
 	}
-	return s[:n] + "…"
+	return s[:n] + "â€¦"
 }
