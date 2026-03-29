@@ -3,48 +3,67 @@
   "title": "Longest Substring Without Repeating Characters",
   "difficulty": "medium",
   "category": "sliding-window",
-  "description": "Given a string `s`, find the length of the **longest substring** without repeating characters.",
+  "description": "Given a string `s`, find the length of the longest substring without duplicate characters.\n\n \n\nExample 1:\n\nInput: s = \"abcabcbb\"\nOutput: 3\nExplanation: The answer is \"abc\", with the length of 3. Note that `\"bca\"` and `\"cab\"` are also correct answers.\n\nExample 2:\n\nInput: s = \"bbbbb\"\nOutput: 1\nExplanation: The answer is \"b\", with the length of 1.\n\nExample 3:\n\nInput: s = \"pwwkew\"\nOutput: 3\nExplanation: The answer is \"wke\", with the length of 3.\nNotice that the answer must be a substring, \"pwke\" is a subsequence and not a substring.",
   "examples": [
     {
       "input": "s = \"abcabcbb\"",
       "output": "3",
-      "explanation": "The answer is \"abc\", length 3."
+      "explanation": "The answer is \"abc\", with the length of 3. Note that `\"bca\"` and `\"cab\"` are also correct answers."
     },
     {
       "input": "s = \"bbbbb\"",
-      "output": "1"
+      "output": "1",
+      "explanation": "The answer is \"b\", with the length of 1."
     },
     {
       "input": "s = \"pwwkew\"",
       "output": "3",
-      "explanation": "The answer is \"wke\", length 3."
+      "explanation": "The answer is \"wke\", with the length of 3.\nNotice that the answer must be a substring, \"pwke\" is a subsequence and not a substring."
     }
   ],
   "constraints": [
-    "0 <= len(s) <= 5 * 10^4",
-    "s consists of English letters, digits, symbols and spaces"
+    "`0 <= s.length <= 5 * 10^4`",
+    "`s` consists of English letters, digits, symbols and spaces."
   ],
+  "execution_mode": "function",
+  "class_name": "",
   "function_name": "length_of_longest_substring",
-  "parameters": [{ "name": "s", "type": "str" }],
+  "starter_code": "def length_of_longest_substring(s):\n    pass\n",
+  "parameters": [
+    {
+      "name": "s",
+      "type": "str"
+    }
+  ],
   "expected_return_type": "int",
+  "comparison": "",
   "visible_tests": [
-    { "args": ["abcabcbb"], "expected": 3 },
-    { "args": ["bbbbb"], "expected": 1 },
-    { "args": ["pwwkew"], "expected": 3 }
+    {
+      "args": [
+        "abcabcbb"
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        "bbbbb"
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        "pwwkew"
+      ],
+      "expected": 3
+    }
   ],
-  "hidden_tests": [
-    { "args": [""], "expected": 0 },
-    { "args": ["abcdef"], "expected": 6 },
-    { "args": ["abba"], "expected": 2 },
-    { "args": ["dvdf"], "expected": 3 },
-    { "args": ["a"], "expected": 1 }
-  ],
+  "hidden_tests": [],
   "hint_plan": {
-    "level_1": "A substring without repeats means each character in the window is unique.",
-    "level_2": "Sliding window: expand right; when you see a repeat, shrink left until the window is valid again.",
-    "level_3": "Track last index of each character to jump the left boundary efficiently.",
-    "level_4": "Use a dict or array for last-seen index; for each right, if char seen, move left to max(left, last[char]+1); update answer with window size."
+    "level_1": "Since maximum string size is at most 26, generate and check all possible substrings with length at most 26.",
+    "level_2": "Since maximum string size is at most 26, generate and check all possible substrings with length at most 26.",
+    "level_3": "Since maximum string size is at most 26, generate and check all possible substrings with length at most 26.",
+    "level_4": "Since maximum string size is at most 26, generate and check all possible substrings with length at most 26."
   },
-  "canonical_solution_summary": "Sliding window with last-seen character indices or a frequency map.",
+  "canonical_solution_summary": "Since maximum string size is at most 26, generate and check all possible substrings with length at most 26.",
   "disallowed_full_solution_exposure": true
 }

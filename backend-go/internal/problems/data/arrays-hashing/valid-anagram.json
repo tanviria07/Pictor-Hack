@@ -3,7 +3,7 @@
   "title": "Valid Anagram",
   "difficulty": "easy",
   "category": "arrays-hashing",
-  "description": "Given two strings `s` and `t`, return `True` if `t` is an anagram of `s`, and `False` otherwise.\n\nAn anagram is a word or phrase formed by rearranging the letters of a different word or phrase, using all the original letters exactly once.",
+  "description": "Given two strings `s` and `t`, return `true` if `t` is an anagram of `s`, and `false` otherwise.\n\n \n\nExample 1:\n\nInput: s = \"anagram\", t = \"nagaram\"\n\nOutput: true\n\nExample 2:\n\nInput: s = \"rat\", t = \"car\"\n\nOutput: false",
   "examples": [
     {
       "input": "s = \"anagram\", t = \"nagaram\"",
@@ -15,33 +15,48 @@
     }
   ],
   "constraints": [
-    "1 <= len(s), len(t) <= 5 * 10^4",
-    "s and t consist of lowercase English letters"
+    "`1 <= s.length, t.length <= 5 * 10^4`",
+    "`s` and `t` consist of lowercase English letters."
   ],
+  "execution_mode": "function",
+  "class_name": "",
   "function_name": "is_anagram",
+  "starter_code": "def is_anagram(s, t):\n    pass\n",
   "parameters": [
-    { "name": "s", "type": "str" },
-    { "name": "t", "type": "str" }
+    {
+      "name": "s",
+      "type": "str"
+    },
+    {
+      "name": "t",
+      "type": "str"
+    }
   ],
   "expected_return_type": "bool",
+  "comparison": "",
   "visible_tests": [
-    { "args": ["anagram", "nagaram"], "expected": true },
-    { "args": ["rat", "car"], "expected": false },
-    { "args": ["listen", "silent"], "expected": true }
+    {
+      "args": [
+        "anagram",
+        "nagaram"
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        "rat",
+        "car"
+      ],
+      "expected": false
+    }
   ],
-  "hidden_tests": [
-    { "args": ["a", "a"], "expected": true },
-    { "args": ["ab", "ba"], "expected": true },
-    { "args": ["abc", "def"], "expected": false },
-    { "args": ["hello", "olleh"], "expected": true },
-    { "args": ["x", "xx"], "expected": false }
-  ],
+  "hidden_tests": [],
   "hint_plan": {
-    "level_1": "Anagrams have identical character counts when lengths match.",
-    "level_2": "Compare frequency tables or sorted tuples of characters.",
-    "level_3": "If lengths differ, return false early; otherwise count letters for both strings and compare.",
-    "level_4": "Use a dict or collections.Counter; ensure counts for every character match between s and t."
+    "level_1": "Break down the core operation in Valid Anagram.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
-  "canonical_solution_summary": "Count characters in both strings (or sort) and compare; short-circuit on length mismatch.",
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
   "disallowed_full_solution_exposure": true
 }

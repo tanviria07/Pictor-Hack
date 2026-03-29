@@ -1,0 +1,101 @@
+{
+  "id": "3sum",
+  "title": "3Sum",
+  "difficulty": "medium",
+  "category": "two-pointers",
+  "description": "Given an integer array nums, return all the triplets `[nums[i], nums[j], nums[k]]` such that `i != j`, `i != k`, and `j != k`, and `nums[i] + nums[j] + nums[k] == 0`.\n\nNotice that the solution set must not contain duplicate triplets.\n\n \n\nExample 1:\n\nInput: nums = [-1,0,1,2,-1,-4]\nOutput: [[-1,-1,2],[-1,0,1]]\nExplanation: \nnums[0] + nums[1] + nums[2] = (-1) + 0 + 1 = 0.\nnums[1] + nums[2] + nums[4] = 0 + 1 + (-1) = 0.\nnums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0.\nThe distinct triplets are [-1,0,1] and [-1,-1,2].\nNotice that the order of the output and the order of the triplets does not matter.\n\nExample 2:\n\nInput: nums = [0,1,1]\nOutput: []\nExplanation: The only possible triplet does not sum up to 0.\n\nExample 3:\n\nInput: nums = [0,0,0]\nOutput: [[0,0,0]]\nExplanation: The only possible triplet sums up to 0.",
+  "examples": [
+    {
+      "input": "nums = [-1,0,1,2,-1,-4]",
+      "output": "[[-1,-1,2],[-1,0,1]]",
+      "explanation": "nums[0] + nums[1] + nums[2] = (-1) + 0 + 1 = 0.\nnums[1] + nums[2] + nums[4] = 0 + 1 + (-1) = 0.\nnums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0.\nThe distinct triplets are [-1,0,1] and [-1,-1,2].\nNotice that the order of the output and the order of the triplets does not matter."
+    },
+    {
+      "input": "nums = [0,1,1]",
+      "output": "[]",
+      "explanation": "The only possible triplet does not sum up to 0."
+    },
+    {
+      "input": "nums = [0,0,0]",
+      "output": "[[0,0,0]]",
+      "explanation": "The only possible triplet sums up to 0."
+    }
+  ],
+  "constraints": [
+    "`3 <= nums.length <= 3000`",
+    "`-10^5 <= nums[i] <= 10^5`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "three_sum",
+  "starter_code": "def three_sum(nums):\n    pass\n",
+  "parameters": [
+    {
+      "name": "nums",
+      "type": "List[int]"
+    }
+  ],
+  "expected_return_type": "List[List[int]]",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          -1,
+          0,
+          1,
+          2,
+          -1,
+          -4
+        ]
+      ],
+      "expected": [
+        [
+          -1,
+          -1,
+          2
+        ],
+        [
+          -1,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          0,
+          1,
+          1
+        ]
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "expected": [
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "So, we essentially need to find three numbers x, y, and z such that they add up to the given value. If we fix one of the numbers say x, we are left with the two-sum problem at hand!",
+    "level_2": "For the two-sum problem, if we fix one of the numbers, say x, we have to scan the entire array to find the next number y, which is value - x where value is the input parameter. Can we change our array somehow so that this search becomes faster?",
+    "level_3": "The second train of thought for two-sum is, without changing the array, can we use additional space somehow? Like maybe a hash map to speed up the search?",
+    "level_4": "The second train of thought for two-sum is, without changing the array, can we use additional space somehow? Like maybe a hash map to speed up the search?"
+  },
+  "canonical_solution_summary": "The second train of thought for two-sum is, without changing the array, can we use additional space somehow? Like maybe a hash map to speed up the search?",
+  "disallowed_full_solution_exposure": true
+}

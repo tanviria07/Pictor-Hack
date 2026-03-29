@@ -36,6 +36,9 @@ type rawProblem struct {
 	Examples                   []dto.Example     `json:"examples"`
 	Constraints                []string          `json:"constraints"`
 	FunctionName               string            `json:"function_name"`
+	ExecutionMode              string            `json:"execution_mode"`
+	ClassName                  string            `json:"class_name"`
+	StarterCode                string            `json:"starter_code"`
 	Parameters                 []dto.Parameter   `json:"parameters"`
 	ExpectedReturnType         string            `json:"expected_return_type"`
 	VisibleTests               []any             `json:"visible_tests"`
@@ -180,6 +183,9 @@ func GetPublic(id string) (*dto.ProblemDetail, error) {
 		Examples:           p.Examples,
 		Constraints:        p.Constraints,
 		FunctionName:       p.FunctionName,
+		ExecutionMode:      p.ExecutionMode,
+		ClassName:          p.ClassName,
+		StarterCode:        p.StarterCode,
 		Parameters:         p.Parameters,
 		ExpectedReturnType: p.ExpectedReturnType,
 		VisibleTestCount:   len(p.VisibleTests),

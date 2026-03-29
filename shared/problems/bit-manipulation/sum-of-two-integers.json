@@ -1,0 +1,61 @@
+{
+  "id": "sum-of-two-integers",
+  "title": "Sum of Two Integers",
+  "difficulty": "medium",
+  "category": "bit-manipulation",
+  "description": "Given two integers `a` and `b`, return the sum of the two integers without using the operators `+` and `-`.\n\n \n\nExample 1:\n\nInput: a = 1, b = 2\nOutput: 3\n\nExample 2:\n\nInput: a = 2, b = 3\nOutput: 5",
+  "examples": [
+    {
+      "input": "a = 1, b = 2",
+      "output": "3"
+    },
+    {
+      "input": "a = 2, b = 3",
+      "output": "5"
+    }
+  ],
+  "constraints": [
+    "`-1000 <= a, b <= 1000`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "get_sum",
+  "starter_code": "def get_sum(a, b):\n    pass\n",
+  "parameters": [
+    {
+      "name": "a",
+      "type": "int"
+    },
+    {
+      "name": "b",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        1,
+        2
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        2,
+        3
+      ],
+      "expected": 5
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Sum of Two Integers.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

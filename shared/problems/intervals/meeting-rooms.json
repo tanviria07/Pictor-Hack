@@ -1,0 +1,57 @@
+{
+  "id": "meeting-rooms",
+  "title": "Meeting Rooms",
+  "difficulty": "easy",
+  "category": "intervals",
+  "description": "Given an array of meeting time interval objects consisting of start and end times `[[start_1,end_1],[start_2,end_2],...] (start_i < end_i)`, determine if a person could add all meetings to their schedule without any conflicts.\n\nNote: (0,8),(8,10) is not considered a conflict at 8",
+  "examples": [
+    {
+      "input": "intervals = [(0,30),(5,10),(15,20)]",
+      "output": "false",
+      "explanation": "* `(0,30)` and `(5,10)` will conflict\n* `(0,30)` and `(15,20)` will conflict"
+    },
+    {
+      "input": "intervals = [(5,8),(9,15)]",
+      "output": "true"
+    }
+  ],
+  "constraints": [
+    "`0 <= intervals.length <= 500`",
+    "`0 <= intervals[i].start < intervals[i].end <= 1,000,000`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "can_attend_meetings",
+  "starter_code": "def can_attend_meetings(intervals):\n    pass\n",
+  "parameters": [
+    {
+      "name": "intervals",
+      "type": "List[List[int]]"
+    }
+  ],
+  "expected_return_type": "bool",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        "[(0,30),(5,10),(15,20)]"
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        "[(5,8),(9,15)]"
+      ],
+      "expected": true
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Meeting Rooms.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

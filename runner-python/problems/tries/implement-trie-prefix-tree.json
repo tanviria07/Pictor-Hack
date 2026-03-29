@@ -1,0 +1,102 @@
+{
+  "id": "implement-trie-prefix-tree",
+  "title": "Implement Trie (Prefix Tree)",
+  "difficulty": "medium",
+  "category": "tries",
+  "description": "A trie (pronounced as \"try\") or prefix tree is a tree data structure used to efficiently store and retrieve keys in a dataset of strings. There are various applications of this data structure, such as autocomplete and spellchecker.\n\nImplement the Trie class:\n\n\t- `Trie()` Initializes the trie object.\n\n\t- `void insert(String word)` Inserts the string `word` into the trie.\n\n\t- `boolean search(String word)` Returns `true` if the string `word` is in the trie (i.e., was inserted before), and `false` otherwise.\n\n\t- `boolean startsWith(String prefix)` Returns `true` if there is a previously inserted string `word` that has the prefix `prefix`, and `false` otherwise.\n\n \n\nExample 1:\n\nInput\n[\"Trie\", \"insert\", \"search\", \"search\", \"startsWith\", \"insert\", \"search\"]\n[[], [\"apple\"], [\"apple\"], [\"app\"], [\"app\"], [\"app\"], [\"app\"]]\nOutput\n[null, null, true, false, true, null, true]\n\nExplanation\nTrie trie = new Trie();\ntrie.insert(\"apple\");\ntrie.search(\"apple\");   // return True\ntrie.search(\"app\");     // return False\ntrie.startsWith(\"app\"); // return True\ntrie.insert(\"app\");\ntrie.search(\"app\");     // return True",
+  "examples": [
+    {
+      "input": "[\"Trie\", \"insert\", \"search\", \"search\", \"startsWith\", \"insert\", \"search\"]\n[[], [\"apple\"], [\"apple\"], [\"app\"], [\"app\"], [\"app\"], [\"app\"]]\nOutput\n[null, null, true, false, true, null, true]\n\nExplanation\nTrie trie = new Trie();\ntrie.insert(\"apple\");\ntrie.search(\"apple\");   // return True\ntrie.search(\"app\");     // return False\ntrie.startsWith(\"app\"); // return True\ntrie.insert(\"app\");\ntrie.search(\"app\");     // return True",
+      "output": "[null, null, true, false, true, null, true]\n\nExplanation\nTrie trie = new Trie();\ntrie.insert(\"apple\");\ntrie.search(\"apple\");   // return True\ntrie.search(\"app\");     // return False\ntrie.startsWith(\"app\"); // return True\ntrie.insert(\"app\");\ntrie.search(\"app\");     // return True",
+      "explanation": "Trie trie = new Trie();\ntrie.insert(\"apple\");\ntrie.search(\"apple\");   // return True\ntrie.search(\"app\");     // return False\ntrie.startsWith(\"app\"); // return True\ntrie.insert(\"app\");\ntrie.search(\"app\");     // return True"
+    }
+  ],
+  "constraints": [
+    "`1 <= word.length, prefix.length <= 2000`",
+    "`word` and `prefix` consist only of lowercase English letters.",
+    "At most `3 * 10^4` calls in total will be made to `insert`, `search`, and `startsWith`."
+  ],
+  "execution_mode": "class",
+  "class_name": "Trie",
+  "function_name": "Trie",
+  "starter_code": "class Trie:\n    def __init__(self):\n        pass\n\n    def insert(self, word):\n        pass\n\n    def search(self, word):\n        pass\n\n    def startsWith(self, prefix):\n        pass\n",
+  "parameters": [],
+  "methods": [
+    {
+      "name": "insert",
+      "params": [
+        {
+          "name": "word",
+          "type": "str"
+        }
+      ],
+      "return_type": "None"
+    },
+    {
+      "name": "search",
+      "params": [
+        {
+          "name": "word",
+          "type": "str"
+        }
+      ],
+      "return_type": "bool"
+    },
+    {
+      "name": "startsWith",
+      "params": [
+        {
+          "name": "prefix",
+          "type": "str"
+        }
+      ],
+      "return_type": "bool"
+    }
+  ],
+  "expected_return_type": "class",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "ops": [
+        "Trie",
+        "insert",
+        "search",
+        "search",
+        "startsWith",
+        "insert",
+        "search"
+      ],
+      "args": [
+        [],
+        [
+          "apple"
+        ],
+        [
+          "apple"
+        ],
+        [
+          "app"
+        ],
+        [
+          "app"
+        ],
+        [
+          "app"
+        ],
+        [
+          "app"
+        ]
+      ],
+      "expected": "[null, null, true, false, true, null, true]\n\nExplanation\nTrie trie = new Trie();\ntrie.insert(\"apple\");\ntrie.search(\"apple\");   // return True\ntrie.search(\"app\");     // return False\ntrie.startsWith(\"app\"); // return True\ntrie.insert(\"app\");\ntrie.search(\"app\");     // return True"
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Implement Trie (Prefix Tree).",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

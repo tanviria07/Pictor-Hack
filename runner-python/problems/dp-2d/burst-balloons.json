@@ -1,0 +1,66 @@
+{
+  "id": "burst-balloons",
+  "title": "Burst Balloons",
+  "difficulty": "hard",
+  "category": "dp-2d",
+  "description": "You are given `n` balloons, indexed from `0` to `n - 1`. Each balloon is painted with a number on it represented by an array `nums`. You are asked to burst all the balloons.\n\nIf you burst the `i^th` balloon, you will get `nums[i - 1] * nums[i] * nums[i + 1]` coins. If `i - 1` or `i + 1` goes out of bounds of the array, then treat it as if there is a balloon with a `1` painted on it.\n\nReturn the maximum coins you can collect by bursting the balloons wisely.\n\n \n\nExample 1:\n\nInput: nums = [3,1,5,8]\nOutput: 167\nExplanation:\nnums = [3,1,5,8] --> [3,5,8] --> [3,8] --> [8] --> []\ncoins =  3*1*5    +   3*5*8   +  1*3*8  + 1*8*1 = 167\n\nExample 2:\n\nInput: nums = [1,5]\nOutput: 10",
+  "examples": [
+    {
+      "input": "nums = [3,1,5,8]",
+      "output": "167",
+      "explanation": "nums = [3,1,5,8] --> [3,5,8] --> [3,8] --> [8] --> []\ncoins =  3*1*5    +   3*5*8   +  1*3*8  + 1*8*1 = 167"
+    },
+    {
+      "input": "nums = [1,5]",
+      "output": "10"
+    }
+  ],
+  "constraints": [
+    "`n == nums.length`",
+    "`1 <= n <= 300`",
+    "`0 <= nums[i] <= 100`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "max_coins",
+  "starter_code": "def max_coins(nums):\n    pass\n",
+  "parameters": [
+    {
+      "name": "nums",
+      "type": "List[int]"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          3,
+          1,
+          5,
+          8
+        ]
+      ],
+      "expected": 167
+    },
+    {
+      "args": [
+        [
+          1,
+          5
+        ]
+      ],
+      "expected": 10
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Burst Balloons.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

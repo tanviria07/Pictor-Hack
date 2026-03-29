@@ -1,0 +1,89 @@
+{
+  "id": "subtree-of-another-tree",
+  "title": "Subtree of Another Tree",
+  "difficulty": "easy",
+  "category": "trees",
+  "description": "Given the roots of two binary trees `root` and `subRoot`, return `true` if there is a subtree of `root` with the same structure and node values of` subRoot` and `false` otherwise.\n\nA subtree of a binary tree `tree` is a tree that consists of a node in `tree` and all of this node's descendants. The tree `tree` could also be considered as a subtree of itself.\n\n \n\nExample 1:\n\nInput: root = [3,4,5,1,2], subRoot = [4,1,2]\nOutput: true\n\nExample 2:\n\nInput: root = [3,4,5,1,2,null,null,null,null,0], subRoot = [4,1,2]\nOutput: false",
+  "examples": [
+    {
+      "input": "root = [3,4,5,1,2], subRoot = [4,1,2]",
+      "output": "true"
+    },
+    {
+      "input": "root = [3,4,5,1,2,null,null,null,null,0], subRoot = [4,1,2]",
+      "output": "false"
+    }
+  ],
+  "constraints": [
+    "The number of nodes in the `root` tree is in the range `[1, 2000]`.",
+    "The number of nodes in the `subRoot` tree is in the range `[1, 1000]`.",
+    "`-10^4 <= root.val <= 10^4`",
+    "`-10^4 <= subRoot.val <= 10^4`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "is_subtree",
+  "starter_code": "def is_subtree(root, subRoot):\n    pass\n",
+  "parameters": [
+    {
+      "name": "root",
+      "type": "TreeNode"
+    },
+    {
+      "name": "subRoot",
+      "type": "TreeNode"
+    }
+  ],
+  "expected_return_type": "bool",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          3,
+          4,
+          5,
+          1,
+          2
+        ],
+        [
+          4,
+          1,
+          2
+        ]
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        [
+          3,
+          4,
+          5,
+          1,
+          2,
+          null,
+          null,
+          null,
+          null,
+          0
+        ],
+        [
+          4,
+          1,
+          2
+        ]
+      ],
+      "expected": false
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Which approach is better here- recursive or iterative?",
+    "level_2": "If recursive approach is better, can you write recursive function with its parameters?",
+    "level_3": "Two trees s and t are said to be identical if their root values are same and their left and right subtrees are identical. Can you write this in form of recursive formulae?",
+    "level_4": "Recursive formulae can be: \nisIdentical(s,t)= s.val==t.val AND isIdentical(s.left,t.left) AND isIdentical(s.right,t.right)"
+  },
+  "canonical_solution_summary": "Recursive formulae can be: \nisIdentical(s,t)= s.val==t.val AND isIdentical(s.left,t.left) AND isIdentical(s.right,t.right)",
+  "disallowed_full_solution_exposure": true
+}

@@ -1,0 +1,68 @@
+{
+  "id": "maximum-depth-of-binary-tree",
+  "title": "Maximum Depth of Binary Tree",
+  "difficulty": "easy",
+  "category": "trees",
+  "description": "Given the `root` of a binary tree, return its maximum depth.\n\nA binary tree's maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.\n\n \n\nExample 1:\n\nInput: root = [3,9,20,null,null,15,7]\nOutput: 3\n\nExample 2:\n\nInput: root = [1,null,2]\nOutput: 2",
+  "examples": [
+    {
+      "input": "root = [3,9,20,null,null,15,7]",
+      "output": "3"
+    },
+    {
+      "input": "root = [1,null,2]",
+      "output": "2"
+    }
+  ],
+  "constraints": [
+    "The number of nodes in the tree is in the range `[0, 10^4]`.",
+    "`-100 <= Node.val <= 100`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "max_depth",
+  "starter_code": "def max_depth(root):\n    pass\n",
+  "parameters": [
+    {
+      "name": "root",
+      "type": "TreeNode"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          3,
+          9,
+          20,
+          null,
+          null,
+          15,
+          7
+        ]
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        [
+          1,
+          null,
+          2
+        ]
+      ],
+      "expected": 2
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Maximum Depth of Binary Tree.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

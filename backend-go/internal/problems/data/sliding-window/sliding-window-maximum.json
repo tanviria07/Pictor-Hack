@@ -1,0 +1,84 @@
+{
+  "id": "sliding-window-maximum",
+  "title": "Sliding Window Maximum",
+  "difficulty": "hard",
+  "category": "sliding-window",
+  "description": "You are given an array of integers `nums`, there is a sliding window of size `k` which is moving from the very left of the array to the very right. You can only see the `k` numbers in the window. Each time the sliding window moves right by one position.\n\nReturn the max sliding window.\n\n \n\nExample 1:\n\nInput: nums = [1,3,-1,-3,5,3,6,7], k = 3\nOutput: [3,3,5,5,6,7]\nExplanation: \nWindow position                Max\n---------------               -----\n[1  3  -1] -3  5  3  6  7       3\n 1 [3  -1  -3] 5  3  6  7       3\n 1  3 [-1  -3  5] 3  6  7       5\n 1  3  -1 [-3  5  3] 6  7       5\n 1  3  -1  -3 [5  3  6] 7       6\n 1  3  -1  -3  5 [3  6  7]      7\n\nExample 2:\n\nInput: nums = [1], k = 1\nOutput: [1]",
+  "examples": [
+    {
+      "input": "nums = [1,3,-1,-3,5,3,6,7], k = 3",
+      "output": "[3,3,5,5,6,7]",
+      "explanation": "Window position                Max\n---------------               -----\n[1  3  -1] -3  5  3  6  7       3\n 1 [3  -1  -3] 5  3  6  7       3\n 1  3 [-1  -3  5] 3  6  7       5\n 1  3  -1 [-3  5  3] 6  7       5\n 1  3  -1  -3 [5  3  6] 7       6\n 1  3  -1  -3  5 [3  6  7]      7"
+    },
+    {
+      "input": "nums = [1], k = 1",
+      "output": "[1]"
+    }
+  ],
+  "constraints": [
+    "`1 <= nums.length <= 10^5`",
+    "`-10^4 <= nums[i] <= 10^4`",
+    "`1 <= k <= nums.length`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "max_sliding_window",
+  "starter_code": "def max_sliding_window(nums, k):\n    pass\n",
+  "parameters": [
+    {
+      "name": "nums",
+      "type": "List[int]"
+    },
+    {
+      "name": "k",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "List[int]",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          1,
+          3,
+          -1,
+          -3,
+          5,
+          3,
+          6,
+          7
+        ],
+        3
+      ],
+      "expected": [
+        3,
+        3,
+        5,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "args": [
+        [
+          1
+        ],
+        1
+      ],
+      "expected": [
+        1
+      ]
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "How about using a data structure such as deque (double-ended queue)?",
+    "level_2": "The queue size need not be the same as the window’s size.",
+    "level_3": "Remove redundant elements and the queue should store only elements that need to be considered.",
+    "level_4": "Remove redundant elements and the queue should store only elements that need to be considered."
+  },
+  "canonical_solution_summary": "Remove redundant elements and the queue should store only elements that need to be considered.",
+  "disallowed_full_solution_exposure": true
+}

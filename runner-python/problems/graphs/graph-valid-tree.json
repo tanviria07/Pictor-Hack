@@ -1,0 +1,100 @@
+{
+  "id": "graph-valid-tree",
+  "title": "Graph Valid Tree",
+  "difficulty": "medium",
+  "category": "graphs",
+  "description": "Given `n` nodes labeled from `0` to `n - 1` and a list of **undirected** edges (each edge is a pair of nodes), write a function to check whether these edges make up a valid tree.",
+  "examples": [
+    {
+      "input": "n = 5\nedges = [[0, 1], [0, 2], [0, 3], [1, 4]]",
+      "output": "true"
+    },
+    {
+      "input": "n = 5\nedges = [[0, 1], [1, 2], [2, 3], [1, 3], [1, 4]]",
+      "output": "false\n\nNote:\n* You can assume that no duplicate edges will appear in edges. Since all edges are `undirected`, `[0, 1]` is the same as `[1, 0]` and thus will not appear together in edges."
+    }
+  ],
+  "constraints": [
+    "`1 <= n <= 100`",
+    "`0 <= edges.length <= n * (n - 1) / 2`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "valid_tree",
+  "starter_code": "def valid_tree(n, edges):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    },
+    {
+      "name": "edges",
+      "type": "List[List[int]]"
+    }
+  ],
+  "expected_return_type": "bool",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        5,
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            4
+          ]
+        ]
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        5,
+        [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            4
+          ]
+        ]
+      ],
+      "expected": "false\n\nNote:\n* You can assume that no duplicate edges will appear in edges. Since all edges are `undirected`, `[0, 1]` is the same as `[1, 0]` and thus will not appear together in edges."
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Given `n = 5` and `edges = [[0, 1], [1, 2], [3, 4]]`, what should your return? Is this case a valid tree?",
+    "level_2": "According to the definition of tree on Wikipedia: “a tree is an undirected graph in which any two vertices are connected by exactly one path. In other words, any connected graph without simple cycles is a tree.”",
+    "level_3": "According to the definition of tree on Wikipedia: “a tree is an undirected graph in which any two vertices are connected by exactly one path. In other words, any connected graph without simple cycles is a tree.”",
+    "level_4": "According to the definition of tree on Wikipedia: “a tree is an undirected graph in which any two vertices are connected by exactly one path. In other words, any connected graph without simple cycles is a tree.”"
+  },
+  "canonical_solution_summary": "According to the definition of tree on Wikipedia: “a tree is an undirected graph in which any two vertices are connected by exactly one path. In other words, any connected graph without simple cycles is a tree.”",
+  "disallowed_full_solution_exposure": true
+}

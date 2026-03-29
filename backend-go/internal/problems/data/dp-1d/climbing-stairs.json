@@ -3,43 +3,55 @@
   "title": "Climbing Stairs",
   "difficulty": "easy",
   "category": "dp-1d",
-  "description": "You are climbing a staircase. It takes `n` steps to reach the top.\n\nEach time you can either climb `1` or `2` steps. In how many distinct ways can you climb to the top?",
+  "description": "You are climbing a staircase. It takes `n` steps to reach the top.\n\nEach time you can either climb `1` or `2` steps. In how many distinct ways can you climb to the top?\n\n \n\nExample 1:\n\nInput: n = 2\nOutput: 2\nExplanation: There are two ways to climb to the top.\n1. 1 step + 1 step\n2. 2 steps\n\nExample 2:\n\nInput: n = 3\nOutput: 3\nExplanation: There are three ways to climb to the top.\n1. 1 step + 1 step + 1 step\n2. 1 step + 2 steps\n3. 2 steps + 1 step",
   "examples": [
     {
       "input": "n = 2",
       "output": "2",
-      "explanation": "There are two ways to climb to the top: 1 + 1, or 2."
+      "explanation": "There are two ways to climb to the top.\n1. 1 step + 1 step\n2. 2 steps"
     },
     {
       "input": "n = 3",
       "output": "3",
-      "explanation": "Three ways: 1+1+1, 1+2, 2+1."
+      "explanation": "There are three ways to climb to the top.\n1. 1 step + 1 step + 1 step\n2. 1 step + 2 steps\n3. 2 steps + 1 step"
     }
   ],
   "constraints": [
-    "1 <= n <= 45"
+    "`1 <= n <= 45`"
   ],
+  "execution_mode": "function",
+  "class_name": "",
   "function_name": "climb_stairs",
-  "parameters": [{ "name": "n", "type": "int" }],
+  "starter_code": "def climb_stairs(n):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    }
+  ],
   "expected_return_type": "int",
+  "comparison": "",
   "visible_tests": [
-    { "args": [2], "expected": 2 },
-    { "args": [3], "expected": 3 },
-    { "args": [1], "expected": 1 }
+    {
+      "args": [
+        2
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        3
+      ],
+      "expected": 3
+    }
   ],
-  "hidden_tests": [
-    { "args": [4], "expected": 5 },
-    { "args": [5], "expected": 8 },
-    { "args": [6], "expected": 13 },
-    { "args": [10], "expected": 89 },
-    { "args": [7], "expected": 21 }
-  ],
+  "hidden_tests": [],
   "hint_plan": {
-    "level_1": "Ways to reach step n depend on how you arrived from n-1 or n-2.",
-    "level_2": "This is Fibonacci-like: f(n) = f(n-1) + f(n-2).",
-    "level_3": "Base cases: n=1 → 1; n=2 → 2; iterate or memoize up to n.",
-    "level_4": "Use two variables rolling a,b from 1,1 up to n; each step a,b = b, a+b."
+    "level_1": "To reach nth step, what could have been your previous steps? (Think about the step sizes)",
+    "level_2": "To reach nth step, what could have been your previous steps? (Think about the step sizes)",
+    "level_3": "To reach nth step, what could have been your previous steps? (Think about the step sizes)",
+    "level_4": "To reach nth step, what could have been your previous steps? (Think about the step sizes)"
   },
-  "canonical_solution_summary": "Fibonacci recurrence with O(1) space rolling variables.",
+  "canonical_solution_summary": "To reach nth step, what could have been your previous steps? (Think about the step sizes)",
   "disallowed_full_solution_exposure": true
 }

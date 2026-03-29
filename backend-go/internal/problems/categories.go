@@ -15,6 +15,7 @@ var AllCategories = []CategoryMeta{
 	{ID: "binary-search", Title: "Binary Search"},
 	{ID: "linked-list", Title: "Linked List"},
 	{ID: "trees", Title: "Trees"},
+	{ID: "tries", Title: "Tries"},
 	{ID: "heap-priority-queue", Title: "Heap / Priority Queue"},
 	{ID: "backtracking", Title: "Backtracking"},
 	{ID: "graphs", Title: "Graphs"},

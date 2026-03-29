@@ -1,0 +1,97 @@
+{
+  "id": "merge-k-sorted-lists",
+  "title": "Merge k Sorted Lists",
+  "difficulty": "hard",
+  "category": "linked-list",
+  "description": "You are given an array of `k` linked-lists `lists`, each linked-list is sorted in ascending order.\n\nMerge all the linked-lists into one sorted linked-list and return it.\n\n \n\nExample 1:\n\nInput: lists = [[1,4,5],[1,3,4],[2,6]]\nOutput: [1,1,2,3,4,4,5,6]\nExplanation: The linked-lists are:\n[\n  1->4->5,\n  1->3->4,\n  2->6\n]\nmerging them into one sorted linked list:\n1->1->2->3->4->4->5->6\n\nExample 2:\n\nInput: lists = []\nOutput: []\n\nExample 3:\n\nInput: lists = [[]]\nOutput: []",
+  "examples": [
+    {
+      "input": "lists = [[1,4,5],[1,3,4],[2,6]]",
+      "output": "[1,1,2,3,4,4,5,6]",
+      "explanation": "The linked-lists are:\n[\n  1->4->5,\n  1->3->4,\n  2->6\n]\nmerging them into one sorted linked list:\n1->1->2->3->4->4->5->6"
+    },
+    {
+      "input": "lists = []",
+      "output": "[]"
+    },
+    {
+      "input": "lists = [[]]",
+      "output": "[]"
+    }
+  ],
+  "constraints": [
+    "`k == lists.length`",
+    "`0 <= k <= 10^4`",
+    "`0 <= lists[i].length <= 500`",
+    "`-10^4 <= lists[i][j] <= 10^4`",
+    "`lists[i]` is sorted in ascending order.",
+    "The sum of `lists[i].length` will not exceed `10^4`."
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "merge_klists",
+  "starter_code": "def merge_klists(lists):\n    pass\n",
+  "parameters": [
+    {
+      "name": "lists",
+      "type": "List[ListNode]"
+    }
+  ],
+  "expected_return_type": "ListNode",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          [
+            1,
+            4,
+            5
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [
+            2,
+            6
+          ]
+        ]
+      ],
+      "expected": [
+        1,
+        1,
+        2,
+        3,
+        4,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          []
+        ]
+      ],
+      "expected": []
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Merge k Sorted Lists.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

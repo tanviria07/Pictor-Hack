@@ -1,0 +1,63 @@
+{
+  "id": "generate-parentheses",
+  "title": "Generate Parentheses",
+  "difficulty": "medium",
+  "category": "stack",
+  "description": "Given `n` pairs of parentheses, write a function to generate all combinations of well-formed parentheses.\n\n \n\nExample 1:\n\nInput: n = 3\nOutput: [\"((()))\",\"(()())\",\"(())()\",\"()(())\",\"()()()\"]\n\nExample 2:\n\nInput: n = 1\nOutput: [\"()\"]",
+  "examples": [
+    {
+      "input": "n = 3",
+      "output": "[\"((()))\",\"(()())\",\"(())()\",\"()(())\",\"()()()\"]"
+    },
+    {
+      "input": "n = 1",
+      "output": "[\"()\"]"
+    }
+  ],
+  "constraints": [
+    "`1 <= n <= 8`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "generate_parenthesis",
+  "starter_code": "def generate_parenthesis(n):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "List[str]",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        3
+      ],
+      "expected": [
+        "((()))",
+        "(()())",
+        "(())()",
+        "()(())",
+        "()()()"
+      ]
+    },
+    {
+      "args": [
+        1
+      ],
+      "expected": [
+        "()"
+      ]
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Generate Parentheses.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

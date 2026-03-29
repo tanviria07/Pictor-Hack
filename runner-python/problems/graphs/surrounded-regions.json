@@ -1,0 +1,117 @@
+{
+  "id": "surrounded-regions",
+  "title": "Surrounded Regions",
+  "difficulty": "medium",
+  "category": "graphs",
+  "description": "You are given an `m x n` matrix `board` containing letters `'X'` and `'O'`, capture regions that are surrounded:\n\n\t- Connect: A cell is connected to adjacent cells horizontally or vertically.\n\n\t- Region: To form a region connect every `'O'` cell.\n\n\t- Surround: A region is surrounded if none of the `'O'` cells in that region are on the edge of the board. Such regions are completely enclosed by `'X'` cells.\n\nTo capture a surrounded region, replace all `'O'`s with `'X'`s in-place within the original board. You do not need to return anything.\n\n \n\nExample 1:\n\nInput: board = [[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"O\",\"O\",\"X\"],[\"X\",\"X\",\"O\",\"X\"],[\"X\",\"O\",\"X\",\"X\"]]\n\nOutput: [[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"O\",\"X\",\"X\"]]\n\nExplanation:\n\nIn the above diagram, the bottom region is not captured because it is on the edge of the board and cannot be surrounded.\n\nExample 2:\n\nInput: board = [[\"X\"]]\n\nOutput: [[\"X\"]]",
+  "examples": [
+    {
+      "input": "board = [[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"O\",\"O\",\"X\"],[\"X\",\"X\",\"O\",\"X\"],[\"X\",\"O\",\"X\",\"X\"]]",
+      "output": "[[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"O\",\"X\",\"X\"]]",
+      "explanation": "In the above diagram, the bottom region is not captured because it is on the edge of the board and cannot be surrounded."
+    },
+    {
+      "input": "board = [[\"X\"]]",
+      "output": "[[\"X\"]]"
+    }
+  ],
+  "constraints": [
+    "`m == board.length`",
+    "`n == board[i].length`",
+    "`1 <= m, n <= 200`",
+    "`board[i][j]` is `'X'` or `'O'`."
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "solve",
+  "starter_code": "def solve(board):\n    pass\n",
+  "parameters": [
+    {
+      "name": "board",
+      "type": "List[List[str]]"
+    }
+  ],
+  "expected_return_type": "None",
+  "comparison": "mutates_first_arg",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          [
+            "X",
+            "X",
+            "X",
+            "X"
+          ],
+          [
+            "X",
+            "O",
+            "O",
+            "X"
+          ],
+          [
+            "X",
+            "X",
+            "O",
+            "X"
+          ],
+          [
+            "X",
+            "O",
+            "X",
+            "X"
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          "X",
+          "X",
+          "X",
+          "X"
+        ],
+        [
+          "X",
+          "X",
+          "X",
+          "X"
+        ],
+        [
+          "X",
+          "X",
+          "X",
+          "X"
+        ],
+        [
+          "X",
+          "O",
+          "X",
+          "X"
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            "X"
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          "X"
+        ]
+      ]
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Surrounded Regions.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

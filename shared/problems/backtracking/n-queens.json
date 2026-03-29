@@ -1,0 +1,73 @@
+{
+  "id": "n-queens",
+  "title": "N-Queens",
+  "difficulty": "hard",
+  "category": "backtracking",
+  "description": "The n-queens puzzle is the problem of placing `n` queens on an `n x n` chessboard such that no two queens attack each other.\n\nGiven an integer `n`, return all distinct solutions to the n-queens puzzle. You may return the answer in any order.\n\nEach solution contains a distinct board configuration of the n-queens' placement, where `'Q'` and `'.'` both indicate a queen and an empty space, respectively.\n\n \n\nExample 1:\n\nInput: n = 4\nOutput: [[\".Q..\",\"...Q\",\"Q...\",\"..Q.\"],[\"..Q.\",\"Q...\",\"...Q\",\".Q..\"]]\nExplanation: There exist two distinct solutions to the 4-queens puzzle as shown above\n\nExample 2:\n\nInput: n = 1\nOutput: [[\"Q\"]]",
+  "examples": [
+    {
+      "input": "n = 4",
+      "output": "[[\".Q..\",\"...Q\",\"Q...\",\"..Q.\"],[\"..Q.\",\"Q...\",\"...Q\",\".Q..\"]]",
+      "explanation": "There exist two distinct solutions to the 4-queens puzzle as shown above"
+    },
+    {
+      "input": "n = 1",
+      "output": "[[\"Q\"]]"
+    }
+  ],
+  "constraints": [
+    "`1 <= n <= 9`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "solve_nqueens",
+  "starter_code": "def solve_nqueens(n):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "List[List[str]]",
+  "comparison": "unordered_nested_list",
+  "visible_tests": [
+    {
+      "args": [
+        4
+      ],
+      "expected": [
+        [
+          ".Q..",
+          "...Q",
+          "Q...",
+          "..Q."
+        ],
+        [
+          "..Q.",
+          "Q...",
+          "...Q",
+          ".Q.."
+        ]
+      ]
+    },
+    {
+      "args": [
+        1
+      ],
+      "expected": [
+        [
+          "Q"
+        ]
+      ]
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in N-Queens.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

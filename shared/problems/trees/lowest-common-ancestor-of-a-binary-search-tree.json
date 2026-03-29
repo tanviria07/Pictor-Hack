@@ -1,0 +1,112 @@
+{
+  "id": "lowest-common-ancestor-of-a-binary-search-tree",
+  "title": "Lowest Common Ancestor of a Binary Search Tree",
+  "difficulty": "medium",
+  "category": "trees",
+  "description": "Given a binary search tree (BST), find the lowest common ancestor (LCA) node of two given nodes in the BST.\n\nAccording to the definition of LCA on Wikipedia: \"The lowest common ancestor is defined between two nodes `p` and `q` as the lowest node in `T` that has both `p` and `q` as descendants (where we allow a node to be a descendant of itself).\"\n\n \n\nExample 1:\n\nInput: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8\nOutput: 6\nExplanation: The LCA of nodes 2 and 8 is 6.\n\nExample 2:\n\nInput: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 4\nOutput: 2\nExplanation: The LCA of nodes 2 and 4 is 2, since a node can be a descendant of itself according to the LCA definition.\n\nExample 3:\n\nInput: root = [2,1], p = 2, q = 1\nOutput: 2",
+  "examples": [
+    {
+      "input": "root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8",
+      "output": "6",
+      "explanation": "The LCA of nodes 2 and 8 is 6."
+    },
+    {
+      "input": "root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 4",
+      "output": "2",
+      "explanation": "The LCA of nodes 2 and 4 is 2, since a node can be a descendant of itself according to the LCA definition."
+    },
+    {
+      "input": "root = [2,1], p = 2, q = 1",
+      "output": "2"
+    }
+  ],
+  "constraints": [
+    "The number of nodes in the tree is in the range `[2, 10^5]`.",
+    "`-10^9 <= Node.val <= 10^9`",
+    "All `Node.val` are unique.",
+    "`p != q`",
+    "`p` and `q` will exist in the BST."
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "lowest_common_ancestor",
+  "starter_code": "def lowest_common_ancestor(root, p, q):\n    pass\n",
+  "parameters": [
+    {
+      "name": "root",
+      "type": "TreeNode"
+    },
+    {
+      "name": "p",
+      "type": "int"
+    },
+    {
+      "name": "q",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "TreeNode",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          6,
+          2,
+          8,
+          0,
+          4,
+          7,
+          9,
+          null,
+          null,
+          3,
+          5
+        ],
+        2,
+        8
+      ],
+      "expected": 6
+    },
+    {
+      "args": [
+        [
+          6,
+          2,
+          8,
+          0,
+          4,
+          7,
+          9,
+          null,
+          null,
+          3,
+          5
+        ],
+        2,
+        4
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        [
+          2,
+          1
+        ],
+        2,
+        1
+      ],
+      "expected": 2
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Lowest Common Ancestor of a Binary Search Tree.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

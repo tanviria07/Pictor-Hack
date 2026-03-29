@@ -1,0 +1,56 @@
+{
+  "id": "happy-number",
+  "title": "Happy Number",
+  "difficulty": "easy",
+  "category": "math-geometry",
+  "description": "Write an algorithm to determine if a number `n` is happy.\n\nA happy number is a number defined by the following process:\n\n\t- Starting with any positive integer, replace the number by the sum of the squares of its digits.\n\n\t- Repeat the process until the number equals 1 (where it will stay), or it loops endlessly in a cycle which does not include 1.\n\n\t- Those numbers for which this process ends in 1 are happy.\n\nReturn `true` if `n` is a happy number, and `false` if not.\n\n \n\nExample 1:\n\nInput: n = 19\nOutput: true\nExplanation:\n1^2 + 9^2 = 82\n8^2 + 2^2 = 68\n6^2 + 8^2 = 100\n1^2 + 0^2 + 0^2 = 1\n\nExample 2:\n\nInput: n = 2\nOutput: false",
+  "examples": [
+    {
+      "input": "n = 19",
+      "output": "true",
+      "explanation": "1^2 + 9^2 = 82\n8^2 + 2^2 = 68\n6^2 + 8^2 = 100\n1^2 + 0^2 + 0^2 = 1"
+    },
+    {
+      "input": "n = 2",
+      "output": "false"
+    }
+  ],
+  "constraints": [
+    "`1 <= n <= 2^31 - 1`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "is_happy",
+  "starter_code": "def is_happy(n):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "bool",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        19
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        2
+      ],
+      "expected": false
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Happy Number.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

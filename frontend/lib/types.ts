@@ -56,6 +56,9 @@ export interface ProblemDetail extends ProblemSummary {
   description: string;
   examples: { input: string; output: string; explanation?: string }[];
   constraints: string[];
+  execution_mode?: string;
+  class_name?: string;
+  starter_code?: string;
   parameters: { name: string; type: string }[];
   expected_return_type: string;
   visible_test_count: number;

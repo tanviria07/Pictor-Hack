@@ -1,0 +1,59 @@
+{
+  "id": "hand-of-straights",
+  "title": "Hand of Straights",
+  "difficulty": "medium",
+  "category": "greedy",
+  "description": "Alice has some number of cards and she wants to rearrange the cards into groups so that each group is of size `groupSize`, and consists of `groupSize` consecutive cards.\n\nGiven an integer array `hand` where `hand[i]` is the value written on the `i^th` card and an integer `groupSize`, return `true` if she can rearrange the cards, or `false` otherwise.\n\n \n\nExample 1:\n\nInput: hand = [1,2,3,6,2,3,4,7,8], groupSize = 3\nOutput: true\nExplanation: Alice's hand can be rearranged as [1,2,3],[2,3,4],[6,7,8]\n\nExample 2:\n\nInput: hand = [1,2,3,4,5], groupSize = 4\nOutput: false\nExplanation: Alice's hand can not be rearranged into groups of 4.",
+  "examples": [
+    {
+      "input": "hand = [1,2,3,6,2,3,4,7,8], groupSize = 3",
+      "output": "true",
+      "explanation": "Alice's hand can be rearranged as [1,2,3],[2,3,4],[6,7,8]"
+    },
+    {
+      "input": "hand = [1,2,3,4,5], groupSize = 4",
+      "output": "false",
+      "explanation": "Alice's hand can not be rearranged into groups of 4."
+    }
+  ],
+  "constraints": [
+    "`1 <= hand.length <= 10^4`",
+    "`0 <= hand[i] <= 10^9`",
+    "`1 <= groupSize <= hand.length`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "is_nstraight_hand",
+  "starter_code": "def is_nstraight_hand(hand):\n    pass\n",
+  "parameters": [
+    {
+      "name": "hand",
+      "type": "List[int]"
+    }
+  ],
+  "expected_return_type": "bool",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        "[1,2,3,6,2,3,4,7,8], groupSize = 3"
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        "[1,2,3,4,5], groupSize = 4"
+      ],
+      "expected": false
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Hand of Straights.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

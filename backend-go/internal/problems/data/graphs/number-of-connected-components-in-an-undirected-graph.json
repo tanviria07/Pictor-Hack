@@ -1,0 +1,96 @@
+{
+  "id": "number-of-connected-components-in-an-undirected-graph",
+  "title": "Number of Connected Components in an Undirected Graph",
+  "difficulty": "medium",
+  "category": "graphs",
+  "description": "You have a graph of `n` nodes. You are given an integer `n` and an array `edges` where `edges[i] = [aᵢ, bᵢ]` indicates that there is an edge between `aᵢ` and `bᵢ` in the graph.\n\nReturn the number of connected components in the graph.",
+  "examples": [
+    {
+      "input": "n = 5, edges = [[0,1],[1,2],[3,4]]",
+      "output": "2"
+    },
+    {
+      "input": "n = 5, edges = [[0,1],[1,2],[2,3],[3,4]]",
+      "output": "1"
+    }
+  ],
+  "constraints": [
+    "`1 <= n <= 2000`",
+    "`1 <= edges.length <= 5000`",
+    "`edges[i].length == 2`",
+    "`0 <= aᵢ <= bᵢ < n`",
+    "`aᵢ != bᵢ`",
+    "There are no repeated edges."
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "count_components",
+  "starter_code": "def count_components(n, edges):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    },
+    {
+      "name": "edges",
+      "type": "List[List[int]]"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        5,
+        [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ]
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        5,
+        [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ]
+        ]
+      ],
+      "expected": 1
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Number of Connected Components in an Undirected Graph.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

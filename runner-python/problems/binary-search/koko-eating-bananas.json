@@ -1,0 +1,91 @@
+{
+  "id": "koko-eating-bananas",
+  "title": "Koko Eating Bananas",
+  "difficulty": "medium",
+  "category": "binary-search",
+  "description": "Koko loves to eat bananas. There are `n` piles of bananas, the `i^th` pile has `piles[i]` bananas. The guards have gone and will come back in `h` hours.\n\nKoko can decide her bananas-per-hour eating speed of `k`. Each hour, she chooses some pile of bananas and eats `k` bananas from that pile. If the pile has less than `k` bananas, she eats all of them instead and will not eat any more bananas during this hour.\n\nKoko likes to eat slowly but still wants to finish eating all the bananas before the guards return.\n\nReturn the minimum integer `k` such that she can eat all the bananas within `h` hours.\n\n \n\nExample 1:\n\nInput: piles = [3,6,7,11], h = 8\nOutput: 4\n\nExample 2:\n\nInput: piles = [30,11,23,4,20], h = 5\nOutput: 30\n\nExample 3:\n\nInput: piles = [30,11,23,4,20], h = 6\nOutput: 23",
+  "examples": [
+    {
+      "input": "piles = [3,6,7,11], h = 8",
+      "output": "4"
+    },
+    {
+      "input": "piles = [30,11,23,4,20], h = 5",
+      "output": "30"
+    },
+    {
+      "input": "piles = [30,11,23,4,20], h = 6",
+      "output": "23"
+    }
+  ],
+  "constraints": [
+    "`1 <= piles.length <= 10^4`",
+    "`piles.length <= h <= 10^9`",
+    "`1 <= piles[i] <= 10^9`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "min_eating_speed",
+  "starter_code": "def min_eating_speed(piles, h):\n    pass\n",
+  "parameters": [
+    {
+      "name": "piles",
+      "type": "List[int]"
+    },
+    {
+      "name": "h",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          3,
+          6,
+          7,
+          11
+        ],
+        8
+      ],
+      "expected": 4
+    },
+    {
+      "args": [
+        [
+          30,
+          11,
+          23,
+          4,
+          20
+        ],
+        5
+      ],
+      "expected": 30
+    },
+    {
+      "args": [
+        [
+          30,
+          11,
+          23,
+          4,
+          20
+        ],
+        6
+      ],
+      "expected": 23
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Koko Eating Bananas.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

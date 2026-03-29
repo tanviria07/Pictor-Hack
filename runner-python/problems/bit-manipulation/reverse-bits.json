@@ -1,0 +1,58 @@
+{
+  "id": "reverse-bits",
+  "title": "Reverse Bits",
+  "difficulty": "easy",
+  "category": "bit-manipulation",
+  "description": "Reverse bits of a given 32 bits signed integer.\n\n \n\nExample 1:\n\nInput: n = 43261596\n\nOutput: 964176192\n\nExplanation:\n\n\t\n\t\t\n\t\t\tInteger\n\t\t\tBinary\n\t\t\n\t\t\n\t\t\t43261596\n\t\t\t00000010100101000001111010011100\n\t\t\n\t\t\n\t\t\t964176192\n\t\t\t00111001011110000010100101000000\n\t\t\n\t\n\nExample 2:\n\nInput: n = 2147483644\n\nOutput: 1073741822\n\nExplanation:\n\n\t\n\t\t\n\t\t\tInteger\n\t\t\tBinary\n\t\t\n\t\t\n\t\t\t2147483644\n\t\t\t01111111111111111111111111111100\n\t\t\n\t\t\n\t\t\t1073741822\n\t\t\t00111111111111111111111111111110",
+  "examples": [
+    {
+      "input": "n = 43261596",
+      "output": "964176192",
+      "explanation": "Integer\n\t\t\tBinary\n\t\t\n\t\t\n\t\t\t43261596\n\t\t\t00000010100101000001111010011100\n\t\t\n\t\t\n\t\t\t964176192\n\t\t\t00111001011110000010100101000000"
+    },
+    {
+      "input": "n = 2147483644",
+      "output": "1073741822",
+      "explanation": "Integer\n\t\t\tBinary\n\t\t\n\t\t\n\t\t\t2147483644\n\t\t\t01111111111111111111111111111100\n\t\t\n\t\t\n\t\t\t1073741822\n\t\t\t00111111111111111111111111111110"
+    }
+  ],
+  "constraints": [
+    "`0 <= n <= 2^31 - 2`",
+    "`n` is even."
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "reverse_bits",
+  "starter_code": "def reverse_bits(n):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        43261596
+      ],
+      "expected": 964176192
+    },
+    {
+      "args": [
+        2147483644
+      ],
+      "expected": 1073741822
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Reverse Bits.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

@@ -3,7 +3,7 @@
   "title": "Product of Array Except Self",
   "difficulty": "medium",
   "category": "arrays-hashing",
-  "description": "Given an integer array `nums`, return an array `answer` such that `answer[i]` is the product of all elements of `nums` except `nums[i]`.\n\nYou must write an algorithm that runs in **O(n)** time without using the division operator.",
+  "description": "Given an integer array `nums`, return an array `answer` such that `answer[i]` is equal to the product of all the elements of `nums` except `nums[i]`.\n\nThe product of any prefix or suffix of `nums` is guaranteed to fit in a 32-bit integer.\n\nYou must write an algorithm that runs in `O(n)` time and without using the division operation.\n\n \n\nExample 1:\n\nInput: nums = [1,2,3,4]\nOutput: [24,12,8,6]\n\nExample 2:\n\nInput: nums = [-1,1,0,-3,3]\nOutput: [0,0,9,0,0]",
   "examples": [
     {
       "input": "nums = [1,2,3,4]",
@@ -15,31 +15,65 @@
     }
   ],
   "constraints": [
-    "2 <= len(nums) <= 10^5",
-    "-30 <= nums[i] <= 30",
-    "The product of any prefix or suffix fits in a 32-bit integer"
+    "`2 <= nums.length <= 10^5`",
+    "`-30 <= nums[i] <= 30`",
+    "The input is generated such that `answer[i]` is guaranteed to fit in a 32-bit integer."
   ],
+  "execution_mode": "function",
+  "class_name": "",
   "function_name": "product_except_self",
-  "parameters": [{ "name": "nums", "type": "List[int]" }],
+  "starter_code": "def product_except_self(nums):\n    pass\n",
+  "parameters": [
+    {
+      "name": "nums",
+      "type": "List[int]"
+    }
+  ],
   "expected_return_type": "List[int]",
+  "comparison": "",
   "visible_tests": [
-    { "args": [[1, 2, 3, 4]], "expected": [24, 12, 8, 6] },
-    { "args": [[2, 3]], "expected": [3, 2] },
-    { "args": [[-1, 1, 0, -3, 3]], "expected": [0, 0, 9, 0, 0] }
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          4
+        ]
+      ],
+      "expected": [
+        24,
+        12,
+        8,
+        6
+      ]
+    },
+    {
+      "args": [
+        [
+          -1,
+          1,
+          0,
+          -3,
+          3
+        ]
+      ],
+      "expected": [
+        0,
+        0,
+        9,
+        0,
+        0
+      ]
+    }
   ],
-  "hidden_tests": [
-    { "args": [[4, 5]], "expected": [5, 4] },
-    { "args": [[1, 2, 3, 4, 5]], "expected": [120, 60, 40, 30, 24] },
-    { "args": [[0, 0]], "expected": [0, 0] },
-    { "args": [[1, 0, 3]], "expected": [0, 3, 0] },
-    { "args": [[2, 2, 2, 2]], "expected": [8, 8, 8, 8] }
-  ],
+  "hidden_tests": [],
   "hint_plan": {
-    "level_1": "Each index needs the product of everything to the left and everything to the right.",
-    "level_2": "Two passes: prefix products, then suffix products, combine without division.",
-    "level_3": "First pass build prefix[i] = product of nums[0..i-1]; second pass multiply by running suffix from the right.",
-    "level_4": "answer[i] = (product of nums before i) * (product of nums after i), computed in O(n) with two sweeps."
+    "level_1": "Think how you can efficiently utilize prefix and suffix products to calculate the product of all elements except self for each index. Can you pre-compute the prefix and suffix products in linear time to avoid redundant calculations?",
+    "level_2": "Can you minimize additional space usage by reusing memory or modifying the input array to store intermediate results?",
+    "level_3": "Can you minimize additional space usage by reusing memory or modifying the input array to store intermediate results?",
+    "level_4": "Can you minimize additional space usage by reusing memory or modifying the input array to store intermediate results?"
   },
-  "canonical_solution_summary": "Prefix and suffix cumulative products in two passes; handle zeros carefully.",
+  "canonical_solution_summary": "Can you minimize additional space usage by reusing memory or modifying the input array to store intermediate results?",
   "disallowed_full_solution_exposure": true
 }

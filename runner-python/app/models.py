@@ -48,7 +48,6 @@ class RunRequest(BaseModel):
 class RunResponse(BaseModel):
     status: ProblemStatus
     evaluation: StructuredEvaluation
-    # Duplicates evaluation.visible_test_results for clients expecting a top-level field (e.g. Go DTO).
     visible_test_results: list[VisibleTestResult] = Field(default_factory=list)
     interviewer_feedback: str = ""
 
@@ -56,7 +55,11 @@ class RunResponse(BaseModel):
 class ProblemMeta(BaseModel):
     id: str
     function_name: str
+    execution_mode: str = "function"
+    class_name: str = ""
+    comparison: str = ""
     parameters: list[dict[str, Any]]
+    methods: list[dict[str, Any]] = Field(default_factory=list)
     expected_return_type: str
     visible_tests: list[dict[str, Any]]
     hidden_tests: list[dict[str, Any]]

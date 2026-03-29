@@ -1,0 +1,83 @@
+{
+  "id": "interleaving-string",
+  "title": "Interleaving String",
+  "difficulty": "medium",
+  "category": "dp-2d",
+  "description": "Given strings `s1`, `s2`, and `s3`, find whether `s3` is formed by an interleaving of `s1` and `s2`.\n\nAn interleaving of two strings `s` and `t` is a configuration where `s` and `t` are divided into `n` and `m` substrings respectively, such that:\n\n\t- `s = s1 + s2 + ... + sn`\n\n\t- `t = t1 + t2 + ... + tm`\n\n\t- `|n - m| <= 1`\n\n\t- The interleaving is `s1 + t1 + s2 + t2 + s3 + t3 + ...` or `t1 + s1 + t2 + s2 + t3 + s3 + ...`\n\nNote: `a + b` is the concatenation of strings `a` and `b`.\n\n \n\nExample 1:\n\nInput: s1 = \"aabcc\", s2 = \"dbbca\", s3 = \"aadbbcbcac\"\nOutput: true\nExplanation: One way to obtain s3 is:\nSplit s1 into s1 = \"aa\" + \"bc\" + \"c\", and s2 into s2 = \"dbbc\" + \"a\".\nInterleaving the two splits, we get \"aa\" + \"dbbc\" + \"bc\" + \"a\" + \"c\" = \"aadbbcbcac\".\nSince s3 can be obtained by interleaving s1 and s2, we return true.\n\nExample 2:\n\nInput: s1 = \"aabcc\", s2 = \"dbbca\", s3 = \"aadbbbaccc\"\nOutput: false\nExplanation: Notice how it is impossible to interleave s2 with any other string to obtain s3.\n\nExample 3:\n\nInput: s1 = \"\", s2 = \"\", s3 = \"\"\nOutput: true",
+  "examples": [
+    {
+      "input": "s1 = \"aabcc\", s2 = \"dbbca\", s3 = \"aadbbcbcac\"",
+      "output": "true",
+      "explanation": "One way to obtain s3 is:\nSplit s1 into s1 = \"aa\" + \"bc\" + \"c\", and s2 into s2 = \"dbbc\" + \"a\".\nInterleaving the two splits, we get \"aa\" + \"dbbc\" + \"bc\" + \"a\" + \"c\" = \"aadbbcbcac\".\nSince s3 can be obtained by interleaving s1 and s2, we return true."
+    },
+    {
+      "input": "s1 = \"aabcc\", s2 = \"dbbca\", s3 = \"aadbbbaccc\"",
+      "output": "false",
+      "explanation": "Notice how it is impossible to interleave s2 with any other string to obtain s3."
+    },
+    {
+      "input": "s1 = \"\", s2 = \"\", s3 = \"\"",
+      "output": "true"
+    }
+  ],
+  "constraints": [
+    "`0 <= s1.length, s2.length <= 100`",
+    "`0 <= s3.length <= 200`",
+    "`s1`, `s2`, and `s3` consist of lowercase English letters."
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "is_interleave",
+  "starter_code": "def is_interleave(s1, s2, s3):\n    pass\n",
+  "parameters": [
+    {
+      "name": "s1",
+      "type": "str"
+    },
+    {
+      "name": "s2",
+      "type": "str"
+    },
+    {
+      "name": "s3",
+      "type": "str"
+    }
+  ],
+  "expected_return_type": "bool",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        "aabcc",
+        "dbbca",
+        "aadbbcbcac"
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        "aabcc",
+        "dbbca",
+        "aadbbbaccc"
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        "",
+        "",
+        ""
+      ],
+      "expected": true
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Interleaving String.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

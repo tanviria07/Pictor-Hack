@@ -1,0 +1,93 @@
+{
+  "id": "min-stack",
+  "title": "Min Stack",
+  "difficulty": "medium",
+  "category": "stack",
+  "description": "Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.\n\nImplement the `MinStack` class:\n\n\t- `MinStack()` initializes the stack object.\n\n\t- `void push(int val)` pushes the element `val` onto the stack.\n\n\t- `void pop()` removes the element on the top of the stack.\n\n\t- `int top()` gets the top element of the stack.\n\n\t- `int getMin()` retrieves the minimum element in the stack.\n\nYou must implement a solution with `O(1)` time complexity for each function.\n\n \n\nExample 1:\n\nInput\n[\"MinStack\",\"push\",\"push\",\"push\",\"getMin\",\"pop\",\"top\",\"getMin\"]\n[[],[-2],[0],[-3],[],[],[],[]]\n\nOutput\n[null,null,null,null,-3,null,0,-2]\n\nExplanation\nMinStack minStack = new MinStack();\nminStack.push(-2);\nminStack.push(0);\nminStack.push(-3);\nminStack.getMin(); // return -3\nminStack.pop();\nminStack.top();    // return 0\nminStack.getMin(); // return -2",
+  "examples": [
+    {
+      "input": "[\"MinStack\",\"push\",\"push\",\"push\",\"getMin\",\"pop\",\"top\",\"getMin\"]\n[[],[-2],[0],[-3],[],[],[],[]]\n\nOutput\n[null,null,null,null,-3,null,0,-2]\n\nExplanation\nMinStack minStack = new MinStack();\nminStack.push(-2);\nminStack.push(0);\nminStack.push(-3);\nminStack.getMin(); // return -3\nminStack.pop();\nminStack.top();    // return 0\nminStack.getMin(); // return -2",
+      "output": "[null,null,null,null,-3,null,0,-2]\n\nExplanation\nMinStack minStack = new MinStack();\nminStack.push(-2);\nminStack.push(0);\nminStack.push(-3);\nminStack.getMin(); // return -3\nminStack.pop();\nminStack.top();    // return 0\nminStack.getMin(); // return -2",
+      "explanation": "MinStack minStack = new MinStack();\nminStack.push(-2);\nminStack.push(0);\nminStack.push(-3);\nminStack.getMin(); // return -3\nminStack.pop();\nminStack.top();    // return 0\nminStack.getMin(); // return -2"
+    }
+  ],
+  "constraints": [
+    "`-2^31 <= val <= 2^31 - 1`",
+    "Methods `pop`, `top` and `getMin` operations will always be called on non-empty stacks.",
+    "At most `3 * 10^4` calls will be made to `push`, `pop`, `top`, and `getMin`."
+  ],
+  "execution_mode": "class",
+  "class_name": "MinStack",
+  "function_name": "MinStack",
+  "starter_code": "class MinStack:\n    def __init__(self):\n        pass\n\n    def push(self, val):\n        pass\n\n    def pop(self):\n        pass\n\n    def top(self):\n        pass\n\n    def getMin(self):\n        pass\n",
+  "parameters": [],
+  "methods": [
+    {
+      "name": "push",
+      "params": [
+        {
+          "name": "val",
+          "type": "int"
+        }
+      ],
+      "return_type": "None"
+    },
+    {
+      "name": "pop",
+      "params": [],
+      "return_type": "None"
+    },
+    {
+      "name": "top",
+      "params": [],
+      "return_type": "int"
+    },
+    {
+      "name": "getMin",
+      "params": [],
+      "return_type": "int"
+    }
+  ],
+  "expected_return_type": "class",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "ops": [
+        "MinStack",
+        "push",
+        "push",
+        "push",
+        "getMin",
+        "pop",
+        "top",
+        "getMin"
+      ],
+      "args": [
+        [],
+        [
+          -2
+        ],
+        [
+          0
+        ],
+        [
+          -3
+        ],
+        [],
+        [],
+        [],
+        []
+      ],
+      "expected": "[null,null,null,null,-3,null,0,-2]\n\nExplanation\nMinStack minStack = new MinStack();\nminStack.push(-2);\nminStack.push(0);\nminStack.push(-3);\nminStack.getMin(); // return -3\nminStack.pop();\nminStack.top();    // return 0\nminStack.getMin(); // return -2"
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Consider each node in the stack having a minimum value. (Credits to @aakarshmadhavan)",
+    "level_2": "Consider each node in the stack having a minimum value. (Credits to @aakarshmadhavan)",
+    "level_3": "Consider each node in the stack having a minimum value. (Credits to @aakarshmadhavan)",
+    "level_4": "Consider each node in the stack having a minimum value. (Credits to @aakarshmadhavan)"
+  },
+  "canonical_solution_summary": "Consider each node in the stack having a minimum value. (Credits to @aakarshmadhavan)",
+  "disallowed_full_solution_exposure": true
+}

@@ -1,0 +1,150 @@
+{
+  "id": "kth-largest-element-in-a-stream",
+  "title": "Kth Largest Element in a Stream",
+  "difficulty": "easy",
+  "category": "heap-priority-queue",
+  "description": "You are part of a university admissions office and need to keep track of the `kth` highest test score from applicants in real-time. This helps to determine cut-off marks for interviews and admissions dynamically as new applicants submit their scores.\n\nYou are tasked to implement a class which, for a given integer `k`, maintains a stream of test scores and continuously returns the `k`th highest test score after a new score has been submitted. More specifically, we are looking for the `k`th highest score in the sorted list of all scores.\n\nImplement the `KthLargest` class:\n\n\t- `KthLargest(int k, int[] nums)` Initializes the object with the integer `k` and the stream of test scores `nums`.\n\n\t- `int add(int val)` Adds a new test score `val` to the stream and returns the element representing the `k^th` largest element in the pool of test scores so far.\n\n \n\nExample 1:\n\nInput:\n\n[\"KthLargest\", \"add\", \"add\", \"add\", \"add\", \"add\"]\n\n[[3, [4, 5, 8, 2]], [3], [5], [10], [9], [4]]\n\nOutput: [null, 4, 5, 5, 8, 8]\n\nExplanation:\n\nKthLargest kthLargest = new KthLargest(3, [4, 5, 8, 2]);\n\nkthLargest.add(3); // return 4\n\nkthLargest.add(5); // return 5\n\nkthLargest.add(10); // return 5\n\nkthLargest.add(9); // return 8\n\nkthLargest.add(4); // return 8\n\nExample 2:\n\nInput:\n\n[\"KthLargest\", \"add\", \"add\", \"add\", \"add\"]\n\n[[4, [7, 7, 7, 7, 8, 3]], [2], [10], [9], [9]]\n\nOutput: [null, 7, 7, 7, 8]\n\nExplanation:\n\nKthLargest kthLargest = new KthLargest(4, [7, 7, 7, 7, 8, 3]);\n\nkthLargest.add(2); // return 7\n\nkthLargest.add(10); // return 7\n\nkthLargest.add(9); // return 7\n\nkthLargest.add(9); // return 8",
+  "examples": [
+    {
+      "input": "[\"KthLargest\", \"add\", \"add\", \"add\", \"add\", \"add\"]\n\n[[3, [4, 5, 8, 2]], [3], [5], [10], [9], [4]]",
+      "output": "[null, 4, 5, 5, 8, 8]",
+      "explanation": "KthLargest kthLargest = new KthLargest(3, [4, 5, 8, 2]);\n\nkthLargest.add(3); // return 4\n\nkthLargest.add(5); // return 5\n\nkthLargest.add(10); // return 5\n\nkthLargest.add(9); // return 8\n\nkthLargest.add(4); // return 8"
+    },
+    {
+      "input": "[\"KthLargest\", \"add\", \"add\", \"add\", \"add\"]\n\n[[4, [7, 7, 7, 7, 8, 3]], [2], [10], [9], [9]]",
+      "output": "[null, 7, 7, 7, 8]",
+      "explanation": "KthLargest kthLargest = new KthLargest(4, [7, 7, 7, 7, 8, 3]);\n\nkthLargest.add(2); // return 7\n\nkthLargest.add(10); // return 7\n\nkthLargest.add(9); // return 7\n\nkthLargest.add(9); // return 8"
+    }
+  ],
+  "constraints": [
+    "`0 <= nums.length <= 10^4`",
+    "`1 <= k <= nums.length + 1`",
+    "`-10^4 <= nums[i] <= 10^4`",
+    "`-10^4 <= val <= 10^4`",
+    "At most `10^4` calls will be made to `add`."
+  ],
+  "execution_mode": "class",
+  "class_name": "KthLargest",
+  "function_name": "KthLargest",
+  "starter_code": "class KthLargest:\n    def __init__(self, k, nums):\n        pass\n\n    def add(self, val):\n        pass\n",
+  "parameters": [
+    {
+      "name": "k",
+      "type": "int"
+    },
+    {
+      "name": "nums",
+      "type": "List[int]"
+    }
+  ],
+  "methods": [
+    {
+      "name": "add",
+      "params": [
+        {
+          "name": "val",
+          "type": "int"
+        }
+      ],
+      "return_type": "int"
+    }
+  ],
+  "expected_return_type": "class",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "ops": [
+        "KthLargest",
+        "add",
+        "add",
+        "add",
+        "add",
+        "add"
+      ],
+      "args": [
+        [
+          3,
+          [
+            4,
+            5,
+            8,
+            2
+          ]
+        ],
+        [
+          3
+        ],
+        [
+          5
+        ],
+        [
+          10
+        ],
+        [
+          9
+        ],
+        [
+          4
+        ]
+      ],
+      "expected": [
+        null,
+        4,
+        5,
+        5,
+        8,
+        8
+      ]
+    },
+    {
+      "ops": [
+        "KthLargest",
+        "add",
+        "add",
+        "add",
+        "add"
+      ],
+      "args": [
+        [
+          4,
+          [
+            7,
+            7,
+            7,
+            7,
+            8,
+            3
+          ]
+        ],
+        [
+          2
+        ],
+        [
+          10
+        ],
+        [
+          9
+        ],
+        [
+          9
+        ]
+      ],
+      "expected": [
+        null,
+        7,
+        7,
+        7,
+        8
+      ]
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Kth Largest Element in a Stream.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

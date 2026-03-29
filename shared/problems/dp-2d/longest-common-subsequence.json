@@ -1,0 +1,76 @@
+{
+  "id": "longest-common-subsequence",
+  "title": "Longest Common Subsequence",
+  "difficulty": "medium",
+  "category": "dp-2d",
+  "description": "Given two strings `text1` and `text2`, return the length of their longest common subsequence. If there is no common subsequence, return `0`.\n\nA subsequence of a string is a new string generated from the original string with some characters (can be none) deleted without changing the relative order of the remaining characters.\n\n\t- For example, `\"ace\"` is a subsequence of `\"abcde\"`.\n\nA common subsequence of two strings is a subsequence that is common to both strings.\n\n \n\nExample 1:\n\nInput: text1 = \"abcde\", text2 = \"ace\" \nOutput: 3  \nExplanation: The longest common subsequence is \"ace\" and its length is 3.\n\nExample 2:\n\nInput: text1 = \"abc\", text2 = \"abc\"\nOutput: 3\nExplanation: The longest common subsequence is \"abc\" and its length is 3.\n\nExample 3:\n\nInput: text1 = \"abc\", text2 = \"def\"\nOutput: 0\nExplanation: There is no such common subsequence, so the result is 0.",
+  "examples": [
+    {
+      "input": "text1 = \"abcde\", text2 = \"ace\"",
+      "output": "3",
+      "explanation": "The longest common subsequence is \"ace\" and its length is 3."
+    },
+    {
+      "input": "text1 = \"abc\", text2 = \"abc\"",
+      "output": "3",
+      "explanation": "The longest common subsequence is \"abc\" and its length is 3."
+    },
+    {
+      "input": "text1 = \"abc\", text2 = \"def\"",
+      "output": "0",
+      "explanation": "There is no such common subsequence, so the result is 0."
+    }
+  ],
+  "constraints": [
+    "`1 <= text1.length, text2.length <= 1000`",
+    "`text1` and `text2` consist of only lowercase English characters."
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "longest_common_subsequence",
+  "starter_code": "def longest_common_subsequence(text1, text2):\n    pass\n",
+  "parameters": [
+    {
+      "name": "text1",
+      "type": "str"
+    },
+    {
+      "name": "text2",
+      "type": "str"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        "abcde",
+        "ace"
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        "abc",
+        "abc"
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        "abc",
+        "def"
+      ],
+      "expected": 0
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Try dynamic programming. \nDP[i][j] represents the longest common subsequence of text1[0 ... i] & text2[0 ... j].",
+    "level_2": "DP[i][j] = DP[i - 1][j - 1] + 1 , if text1[i] == text2[j]\nDP[i][j] = max(DP[i - 1][j], DP[i][j - 1]) , otherwise",
+    "level_3": "DP[i][j] = DP[i - 1][j - 1] + 1 , if text1[i] == text2[j]\nDP[i][j] = max(DP[i - 1][j], DP[i][j - 1]) , otherwise",
+    "level_4": "DP[i][j] = DP[i - 1][j - 1] + 1 , if text1[i] == text2[j]\nDP[i][j] = max(DP[i - 1][j], DP[i][j - 1]) , otherwise"
+  },
+  "canonical_solution_summary": "DP[i][j] = DP[i - 1][j - 1] + 1 , if text1[i] == text2[j]\nDP[i][j] = max(DP[i - 1][j], DP[i][j - 1]) , otherwise",
+  "disallowed_full_solution_exposure": true
+}

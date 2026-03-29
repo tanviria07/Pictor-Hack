@@ -148,6 +148,9 @@ type ProblemDetail struct {
 	Examples           []Example   `json:"examples"`
 	Constraints        []string    `json:"constraints"`
 	FunctionName       string      `json:"function_name"`
+	ExecutionMode      string      `json:"execution_mode,omitempty"`
+	ClassName          string      `json:"class_name,omitempty"`
+	StarterCode        string      `json:"starter_code,omitempty"`
 	Parameters         []Parameter `json:"parameters"`
 	ExpectedReturnType string      `json:"expected_return_type"`
 	VisibleTestCount   int         `json:"visible_test_count"`

@@ -1,0 +1,78 @@
+{
+  "id": "kth-smallest-element-in-a-bst",
+  "title": "Kth Smallest Element in a BST",
+  "difficulty": "medium",
+  "category": "trees",
+  "description": "Given the `root` of a binary search tree, and an integer `k`, return the `k^th` smallest value (1-indexed) of all the values of the nodes in the tree.\n\n \n\nExample 1:\n\nInput: root = [3,1,4,null,2], k = 1\nOutput: 1\n\nExample 2:\n\nInput: root = [5,3,6,2,4,null,null,1], k = 3\nOutput: 3",
+  "examples": [
+    {
+      "input": "root = [3,1,4,null,2], k = 1",
+      "output": "1"
+    },
+    {
+      "input": "root = [5,3,6,2,4,null,null,1], k = 3",
+      "output": "3"
+    }
+  ],
+  "constraints": [
+    "The number of nodes in the tree is `n`.",
+    "`1 <= k <= n <= 10^4`",
+    "`0 <= Node.val <= 10^4`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "kth_smallest",
+  "starter_code": "def kth_smallest(root, k):\n    pass\n",
+  "parameters": [
+    {
+      "name": "root",
+      "type": "TreeNode"
+    },
+    {
+      "name": "k",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          3,
+          1,
+          4,
+          null,
+          2
+        ],
+        1
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        [
+          5,
+          3,
+          6,
+          2,
+          4,
+          null,
+          null,
+          1
+        ],
+        3
+      ],
+      "expected": 3
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Try to utilize the property of a BST.",
+    "level_2": "Try in-order traversal. (Credits to @chan13)",
+    "level_3": "What if you could modify the BST node's structure?",
+    "level_4": "The optimal runtime complexity is O(height of BST)."
+  },
+  "canonical_solution_summary": "The optimal runtime complexity is O(height of BST).",
+  "disallowed_full_solution_exposure": true
+}

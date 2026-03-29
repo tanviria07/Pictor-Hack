@@ -1,0 +1,79 @@
+{
+  "id": "regular-expression-matching",
+  "title": "Regular Expression Matching",
+  "difficulty": "hard",
+  "category": "dp-2d",
+  "description": "Given an input string `s` and a pattern `p`, implement regular expression matching with support for `'.'` and `'*'` where:\n\n\t- `'.'` Matches any single character.​​​​\n\n\t- `'*'` Matches zero or more of the preceding element.\n\nReturn a boolean indicating whether the matching covers the entire input string (not partial).\n\n \n\nExample 1:\n\nInput: s = \"aa\", p = \"a\"\nOutput: false\nExplanation: \"a\" does not match the entire string \"aa\".\n\nExample 2:\n\nInput: s = \"aa\", p = \"a*\"\nOutput: true\nExplanation: '*' means zero or more of the preceding element, 'a'. Therefore, by repeating 'a' once, it becomes \"aa\".\n\nExample 3:\n\nInput: s = \"ab\", p = \".*\"\nOutput: true\nExplanation: \".*\" means \"zero or more (*) of any character (.)\".",
+  "examples": [
+    {
+      "input": "s = \"aa\", p = \"a\"",
+      "output": "false",
+      "explanation": "\"a\" does not match the entire string \"aa\"."
+    },
+    {
+      "input": "s = \"aa\", p = \"a*\"",
+      "output": "true",
+      "explanation": "'*' means zero or more of the preceding element, 'a'. Therefore, by repeating 'a' once, it becomes \"aa\"."
+    },
+    {
+      "input": "s = \"ab\", p = \".*\"",
+      "output": "true",
+      "explanation": "\".*\" means \"zero or more (*) of any character (.)\"."
+    }
+  ],
+  "constraints": [
+    "`1 <= s.length <= 20`",
+    "`1 <= p.length <= 20`",
+    "`s` contains only lowercase English letters.",
+    "`p` contains only lowercase English letters, `'.'`, and `'*'`.",
+    "It is guaranteed for each appearance of the character `'*'`, there will be a previous valid character to match."
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "is_match",
+  "starter_code": "def is_match(s, p):\n    pass\n",
+  "parameters": [
+    {
+      "name": "s",
+      "type": "str"
+    },
+    {
+      "name": "p",
+      "type": "str"
+    }
+  ],
+  "expected_return_type": "bool",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        "aa",
+        "a"
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        "aa",
+        "a*"
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        "ab",
+        ".*"
+      ],
+      "expected": true
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Regular Expression Matching.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

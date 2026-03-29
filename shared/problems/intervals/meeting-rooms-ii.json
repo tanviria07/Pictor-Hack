@@ -1,0 +1,57 @@
+{
+  "id": "meeting-rooms-ii",
+  "title": "Meeting Rooms II",
+  "difficulty": "medium",
+  "category": "intervals",
+  "description": "Given an array of meeting time interval objects consisting of start and end times `[[start_1,end_1],[start_2,end_2],...] (start_i < end_i)`, find the minimum number of rooms required to schedule all meetings without any conflicts.\n\nNote: `(0,8),(8,10)` is **NOT** considered a conflict at 8.",
+  "examples": [
+    {
+      "input": "intervals = [(0,40),(5,10),(15,20)]",
+      "output": "2",
+      "explanation": "day1: `(0,40)`\nday2: `(5,10),(15,20)`"
+    },
+    {
+      "input": "intervals = [(4,9)]",
+      "output": "1"
+    }
+  ],
+  "constraints": [
+    "`0 <= intervals.length <= 500`",
+    "`0 <= intervals[i].start < intervals[i].end <= 1,000,000`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "min_meeting_rooms",
+  "starter_code": "def min_meeting_rooms(intervals):\n    pass\n",
+  "parameters": [
+    {
+      "name": "intervals",
+      "type": "List[List[int]]"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        "[(0,40),(5,10),(15,20)]"
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        "[(4,9)]"
+      ],
+      "expected": 1
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Think about how we would approach this problem in a very simplistic way. We will allocate rooms to meetings that occur earlier in the day v/s the ones that occur later on, right?",
+    "level_2": "If you've figured out that we have to sort the meetings by their start time, the next thing to think about is how do we do the allocation? \nThere are two scenarios possible here for any meeting. Either there is no meeting room available and a new one has to be allocated, or a meeting room has freed up and this meeting can take place there.",
+    "level_3": "An important thing to note is that we don't really care which room gets freed up while allocating a room for the current meeting. As long as a room is free, our job is done. \n\nWe already know the rooms we have allocated till now and we also know when are they due to get free because of the end times of the meetings going on in those rooms. We can simply check the room which is due to get vacated the earliest amongst all the allocated rooms.",
+    "level_4": "Following up on the previous hint, we can make use of a min-heap to store the end times of the meetings in various rooms. \n\nSo, every time we want to check if any room is free or not, simply check the topmost element of the min heap as that would be the room that would get free the earliest out of all the other rooms currently occupied.\n\nIf the room we extracted from the top of the min heap isn't free, then no other room is. So, we can save time here and simply allocate a new room."
+  },
+  "canonical_solution_summary": "Following up on the previous hint, we can make use of a min-heap to store the end times of the meetings in various rooms. \n\nSo, every time we want to check if any room is free or not, simply check the topmost element of the min heap as that would be the room that would get free the earliest out of all the other rooms currently occupied.\n\nIf the room we extracted from the top of the min heap isn't free, then no other room is. So, we can save time here and simply allocate a new room.",
+  "disallowed_full_solution_exposure": true
+}

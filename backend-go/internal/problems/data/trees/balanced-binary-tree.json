@@ -1,0 +1,84 @@
+{
+  "id": "balanced-binary-tree",
+  "title": "Balanced Binary Tree",
+  "difficulty": "easy",
+  "category": "trees",
+  "description": "Given a binary tree, determine if it is height-balanced.\n\n \n\nExample 1:\n\nInput: root = [3,9,20,null,null,15,7]\nOutput: true\n\nExample 2:\n\nInput: root = [1,2,2,3,3,null,null,4,4]\nOutput: false\n\nExample 3:\n\nInput: root = []\nOutput: true",
+  "examples": [
+    {
+      "input": "root = [3,9,20,null,null,15,7]",
+      "output": "true"
+    },
+    {
+      "input": "root = [1,2,2,3,3,null,null,4,4]",
+      "output": "false"
+    },
+    {
+      "input": "root = []",
+      "output": "true"
+    }
+  ],
+  "constraints": [
+    "The number of nodes in the tree is in the range `[0, 5000]`.",
+    "`-10^4 <= Node.val <= 10^4`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "is_balanced",
+  "starter_code": "def is_balanced(root):\n    pass\n",
+  "parameters": [
+    {
+      "name": "root",
+      "type": "TreeNode"
+    }
+  ],
+  "expected_return_type": "bool",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          3,
+          9,
+          20,
+          null,
+          null,
+          15,
+          7
+        ]
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          2,
+          3,
+          3,
+          null,
+          null,
+          4,
+          4
+        ]
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": true
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Balanced Binary Tree.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

@@ -1,0 +1,57 @@
+{
+  "id": "longest-palindromic-substring",
+  "title": "Longest Palindromic Substring",
+  "difficulty": "medium",
+  "category": "dp-1d",
+  "description": "Given a string `s`, return the longest palindromic substring in `s`.\n\n \n\nExample 1:\n\nInput: s = \"babad\"\nOutput: \"bab\"\nExplanation: \"aba\" is also a valid answer.\n\nExample 2:\n\nInput: s = \"cbbd\"\nOutput: \"bb\"",
+  "examples": [
+    {
+      "input": "s = \"babad\"",
+      "output": "\"bab\"",
+      "explanation": "\"aba\" is also a valid answer."
+    },
+    {
+      "input": "s = \"cbbd\"",
+      "output": "\"bb\""
+    }
+  ],
+  "constraints": [
+    "`1 <= s.length <= 1000`",
+    "`s` consist of only digits and English letters."
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "longest_palindrome",
+  "starter_code": "def longest_palindrome(s):\n    pass\n",
+  "parameters": [
+    {
+      "name": "s",
+      "type": "str"
+    }
+  ],
+  "expected_return_type": "str",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        "babad"
+      ],
+      "expected": "bab"
+    },
+    {
+      "args": [
+        "cbbd"
+      ],
+      "expected": "bb"
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "How can we reuse a previously computed palindrome to compute a larger palindrome?",
+    "level_2": "If “aba” is a palindrome, is “xabax” a palindrome? Similarly is “xabay” a palindrome?",
+    "level_3": "Complexity based hint:\nIf we use brute-force and check whether for every start and end position a substring is a palindrome we have O(n^2) start - end pairs and O(n) palindromic checks. Can we reduce the time for palindromic checks to O(1) by reusing some previous computation.",
+    "level_4": "Complexity based hint:\nIf we use brute-force and check whether for every start and end position a substring is a palindrome we have O(n^2) start - end pairs and O(n) palindromic checks. Can we reduce the time for palindromic checks to O(1) by reusing some previous computation."
+  },
+  "canonical_solution_summary": "Complexity based hint:\nIf we use brute-force and check whether for every start and end position a substring is a palindrome we have O(n^2) start - end pairs and O(n) palindromic checks. Can we reduce the time for palindromic checks to O(1) by reusing some previous computation.",
+  "disallowed_full_solution_exposure": true
+}

@@ -1,0 +1,85 @@
+{
+  "id": "encode-and-decode-strings",
+  "title": "Encode and Decode Strings",
+  "difficulty": "medium",
+  "category": "arrays-hashing",
+  "description": "Design an algorithm to encode **a list of strings** to **a string**. The encoded string is then sent over the network and is decoded back to the original list of strings.\n\nMachine 1 (sender) has the function:\n\nstring encode(vector<string> strs) {\n    // ... your code\n    return encoded_string;\n}\n\nMachine 2 (receiver) has the function:\n\nvector<string> decode(string s) {\n    //... your code\n    return strs;\n}\n\nSo Machine 1 does:\nstring encoded_string = encode(strs);\n\nand Machine 2 does:\nvector<string> strs2 = decode(encoded_string);\n\n`strs2` in Machine 2 should be the same as `strs` in Machine 1.\n\nImplement the `encode` and `decode` methods.",
+  "examples": [
+    {
+      "input": "dummy_input = [\"Hello\",\"World\"]",
+      "output": "[\"Hello\",\"World\"]",
+      "explanation": "Machine 1:\nCodec encoder = new Codec();\nString msg = encoder.encode(strs);\nMachine 1 ---msg---> Machine 2\n\nMachine 2:\nCodec decoder = new Codec();\nString[] strs = decoder.decode(msg);"
+    },
+    {
+      "input": "dummy_input = [\"\"]",
+      "output": "[\"\"]"
+    }
+  ],
+  "constraints": [
+    "`0 <= strs.length < 100`",
+    "`0 <= strs[i].length < 200`",
+    "`strs[i]` contains any possible characters out of `256` valid ASCII characters."
+  ],
+  "execution_mode": "class",
+  "class_name": "Codec",
+  "function_name": "Codec",
+  "starter_code": "class Codec:\n    def __init__(self):\n        pass\n\n    def encode(self, strs):\n        pass\n\n    def decode(self, s):\n        pass\n",
+  "parameters": [],
+  "methods": [
+    {
+      "name": "encode",
+      "params": [
+        {
+          "name": "strs",
+          "type": "List[str]"
+        }
+      ],
+      "return_type": "str"
+    },
+    {
+      "name": "decode",
+      "params": [
+        {
+          "name": "s",
+          "type": "str"
+        }
+      ],
+      "return_type": "List[str]"
+    }
+  ],
+  "expected_return_type": "class",
+  "comparison": "codec_roundtrip_strings",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          "Hello",
+          "World"
+        ]
+      ],
+      "expected": [
+        "Hello",
+        "World"
+      ]
+    },
+    {
+      "args": [
+        [
+          ""
+        ]
+      ],
+      "expected": [
+        ""
+      ]
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Encode and Decode Strings.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

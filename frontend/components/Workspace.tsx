@@ -243,6 +243,15 @@ export function Workspace() {
   }, [detail, persist]);
 
   const title = useMemo(() => detail?.title ?? "Practice", [detail]);
+  const signature = useMemo(() => {
+    if (!detail) return "";
+    if (detail.execution_mode === "class") {
+      return `class ${detail.class_name || detail.function_name}`;
+    }
+    return `def ${detail.function_name}(${detail.parameters
+      .map((x) => x.name)
+      .join(", ")}) -> ${detail.expected_return_type}`;
+  }, [detail]);
 
   return (
     <div className="flex h-screen flex-col bg-surface-base text-zinc-200">
@@ -297,9 +306,7 @@ export function Workspace() {
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   <DifficultyBadge difficulty={detail.difficulty} />
                   <code className="break-all font-mono text-2xs text-zinc-500">
-                    def {detail.function_name}(
-                    {detail.parameters.map((x) => x.name).join(", ")}) â†’{" "}
-                    {detail.expected_return_type}
+                    {signature}
                   </code>
                 </div>
               )}

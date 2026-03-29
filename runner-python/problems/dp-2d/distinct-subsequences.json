@@ -1,0 +1,64 @@
+{
+  "id": "distinct-subsequences",
+  "title": "Distinct Subsequences",
+  "difficulty": "hard",
+  "category": "dp-2d",
+  "description": "Given two strings s and t, return the number of distinct subsequences of s which equals t.\n\nThe test cases are generated so that the answer fits on a 32-bit signed integer.\n\n \n\nExample 1:\n\nInput: s = \"rabbbit\", t = \"rabbit\"\nOutput: 3\nExplanation:\nAs shown below, there are 3 ways you can generate \"rabbit\" from s.\n`rabbbit`\n`rabbbit`\n`rabbbit`\n\nExample 2:\n\nInput: s = \"babgbag\", t = \"bag\"\nOutput: 5\nExplanation:\nAs shown below, there are 5 ways you can generate \"bag\" from s.\n`babgbag`\n`babgbag`\n`babgbag`\n`babgbag`\n`babgbag`",
+  "examples": [
+    {
+      "input": "s = \"rabbbit\", t = \"rabbit\"",
+      "output": "3",
+      "explanation": "As shown below, there are 3 ways you can generate \"rabbit\" from s.\n`rabbbit`\n`rabbbit`\n`rabbbit`"
+    },
+    {
+      "input": "s = \"babgbag\", t = \"bag\"",
+      "output": "5",
+      "explanation": "As shown below, there are 5 ways you can generate \"bag\" from s.\n`babgbag`\n`babgbag`\n`babgbag`\n`babgbag`\n`babgbag`"
+    }
+  ],
+  "constraints": [
+    "`1 <= s.length, t.length <= 1000`",
+    "`s` and `t` consist of English letters."
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "num_distinct",
+  "starter_code": "def num_distinct(s, t):\n    pass\n",
+  "parameters": [
+    {
+      "name": "s",
+      "type": "str"
+    },
+    {
+      "name": "t",
+      "type": "str"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        "rabbbit",
+        "rabbit"
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        "babgbag",
+        "bag"
+      ],
+      "expected": 5
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Distinct Subsequences.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

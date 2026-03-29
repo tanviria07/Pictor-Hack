@@ -1,0 +1,93 @@
+{
+  "id": "construct-binary-tree-from-preorder-and-inorder-traversal",
+  "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+  "difficulty": "medium",
+  "category": "trees",
+  "description": "Given two integer arrays `preorder` and `inorder` where `preorder` is the preorder traversal of a binary tree and `inorder` is the inorder traversal of the same tree, construct and return the binary tree.\n\n \n\nExample 1:\n\nInput: preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]\nOutput: [3,9,20,null,null,15,7]\n\nExample 2:\n\nInput: preorder = [-1], inorder = [-1]\nOutput: [-1]",
+  "examples": [
+    {
+      "input": "preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]",
+      "output": "[3,9,20,null,null,15,7]"
+    },
+    {
+      "input": "preorder = [-1], inorder = [-1]",
+      "output": "[-1]"
+    }
+  ],
+  "constraints": [
+    "`1 <= preorder.length <= 3000`",
+    "`inorder.length == preorder.length`",
+    "`-3000 <= preorder[i], inorder[i] <= 3000`",
+    "`preorder` and `inorder` consist of unique values.",
+    "Each value of `inorder` also appears in `preorder`.",
+    "`preorder` is guaranteed to be the preorder traversal of the tree.",
+    "`inorder` is guaranteed to be the inorder traversal of the tree."
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "build_tree",
+  "starter_code": "def build_tree(preorder, inorder):\n    pass\n",
+  "parameters": [
+    {
+      "name": "preorder",
+      "type": "List[int]"
+    },
+    {
+      "name": "inorder",
+      "type": "List[int]"
+    }
+  ],
+  "expected_return_type": "TreeNode",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          3,
+          9,
+          20,
+          15,
+          7
+        ],
+        [
+          9,
+          3,
+          15,
+          20,
+          7
+        ]
+      ],
+      "expected": [
+        3,
+        9,
+        20,
+        null,
+        null,
+        15,
+        7
+      ]
+    },
+    {
+      "args": [
+        [
+          -1
+        ],
+        [
+          -1
+        ]
+      ],
+      "expected": [
+        -1
+      ]
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Construct Binary Tree from Preorder and Inorder Traversal.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

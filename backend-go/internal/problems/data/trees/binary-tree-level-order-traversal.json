@@ -1,0 +1,92 @@
+{
+  "id": "binary-tree-level-order-traversal",
+  "title": "Binary Tree Level Order Traversal",
+  "difficulty": "medium",
+  "category": "trees",
+  "description": "Given the `root` of a binary tree, return the level order traversal of its nodes' values. (i.e., from left to right, level by level).\n\n \n\nExample 1:\n\nInput: root = [3,9,20,null,null,15,7]\nOutput: [[3],[9,20],[15,7]]\n\nExample 2:\n\nInput: root = [1]\nOutput: [[1]]\n\nExample 3:\n\nInput: root = []\nOutput: []",
+  "examples": [
+    {
+      "input": "root = [3,9,20,null,null,15,7]",
+      "output": "[[3],[9,20],[15,7]]"
+    },
+    {
+      "input": "root = [1]",
+      "output": "[[1]]"
+    },
+    {
+      "input": "root = []",
+      "output": "[]"
+    }
+  ],
+  "constraints": [
+    "The number of nodes in the tree is in the range `[0, 2000]`.",
+    "`-1000 <= Node.val <= 1000`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "level_order",
+  "starter_code": "def level_order(root):\n    pass\n",
+  "parameters": [
+    {
+      "name": "root",
+      "type": "TreeNode"
+    }
+  ],
+  "expected_return_type": "List[List[int]]",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          3,
+          9,
+          20,
+          null,
+          null,
+          15,
+          7
+        ]
+      ],
+      "expected": [
+        [
+          3
+        ],
+        [
+          9,
+          20
+        ],
+        [
+          15,
+          7
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          1
+        ]
+      ],
+      "expected": [
+        [
+          1
+        ]
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Use a queue to perform BFS.",
+    "level_2": "Use a queue to perform BFS.",
+    "level_3": "Use a queue to perform BFS.",
+    "level_4": "Use a queue to perform BFS."
+  },
+  "canonical_solution_summary": "Use a queue to perform BFS.",
+  "disallowed_full_solution_exposure": true
+}

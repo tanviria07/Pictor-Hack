@@ -1,0 +1,63 @@
+{
+  "id": "permutation-in-string",
+  "title": "Permutation in String",
+  "difficulty": "medium",
+  "category": "sliding-window",
+  "description": "Given two strings `s1` and `s2`, return `true` if `s2` contains a permutation of `s1`, or `false` otherwise.\n\nIn other words, return `true` if one of `s1`'s permutations is the substring of `s2`.\n\n \n\nExample 1:\n\nInput: s1 = \"ab\", s2 = \"eidbaooo\"\nOutput: true\nExplanation: s2 contains one permutation of s1 (\"ba\").\n\nExample 2:\n\nInput: s1 = \"ab\", s2 = \"eidboaoo\"\nOutput: false",
+  "examples": [
+    {
+      "input": "s1 = \"ab\", s2 = \"eidbaooo\"",
+      "output": "true",
+      "explanation": "s2 contains one permutation of s1 (\"ba\")."
+    },
+    {
+      "input": "s1 = \"ab\", s2 = \"eidboaoo\"",
+      "output": "false"
+    }
+  ],
+  "constraints": [
+    "`1 <= s1.length, s2.length <= 10^4`",
+    "`s1` and `s2` consist of lowercase English letters."
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "check_inclusion",
+  "starter_code": "def check_inclusion(s1, s2):\n    pass\n",
+  "parameters": [
+    {
+      "name": "s1",
+      "type": "str"
+    },
+    {
+      "name": "s2",
+      "type": "str"
+    }
+  ],
+  "expected_return_type": "bool",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        "ab",
+        "eidbaooo"
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        "ab",
+        "eidboaoo"
+      ],
+      "expected": false
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Obviously, brute force will result in TLE. Think of something else.",
+    "level_2": "How will you check whether one string is a permutation of another string?",
+    "level_3": "One way is to sort the string and then compare. But, Is there a better way?",
+    "level_4": "What about hash table?  An array of size 26?"
+  },
+  "canonical_solution_summary": "What about hash table?  An array of size 26?",
+  "disallowed_full_solution_exposure": true
+}

@@ -1,0 +1,58 @@
+{
+  "id": "palindromic-substrings",
+  "title": "Palindromic Substrings",
+  "difficulty": "medium",
+  "category": "dp-1d",
+  "description": "Given a string `s`, return the number of palindromic substrings in it.\n\nA string is a palindrome when it reads the same backward as forward.\n\nA substring is a contiguous sequence of characters within the string.\n\n \n\nExample 1:\n\nInput: s = \"abc\"\nOutput: 3\nExplanation: Three palindromic strings: \"a\", \"b\", \"c\".\n\nExample 2:\n\nInput: s = \"aaa\"\nOutput: 6\nExplanation: Six palindromic strings: \"a\", \"a\", \"a\", \"aa\", \"aa\", \"aaa\".",
+  "examples": [
+    {
+      "input": "s = \"abc\"",
+      "output": "3",
+      "explanation": "Three palindromic strings: \"a\", \"b\", \"c\"."
+    },
+    {
+      "input": "s = \"aaa\"",
+      "output": "6",
+      "explanation": "Six palindromic strings: \"a\", \"a\", \"a\", \"aa\", \"aa\", \"aaa\"."
+    }
+  ],
+  "constraints": [
+    "`1 <= s.length <= 1000`",
+    "`s` consists of lowercase English letters."
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "count_substrings",
+  "starter_code": "def count_substrings(s):\n    pass\n",
+  "parameters": [
+    {
+      "name": "s",
+      "type": "str"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        "abc"
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        "aaa"
+      ],
+      "expected": 6
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "How can we reuse a previously computed palindrome to compute a larger palindrome?",
+    "level_2": "If “aba” is a palindrome, is “xabax” a palindrome? Similarly is “xabay” a palindrome?",
+    "level_3": "Complexity based hint:\nIf we use brute force and check whether for every start and end position a substring is a palindrome we have O(n^2) start - end pairs and O(n) palindromic checks. Can we reduce the time for palindromic checks to O(1) by reusing some previous computation?",
+    "level_4": "Complexity based hint:\nIf we use brute force and check whether for every start and end position a substring is a palindrome we have O(n^2) start - end pairs and O(n) palindromic checks. Can we reduce the time for palindromic checks to O(1) by reusing some previous computation?"
+  },
+  "canonical_solution_summary": "Complexity based hint:\nIf we use brute force and check whether for every start and end position a substring is a palindrome we have O(n^2) start - end pairs and O(n) palindromic checks. Can we reduce the time for palindromic checks to O(1) by reusing some previous computation?",
+  "disallowed_full_solution_exposure": true
+}

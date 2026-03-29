@@ -51,6 +51,9 @@ func BuildHintPromptContext(problemID string) (HintPromptContext, error) {
 		params = append(params, par.Name)
 	}
 	sig := "def " + p.FunctionName + "(" + strings.Join(params, ", ") + ") -> " + p.ExpectedReturnType
+	if p.ExecutionMode == "class" {
+		sig = "class " + p.ClassName
+	}
 
 	return HintPromptContext{
 		Title:        p.Title,

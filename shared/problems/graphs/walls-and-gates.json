@@ -1,0 +1,126 @@
+{
+  "id": "walls-and-gates",
+  "title": "Walls and Gates",
+  "difficulty": "medium",
+  "category": "graphs",
+  "description": "You are given a $m \\times n$ 2D `grid` initialized with these three possible values:\n\n1. `-1` - A water cell that *can not* be traversed.\n2. `0` - A treasure chest.\n3. `INF` - A land cell that *can* be traversed. We use the integer `2^31 - 1 = 2147483647` to represent `INF`.\n\nFill each land cell with the distance to its nearest treasure chest. If a land cell cannot reach a treasure chest then the value should remain `INF`.\n\nAssume the grid can only be traversed up, down, left, or right.\n\nModify the `grid` **in-place**.",
+  "examples": [
+    {
+      "input": "[\n  [2147483647,-1,0,2147483647],\n  [2147483647,2147483647,2147483647,-1],\n  [2147483647,-1,2147483647,-1],\n  [0,-1,2147483647,2147483647]\n]",
+      "output": "[\n  [3,-1,0,1],\n  [2,2,1,-1],\n  [1,-1,2,-1],\n  [0,-1,3,4]\n]"
+    },
+    {
+      "input": "[\n  [0,-1],\n  [2147483647,2147483647]\n]",
+      "output": "[\n  [0,-1],\n  [1,2]\n]"
+    }
+  ],
+  "constraints": [
+    "`m == grid.length`",
+    "`n == grid[i].length`",
+    "`1 <= m, n <= 100`",
+    "`grid[i][j]` is one of `{-1, 0, 2147483647}`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "walls_and_gates",
+  "starter_code": "def walls_and_gates(rooms):\n    pass\n",
+  "parameters": [
+    {
+      "name": "rooms",
+      "type": "List[List[int]]"
+    }
+  ],
+  "expected_return_type": "None",
+  "comparison": "mutates_first_arg",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          [
+            2147483647,
+            -1,
+            0,
+            2147483647
+          ],
+          [
+            2147483647,
+            2147483647,
+            2147483647,
+            -1
+          ],
+          [
+            2147483647,
+            -1,
+            2147483647,
+            -1
+          ],
+          [
+            0,
+            -1,
+            2147483647,
+            2147483647
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          3,
+          -1,
+          0,
+          1
+        ],
+        [
+          2,
+          2,
+          1,
+          -1
+        ],
+        [
+          1,
+          -1,
+          2,
+          -1
+        ],
+        [
+          0,
+          -1,
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            -1
+          ],
+          [
+            2147483647,
+            2147483647
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          0,
+          -1
+        ],
+        [
+          1,
+          2
+        ]
+      ]
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Walls and Gates.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

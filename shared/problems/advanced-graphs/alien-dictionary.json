@@ -1,0 +1,68 @@
+{
+  "id": "alien-dictionary",
+  "title": "Alien Dictionary",
+  "difficulty": "hard",
+  "category": "advanced-graphs",
+  "description": "There is a foreign language which uses the latin alphabet, but the order among letters is *not* \"a\", \"b\", \"c\" ... \"z\" as in English.\n\nYou receive a list of *non-empty* strings `words` from the dictionary, where the words are **sorted lexicographically** based on the rules of this new language.\n\nDerive the order of letters in this language. If the order is invalid, return an empty string. If there are multiple valid order of letters, return **any** of them.\n\nA string `a` is lexicographically smaller than a string `b` if either of the following is true:\n* The first letter where they differ is smaller in `a` than in `b`.\n* `a` is a prefix of `b` *and* `a.length < b.length`.",
+  "examples": [
+    {
+      "input": "[\"z\",\"o\"]",
+      "output": "\"zo\"",
+      "explanation": "From \"z\" and \"o\", we know 'z' < 'o', so return \"zo\"."
+    },
+    {
+      "input": "[\"hrn\",\"hrf\",\"er\",\"enn\",\"rfnn\"]",
+      "output": "\"hernf\"",
+      "explanation": "* from \"hrn\" and \"hrf\", we know 'n' < 'f'\n* from \"hrf\" and \"er\", we know 'h' < 'e'\n* from \"er\" and \"enn\", we know get 'r' < 'n'\n* from \"enn\" and \"rfnn\" we know 'e'<'r'\n* so one possibile solution is \"hernf\""
+    }
+  ],
+  "constraints": [
+    "The input `words` will contain characters only from lowercase `'a'` to `'z'`.",
+    "`1 <= words.length <= 100`",
+    "`1 <= words[i].length <= 100`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "alien_order",
+  "starter_code": "def alien_order(words):\n    pass\n",
+  "parameters": [
+    {
+      "name": "words",
+      "type": "List[str]"
+    }
+  ],
+  "expected_return_type": "str",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          "z",
+          "o"
+        ]
+      ],
+      "expected": "zo"
+    },
+    {
+      "args": [
+        [
+          "hrn",
+          "hrf",
+          "er",
+          "enn",
+          "rfnn"
+        ]
+      ],
+      "expected": "hernf"
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Alien Dictionary.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

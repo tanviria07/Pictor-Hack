@@ -1,0 +1,93 @@
+{
+  "id": "remove-nth-node-from-end-of-list",
+  "title": "Remove Nth Node From End of List",
+  "difficulty": "medium",
+  "category": "linked-list",
+  "description": "Given the `head` of a linked list, remove the `n^th` node from the end of the list and return its head.\n\n \n\nExample 1:\n\nInput: head = [1,2,3,4,5], n = 2\nOutput: [1,2,3,5]\n\nExample 2:\n\nInput: head = [1], n = 1\nOutput: []\n\nExample 3:\n\nInput: head = [1,2], n = 1\nOutput: [1]",
+  "examples": [
+    {
+      "input": "head = [1,2,3,4,5], n = 2",
+      "output": "[1,2,3,5]"
+    },
+    {
+      "input": "head = [1], n = 1",
+      "output": "[]"
+    },
+    {
+      "input": "head = [1,2], n = 1",
+      "output": "[1]"
+    }
+  ],
+  "constraints": [
+    "The number of nodes in the list is `sz`.",
+    "`1 <= sz <= 30`",
+    "`0 <= Node.val <= 100`",
+    "`1 <= n <= sz`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "remove_nth_from_end",
+  "starter_code": "def remove_nth_from_end(head, n):\n    pass\n",
+  "parameters": [
+    {
+      "name": "head",
+      "type": "ListNode"
+    },
+    {
+      "name": "n",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "ListNode",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        2
+      ],
+      "expected": [
+        1,
+        2,
+        3,
+        5
+      ]
+    },
+    {
+      "args": [
+        [
+          1
+        ],
+        1
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          1,
+          2
+        ],
+        1
+      ],
+      "expected": [
+        1
+      ]
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Maintain two pointers and update one with a delay of n steps.",
+    "level_2": "Maintain two pointers and update one with a delay of n steps.",
+    "level_3": "Maintain two pointers and update one with a delay of n steps.",
+    "level_4": "Maintain two pointers and update one with a delay of n steps."
+  },
+  "canonical_solution_summary": "Maintain two pointers and update one with a delay of n steps.",
+  "disallowed_full_solution_exposure": true
+}

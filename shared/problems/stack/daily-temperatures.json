@@ -1,0 +1,102 @@
+{
+  "id": "daily-temperatures",
+  "title": "Daily Temperatures",
+  "difficulty": "medium",
+  "category": "stack",
+  "description": "Given an array of integers `temperatures` represents the daily temperatures, return an array `answer` such that `answer[i]` is the number of days you have to wait after the `i^th` day to get a warmer temperature. If there is no future day for which this is possible, keep `answer[i] == 0` instead.\n\n \n\nExample 1:\n\nInput: temperatures = [73,74,75,71,69,72,76,73]\nOutput: [1,1,4,2,1,1,0,0]\n\nExample 2:\n\nInput: temperatures = [30,40,50,60]\nOutput: [1,1,1,0]\n\nExample 3:\n\nInput: temperatures = [30,60,90]\nOutput: [1,1,0]",
+  "examples": [
+    {
+      "input": "temperatures = [73,74,75,71,69,72,76,73]",
+      "output": "[1,1,4,2,1,1,0,0]"
+    },
+    {
+      "input": "temperatures = [30,40,50,60]",
+      "output": "[1,1,1,0]"
+    },
+    {
+      "input": "temperatures = [30,60,90]",
+      "output": "[1,1,0]"
+    }
+  ],
+  "constraints": [
+    "`1 <= temperatures.length <= 10^5`",
+    "`30 <= temperatures[i] <= 100`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "daily_temperatures",
+  "starter_code": "def daily_temperatures(temperatures):\n    pass\n",
+  "parameters": [
+    {
+      "name": "temperatures",
+      "type": "List[int]"
+    }
+  ],
+  "expected_return_type": "List[int]",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          73,
+          74,
+          75,
+          71,
+          69,
+          72,
+          76,
+          73
+        ]
+      ],
+      "expected": [
+        1,
+        1,
+        4,
+        2,
+        1,
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          30,
+          40,
+          50,
+          60
+        ]
+      ],
+      "expected": [
+        1,
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          30,
+          60,
+          90
+        ]
+      ],
+      "expected": [
+        1,
+        1,
+        0
+      ]
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "If the temperature is say, 70 today, then in the future a warmer temperature must be either 71, 72, 73, ..., 99, or 100.  We could remember when all of them occur next.",
+    "level_2": "If the temperature is say, 70 today, then in the future a warmer temperature must be either 71, 72, 73, ..., 99, or 100.  We could remember when all of them occur next.",
+    "level_3": "If the temperature is say, 70 today, then in the future a warmer temperature must be either 71, 72, 73, ..., 99, or 100.  We could remember when all of them occur next.",
+    "level_4": "If the temperature is say, 70 today, then in the future a warmer temperature must be either 71, 72, 73, ..., 99, or 100.  We could remember when all of them occur next."
+  },
+  "canonical_solution_summary": "If the temperature is say, 70 today, then in the future a warmer temperature must be either 71, 72, 73, ..., 99, or 100.  We could remember when all of them occur next.",
+  "disallowed_full_solution_exposure": true
+}

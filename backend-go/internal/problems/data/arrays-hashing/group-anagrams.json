@@ -1,0 +1,100 @@
+{
+  "id": "group-anagrams",
+  "title": "Group Anagrams",
+  "difficulty": "medium",
+  "category": "arrays-hashing",
+  "description": "Given an array of strings `strs`, group the anagrams together. You can return the answer in any order.\n\n \n\nExample 1:\n\nInput: strs = [\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]\n\nOutput: [[\"bat\"],[\"nat\",\"tan\"],[\"ate\",\"eat\",\"tea\"]]\n\nExplanation:\n\n\t- There is no string in strs that can be rearranged to form `\"bat\"`.\n\n\t- The strings `\"nat\"` and `\"tan\"` are anagrams as they can be rearranged to form each other.\n\n\t- The strings `\"ate\"`, `\"eat\"`, and `\"tea\"` are anagrams as they can be rearranged to form each other.\n\nExample 2:\n\nInput: strs = [\"\"]\n\nOutput: [[\"\"]]\n\nExample 3:\n\nInput: strs = [\"a\"]\n\nOutput: [[\"a\"]]",
+  "examples": [
+    {
+      "input": "strs = [\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]",
+      "output": "[[\"bat\"],[\"nat\",\"tan\"],[\"ate\",\"eat\",\"tea\"]]",
+      "explanation": "- There is no string in strs that can be rearranged to form `\"bat\"`.\n\n\t- The strings `\"nat\"` and `\"tan\"` are anagrams as they can be rearranged to form each other.\n\n\t- The strings `\"ate\"`, `\"eat\"`, and `\"tea\"` are anagrams as they can be rearranged to form each other."
+    },
+    {
+      "input": "strs = [\"\"]",
+      "output": "[[\"\"]]"
+    },
+    {
+      "input": "strs = [\"a\"]",
+      "output": "[[\"a\"]]"
+    }
+  ],
+  "constraints": [
+    "`1 <= strs.length <= 10^4`",
+    "`0 <= strs[i].length <= 100`",
+    "`strs[i]` consists of lowercase English letters."
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "group_anagrams",
+  "starter_code": "def group_anagrams(strs):\n    pass\n",
+  "parameters": [
+    {
+      "name": "strs",
+      "type": "List[str]"
+    }
+  ],
+  "expected_return_type": "List[List[str]]",
+  "comparison": "unordered_nested_list",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          "eat",
+          "tea",
+          "tan",
+          "ate",
+          "nat",
+          "bat"
+        ]
+      ],
+      "expected": [
+        [
+          "bat"
+        ],
+        [
+          "nat",
+          "tan"
+        ],
+        [
+          "ate",
+          "eat",
+          "tea"
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          ""
+        ]
+      ],
+      "expected": [
+        [
+          ""
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          "a"
+        ]
+      ],
+      "expected": [
+        [
+          "a"
+        ]
+      ]
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Group Anagrams.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

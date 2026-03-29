@@ -1,0 +1,64 @@
+{
+  "id": "edit-distance",
+  "title": "Edit Distance",
+  "difficulty": "medium",
+  "category": "dp-2d",
+  "description": "Given two strings `word1` and `word2`, return the minimum number of operations required to convert `word1` to `word2`.\n\nYou have the following three operations permitted on a word:\n\n\t- Insert a character\n\n\t- Delete a character\n\n\t- Replace a character\n\n \n\nExample 1:\n\nInput: word1 = \"horse\", word2 = \"ros\"\nOutput: 3\nExplanation: \nhorse -> rorse (replace 'h' with 'r')\nrorse -> rose (remove 'r')\nrose -> ros (remove 'e')\n\nExample 2:\n\nInput: word1 = \"intention\", word2 = \"execution\"\nOutput: 5\nExplanation: \nintention -> inention (remove 't')\ninention -> enention (replace 'i' with 'e')\nenention -> exention (replace 'n' with 'x')\nexention -> exection (replace 'n' with 'c')\nexection -> execution (insert 'u')",
+  "examples": [
+    {
+      "input": "word1 = \"horse\", word2 = \"ros\"",
+      "output": "3",
+      "explanation": "horse -> rorse (replace 'h' with 'r')\nrorse -> rose (remove 'r')\nrose -> ros (remove 'e')"
+    },
+    {
+      "input": "word1 = \"intention\", word2 = \"execution\"",
+      "output": "5",
+      "explanation": "intention -> inention (remove 't')\ninention -> enention (replace 'i' with 'e')\nenention -> exention (replace 'n' with 'x')\nexention -> exection (replace 'n' with 'c')\nexection -> execution (insert 'u')"
+    }
+  ],
+  "constraints": [
+    "`0 <= word1.length, word2.length <= 500`",
+    "`word1` and `word2` consist of lowercase English letters."
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "min_distance",
+  "starter_code": "def min_distance(word1, word2):\n    pass\n",
+  "parameters": [
+    {
+      "name": "word1",
+      "type": "str"
+    },
+    {
+      "name": "word2",
+      "type": "str"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        "horse",
+        "ros"
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        "intention",
+        "execution"
+      ],
+      "expected": 5
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Edit Distance.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

@@ -1,0 +1,81 @@
+{
+  "id": "course-schedule",
+  "title": "Course Schedule",
+  "difficulty": "medium",
+  "category": "graphs",
+  "description": "There are a total of `numCourses` courses you have to take, labeled from `0` to `numCourses - 1`. You are given an array `prerequisites` where `prerequisites[i] = [ai, bi]` indicates that you must take course `bi` first if you want to take course `ai`.\n\n\t- For example, the pair `[0, 1]`, indicates that to take course `0` you have to first take course `1`.\n\nReturn `true` if you can finish all courses. Otherwise, return `false`.\n\n \n\nExample 1:\n\nInput: numCourses = 2, prerequisites = [[1,0]]\nOutput: true\nExplanation: There are a total of 2 courses to take. \nTo take course 1 you should have finished course 0. So it is possible.\n\nExample 2:\n\nInput: numCourses = 2, prerequisites = [[1,0],[0,1]]\nOutput: false\nExplanation: There are a total of 2 courses to take. \nTo take course 1 you should have finished course 0, and to take course 0 you should also have finished course 1. So it is impossible.",
+  "examples": [
+    {
+      "input": "numCourses = 2, prerequisites = [[1,0]]",
+      "output": "true",
+      "explanation": "There are a total of 2 courses to take. \nTo take course 1 you should have finished course 0. So it is possible."
+    },
+    {
+      "input": "numCourses = 2, prerequisites = [[1,0],[0,1]]",
+      "output": "false",
+      "explanation": "There are a total of 2 courses to take. \nTo take course 1 you should have finished course 0, and to take course 0 you should also have finished course 1. So it is impossible."
+    }
+  ],
+  "constraints": [
+    "`1 <= numCourses <= 2000`",
+    "`0 <= prerequisites.length <= 5000`",
+    "`prerequisites[i].length == 2`",
+    "`0 <= ai, bi < numCourses`",
+    "All the pairs prerequisites[i] are unique."
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "can_finish",
+  "starter_code": "def can_finish(numCourses, prerequisites):\n    pass\n",
+  "parameters": [
+    {
+      "name": "numCourses",
+      "type": "int"
+    },
+    {
+      "name": "prerequisites",
+      "type": "List[List[int]]"
+    }
+  ],
+  "expected_return_type": "bool",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        2,
+        [
+          [
+            1,
+            0
+          ]
+        ]
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        2,
+        [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      ],
+      "expected": false
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "This problem is equivalent to finding if a cycle exists in a directed graph. If a cycle exists, no topological ordering exists and therefore it will be impossible to take all courses.",
+    "level_2": "Topological Sort via DFS - A great tutorial explaining the basic concepts of Topological Sort.",
+    "level_3": "Topological sort could also be done via BFS.",
+    "level_4": "Topological sort could also be done via BFS."
+  },
+  "canonical_solution_summary": "Topological sort could also be done via BFS.",
+  "disallowed_full_solution_exposure": true
+}

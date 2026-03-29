@@ -3,7 +3,7 @@
   "title": "Reverse Linked List",
   "difficulty": "easy",
   "category": "linked-list",
-  "description": "Given the `head` of a singly linked list, reverse the list and return the new head.\n\n**Define a `ListNode` class** in your solution with `val` and `next` (default `None`), matching the usual interview form. The judge passes the list as a Python list of values `[v1, v2, ...]` and compares your result to the reversed value list.",
+  "description": "Given the `head` of a singly linked list, reverse the list, and return the reversed list.\n\n \n\nExample 1:\n\nInput: head = [1,2,3,4,5]\nOutput: [5,4,3,2,1]\n\nExample 2:\n\nInput: head = [1,2]\nOutput: [2,1]\n\nExample 3:\n\nInput: head = []\nOutput: []",
   "examples": [
     {
       "input": "head = [1,2,3,4,5]",
@@ -12,33 +12,73 @@
     {
       "input": "head = [1,2]",
       "output": "[2,1]"
+    },
+    {
+      "input": "head = []",
+      "output": "[]"
     }
   ],
   "constraints": [
-    "The number of nodes is in the range [0, 5000]",
-    "-5000 <= Node.val <= 5000"
+    "The number of nodes in the list is the range `[0, 5000]`.",
+    "`-5000 <= Node.val <= 5000`"
   ],
+  "execution_mode": "function",
+  "class_name": "",
   "function_name": "reverse_list",
-  "parameters": [{ "name": "head", "type": "ListNode" }],
+  "starter_code": "def reverse_list(head):\n    pass\n",
+  "parameters": [
+    {
+      "name": "head",
+      "type": "ListNode"
+    }
+  ],
   "expected_return_type": "ListNode",
+  "comparison": "",
   "visible_tests": [
-    { "args": [[1, 2, 3, 4, 5]], "expected": [5, 4, 3, 2, 1] },
-    { "args": [[1, 2]], "expected": [2, 1] },
-    { "args": [[]], "expected": [] }
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      ],
+      "expected": [
+        5,
+        4,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          2
+        ]
+      ],
+      "expected": [
+        2,
+        1
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    }
   ],
-  "hidden_tests": [
-    { "args": [[42]], "expected": [42] },
-    { "args": [[1, 2, 3]], "expected": [3, 2, 1] },
-    { "args": [[0, 0, 1]], "expected": [1, 0, 0] },
-    { "args": [[9, 8, 7, 6]], "expected": [6, 7, 8, 9] },
-    { "args": [[2, 2, 2]], "expected": [2, 2, 2] }
-  ],
+  "hidden_tests": [],
   "hint_plan": {
-    "level_1": "Think about reversing pointers one node at a time.",
-    "level_2": "Iterative: track previous, current, next; flip current.next to previous.",
-    "level_3": "Initialize prev=None, cur=head; while cur: nxt=cur.next; cur.next=prev; prev=cur; cur=nxt; return prev.",
-    "level_4": "Handle empty head early; ensure you return the old tail as new head."
+    "level_1": "Break down the core operation in Reverse Linked List.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
-  "canonical_solution_summary": "Iterative pointer reversal or recursive version with careful stack depth.",
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
   "disallowed_full_solution_exposure": true
 }

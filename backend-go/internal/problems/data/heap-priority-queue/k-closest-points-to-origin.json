@@ -1,0 +1,100 @@
+{
+  "id": "k-closest-points-to-origin",
+  "title": "K Closest Points to Origin",
+  "difficulty": "medium",
+  "category": "heap-priority-queue",
+  "description": "Given an array of `points` where `points[i] = [xi, yi]` represents a point on the X-Y plane and an integer `k`, return the `k` closest points to the origin `(0, 0)`.\n\nThe distance between two points on the X-Y plane is the Euclidean distance (i.e., `&radic;(x1 - x2)^2 + (y1 - y2)^2`).\n\nYou may return the answer in any order. The answer is guaranteed to be unique (except for the order that it is in).\n\n \n\nExample 1:\n\nInput: points = [[1,3],[-2,2]], k = 1\nOutput: [[-2,2]]\nExplanation:\nThe distance between (1, 3) and the origin is sqrt(10).\nThe distance between (-2, 2) and the origin is sqrt(8).\nSince sqrt(8) < sqrt(10), (-2, 2) is closer to the origin.\nWe only want the closest k = 1 points from the origin, so the answer is just [[-2,2]].\n\nExample 2:\n\nInput: points = [[3,3],[5,-1],[-2,4]], k = 2\nOutput: [[3,3],[-2,4]]\nExplanation: The answer [[-2,4],[3,3]] would also be accepted.",
+  "examples": [
+    {
+      "input": "points = [[1,3],[-2,2]], k = 1",
+      "output": "[[-2,2]]",
+      "explanation": "The distance between (1, 3) and the origin is sqrt(10).\nThe distance between (-2, 2) and the origin is sqrt(8).\nSince sqrt(8) < sqrt(10), (-2, 2) is closer to the origin.\nWe only want the closest k = 1 points from the origin, so the answer is just [[-2,2]]."
+    },
+    {
+      "input": "points = [[3,3],[5,-1],[-2,4]], k = 2",
+      "output": "[[3,3],[-2,4]]",
+      "explanation": "The answer [[-2,4],[3,3]] would also be accepted."
+    }
+  ],
+  "constraints": [
+    "`1 <= k <= points.length <= 10^4`",
+    "`-10^4 <= xi, yi <= 10^4`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "k_closest",
+  "starter_code": "def k_closest(points, k):\n    pass\n",
+  "parameters": [
+    {
+      "name": "points",
+      "type": "List[List[int]]"
+    },
+    {
+      "name": "k",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "List[List[int]]",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          [
+            1,
+            3
+          ],
+          [
+            -2,
+            2
+          ]
+        ],
+        1
+      ],
+      "expected": [
+        [
+          -2,
+          2
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            3,
+            3
+          ],
+          [
+            5,
+            -1
+          ],
+          [
+            -2,
+            4
+          ]
+        ],
+        2
+      ],
+      "expected": [
+        [
+          3,
+          3
+        ],
+        [
+          -2,
+          4
+        ]
+      ]
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in K Closest Points to Origin.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

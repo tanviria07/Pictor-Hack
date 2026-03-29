@@ -1,0 +1,91 @@
+{
+  "id": "longest-increasing-subsequence",
+  "title": "Longest Increasing Subsequence",
+  "difficulty": "medium",
+  "category": "dp-1d",
+  "description": "Given an integer array `nums`, return the length of the longest strictly increasing subsequence.\n\n \n\nExample 1:\n\nInput: nums = [10,9,2,5,3,7,101,18]\nOutput: 4\nExplanation: The longest increasing subsequence is [2,3,7,101], therefore the length is 4.\n\nExample 2:\n\nInput: nums = [0,1,0,3,2,3]\nOutput: 4\n\nExample 3:\n\nInput: nums = [7,7,7,7,7,7,7]\nOutput: 1",
+  "examples": [
+    {
+      "input": "nums = [10,9,2,5,3,7,101,18]",
+      "output": "4",
+      "explanation": "The longest increasing subsequence is [2,3,7,101], therefore the length is 4."
+    },
+    {
+      "input": "nums = [0,1,0,3,2,3]",
+      "output": "4"
+    },
+    {
+      "input": "nums = [7,7,7,7,7,7,7]",
+      "output": "1"
+    }
+  ],
+  "constraints": [
+    "`1 <= nums.length <= 2500`",
+    "`-10^4 <= nums[i] <= 10^4`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "length_of_lis",
+  "starter_code": "def length_of_lis(nums):\n    pass\n",
+  "parameters": [
+    {
+      "name": "nums",
+      "type": "List[int]"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          10,
+          9,
+          2,
+          5,
+          3,
+          7,
+          101,
+          18
+        ]
+      ],
+      "expected": 4
+    },
+    {
+      "args": [
+        [
+          0,
+          1,
+          0,
+          3,
+          2,
+          3
+        ]
+      ],
+      "expected": 4
+    },
+    {
+      "args": [
+        [
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7
+        ]
+      ],
+      "expected": 1
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Longest Increasing Subsequence.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

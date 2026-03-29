@@ -1,0 +1,68 @@
+{
+  "id": "number-of-1-bits",
+  "title": "Number of 1 Bits",
+  "difficulty": "easy",
+  "category": "bit-manipulation",
+  "description": "Given a positive integer `n`, write a function that returns the number of set bits in its binary representation (also known as the Hamming weight).\n\n \n\nExample 1:\n\nInput: n = 11\n\nOutput: 3\n\nExplanation:\n\nThe input binary string 1011 has a total of three set bits.\n\nExample 2:\n\nInput: n = 128\n\nOutput: 1\n\nExplanation:\n\nThe input binary string 10000000 has a total of one set bit.\n\nExample 3:\n\nInput: n = 2147483645\n\nOutput: 30\n\nExplanation:\n\nThe input binary string 1111111111111111111111111111101 has a total of thirty set bits.",
+  "examples": [
+    {
+      "input": "n = 11",
+      "output": "3",
+      "explanation": "The input binary string 1011 has a total of three set bits."
+    },
+    {
+      "input": "n = 128",
+      "output": "1",
+      "explanation": "The input binary string 10000000 has a total of one set bit."
+    },
+    {
+      "input": "n = 2147483645",
+      "output": "30",
+      "explanation": "The input binary string 1111111111111111111111111111101 has a total of thirty set bits."
+    }
+  ],
+  "constraints": [
+    "`1 <= n <= 2^31 - 1`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "hamming_weight",
+  "starter_code": "def hamming_weight(n):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        11
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        128
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        2147483645
+      ],
+      "expected": 30
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Number of 1 Bits.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

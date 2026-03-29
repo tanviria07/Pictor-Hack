@@ -1,0 +1,70 @@
+{
+  "id": "jump-game-ii",
+  "title": "Jump Game II",
+  "difficulty": "medium",
+  "category": "greedy",
+  "description": "You are given a 0-indexed array of integers `nums` of length `n`. You are initially positioned at index 0.\n\nEach element `nums[i]` represents the maximum length of a forward jump from index `i`. In other words, if you are at index `i`, you can jump to any index `(i + j)` where:\n\n\t- `0 <= j <= nums[i]` and\n\n\t- `i + j < n`\n\nReturn the minimum number of jumps to reach index `n - 1`. The test cases are generated such that you can reach index `n - 1`.\n\n \n\nExample 1:\n\nInput: nums = [2,3,1,1,4]\nOutput: 2\nExplanation: The minimum number of jumps to reach the last index is 2. Jump 1 step from index 0 to 1, then 3 steps to the last index.\n\nExample 2:\n\nInput: nums = [2,3,0,1,4]\nOutput: 2",
+  "examples": [
+    {
+      "input": "nums = [2,3,1,1,4]",
+      "output": "2",
+      "explanation": "The minimum number of jumps to reach the last index is 2. Jump 1 step from index 0 to 1, then 3 steps to the last index."
+    },
+    {
+      "input": "nums = [2,3,0,1,4]",
+      "output": "2"
+    }
+  ],
+  "constraints": [
+    "`1 <= nums.length <= 10^4`",
+    "`0 <= nums[i] <= 1000`",
+    "It's guaranteed that you can reach `nums[n - 1]`."
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "jump",
+  "starter_code": "def jump(nums):\n    pass\n",
+  "parameters": [
+    {
+      "name": "nums",
+      "type": "List[int]"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          2,
+          3,
+          1,
+          1,
+          4
+        ]
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        [
+          2,
+          3,
+          0,
+          1,
+          4
+        ]
+      ],
+      "expected": 2
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Jump Game II.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

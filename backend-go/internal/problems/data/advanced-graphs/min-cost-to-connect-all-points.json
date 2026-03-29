@@ -1,0 +1,92 @@
+{
+  "id": "min-cost-to-connect-all-points",
+  "title": "Min Cost to Connect All Points",
+  "difficulty": "medium",
+  "category": "advanced-graphs",
+  "description": "You are given an array `points` representing integer coordinates of some points on a 2D-plane, where `points[i] = [xi, yi]`.\n\nThe cost of connecting two points `[xi, yi]` and `[xj, yj]` is the manhattan distance between them: `|xi - xj| + |yi - yj|`, where `|val|` denotes the absolute value of `val`.\n\nReturn the minimum cost to make all points connected. All points are connected if there is exactly one simple path between any two points.\n\n \n\nExample 1:\n\nInput: points = [[0,0],[2,2],[3,10],[5,2],[7,0]]\nOutput: 20\nExplanation: \n\nWe can connect the points as shown above to get the minimum cost of 20.\nNotice that there is a unique path between every pair of points.\n\nExample 2:\n\nInput: points = [[3,12],[-2,5],[-4,1]]\nOutput: 18",
+  "examples": [
+    {
+      "input": "points = [[0,0],[2,2],[3,10],[5,2],[7,0]]",
+      "output": "20",
+      "explanation": "We can connect the points as shown above to get the minimum cost of 20.\nNotice that there is a unique path between every pair of points."
+    },
+    {
+      "input": "points = [[3,12],[-2,5],[-4,1]]",
+      "output": "18"
+    }
+  ],
+  "constraints": [
+    "`1 <= points.length <= 1000`",
+    "`-10^6 <= xi, yi <= 10^6`",
+    "All pairs `(xi, yi)` are distinct."
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "min_cost_connect_points",
+  "starter_code": "def min_cost_connect_points(points):\n    pass\n",
+  "parameters": [
+    {
+      "name": "points",
+      "type": "List[List[int]]"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            10
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            7,
+            0
+          ]
+        ]
+      ],
+      "expected": 20
+    },
+    {
+      "args": [
+        [
+          [
+            3,
+            12
+          ],
+          [
+            -2,
+            5
+          ],
+          [
+            -4,
+            1
+          ]
+        ]
+      ],
+      "expected": 18
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Connect each pair of points with a weighted edge, the weight being the manhattan distance between those points.",
+    "level_2": "The problem is now the cost of minimum spanning tree in graph with above edges.",
+    "level_3": "The problem is now the cost of minimum spanning tree in graph with above edges.",
+    "level_4": "The problem is now the cost of minimum spanning tree in graph with above edges."
+  },
+  "canonical_solution_summary": "The problem is now the cost of minimum spanning tree in graph with above edges.",
+  "disallowed_full_solution_exposure": true
+}

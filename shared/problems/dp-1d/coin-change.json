@@ -1,0 +1,83 @@
+{
+  "id": "coin-change",
+  "title": "Coin Change",
+  "difficulty": "medium",
+  "category": "dp-1d",
+  "description": "You are given an integer array `coins` representing coins of different denominations and an integer `amount` representing a total amount of money.\n\nReturn the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return `-1`.\n\nYou may assume that you have an infinite number of each kind of coin.\n\n \n\nExample 1:\n\nInput: coins = [1,2,5], amount = 11\nOutput: 3\nExplanation: 11 = 5 + 5 + 1\n\nExample 2:\n\nInput: coins = [2], amount = 3\nOutput: -1\n\nExample 3:\n\nInput: coins = [1], amount = 0\nOutput: 0",
+  "examples": [
+    {
+      "input": "coins = [1,2,5], amount = 11",
+      "output": "3",
+      "explanation": "11 = 5 + 5 + 1"
+    },
+    {
+      "input": "coins = [2], amount = 3",
+      "output": "-1"
+    },
+    {
+      "input": "coins = [1], amount = 0",
+      "output": "0"
+    }
+  ],
+  "constraints": [
+    "`1 <= coins.length <= 12`",
+    "`1 <= coins[i] <= 2^31 - 1`",
+    "`0 <= amount <= 10^4`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "coin_change",
+  "starter_code": "def coin_change(coins, amount):\n    pass\n",
+  "parameters": [
+    {
+      "name": "coins",
+      "type": "List[int]"
+    },
+    {
+      "name": "amount",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          5
+        ],
+        11
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        [
+          2
+        ],
+        3
+      ],
+      "expected": -1
+    },
+    {
+      "args": [
+        [
+          1
+        ],
+        0
+      ],
+      "expected": 0
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Coin Change.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}

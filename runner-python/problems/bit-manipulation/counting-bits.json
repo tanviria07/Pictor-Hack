@@ -1,0 +1,68 @@
+{
+  "id": "counting-bits",
+  "title": "Counting Bits",
+  "difficulty": "easy",
+  "category": "bit-manipulation",
+  "description": "Given an integer `n`, return an array `ans` of length `n + 1` such that for each `i` (`0 <= i <= n`), `ans[i]` is the number of `1`'s in the binary representation of `i`.\n\n \n\nExample 1:\n\nInput: n = 2\nOutput: [0,1,1]\nExplanation:\n0 --> 0\n1 --> 1\n2 --> 10\n\nExample 2:\n\nInput: n = 5\nOutput: [0,1,1,2,1,2]\nExplanation:\n0 --> 0\n1 --> 1\n2 --> 10\n3 --> 11\n4 --> 100\n5 --> 101",
+  "examples": [
+    {
+      "input": "n = 2",
+      "output": "[0,1,1]",
+      "explanation": "0 --> 0\n1 --> 1\n2 --> 10"
+    },
+    {
+      "input": "n = 5",
+      "output": "[0,1,1,2,1,2]",
+      "explanation": "0 --> 0\n1 --> 1\n2 --> 10\n3 --> 11\n4 --> 100\n5 --> 101"
+    }
+  ],
+  "constraints": [
+    "`0 <= n <= 10^5`"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "count_bits",
+  "starter_code": "def count_bits(n):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "List[int]",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        2
+      ],
+      "expected": [
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "args": [
+        5
+      ],
+      "expected": [
+        0,
+        1,
+        1,
+        2,
+        1,
+        2
+      ]
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "You should make use of what you have produced already.",
+    "level_2": "Divide the numbers in ranges like [2-3], [4-7], [8-15] and so on. And try to generate new range from previous.",
+    "level_3": "Or does the odd/even status of the number help you in calculating the number of 1s?",
+    "level_4": "Or does the odd/even status of the number help you in calculating the number of 1s?"
+  },
+  "canonical_solution_summary": "Or does the odd/even status of the number help you in calculating the number of 1s?",
+  "disallowed_full_solution_exposure": true
+}

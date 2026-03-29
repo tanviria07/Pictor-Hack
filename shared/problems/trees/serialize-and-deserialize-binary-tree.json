@@ -1,0 +1,89 @@
+{
+  "id": "serialize-and-deserialize-binary-tree",
+  "title": "Serialize and Deserialize Binary Tree",
+  "difficulty": "hard",
+  "category": "trees",
+  "description": "Serialization is the process of converting a data structure or object into a sequence of bits so that it can be stored in a file or memory buffer, or transmitted across a network connection link to be reconstructed later in the same or another computer environment.\n\nDesign an algorithm to serialize and deserialize a binary tree. There is no restriction on how your serialization/deserialization algorithm should work. You just need to ensure that a binary tree can be serialized to a string and this string can be deserialized to the original tree structure.\n\nClarification: The input/output format is the same as how LeetCode serializes a binary tree. You do not necessarily need to follow this format, so please be creative and come up with different approaches yourself.\n\n \n\nExample 1:\n\nInput: root = [1,2,3,null,null,4,5]\nOutput: [1,2,3,null,null,4,5]\n\nExample 2:\n\nInput: root = []\nOutput: []",
+  "examples": [
+    {
+      "input": "root = [1,2,3,null,null,4,5]",
+      "output": "[1,2,3,null,null,4,5]"
+    },
+    {
+      "input": "root = []",
+      "output": "[]"
+    }
+  ],
+  "constraints": [
+    "The number of nodes in the tree is in the range `[0, 10^4]`.",
+    "`-1000 <= Node.val <= 1000`"
+  ],
+  "execution_mode": "class",
+  "class_name": "Codec",
+  "function_name": "Codec",
+  "starter_code": "class Codec:\n    def __init__(self):\n        pass\n\n    def serialize(self, root):\n        pass\n\n    def deserialize(self, data):\n        pass\n",
+  "parameters": [],
+  "methods": [
+    {
+      "name": "serialize",
+      "params": [
+        {
+          "name": "root",
+          "type": "TreeNode"
+        }
+      ],
+      "return_type": "str"
+    },
+    {
+      "name": "deserialize",
+      "params": [
+        {
+          "name": "data",
+          "type": "str"
+        }
+      ],
+      "return_type": "TreeNode"
+    }
+  ],
+  "expected_return_type": "class",
+  "comparison": "codec_roundtrip_tree",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          null,
+          null,
+          4,
+          5
+        ]
+      ],
+      "expected": [
+        1,
+        2,
+        3,
+        null,
+        null,
+        4,
+        5
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    }
+  ],
+  "hidden_tests": [],
+  "hint_plan": {
+    "level_1": "Break down the core operation in Serialize and Deserialize Binary Tree.",
+    "level_2": "Look for the data structure or traversal pattern that avoids repeated work.",
+    "level_3": "Use the constraints and examples to narrow the intended time complexity.",
+    "level_4": "Implement the direct approach that maintains the required invariant step by step."
+  },
+  "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
+  "disallowed_full_solution_exposure": true
+}
