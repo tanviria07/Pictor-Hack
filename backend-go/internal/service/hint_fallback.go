@@ -10,29 +10,49 @@ import (
 // MaxHintLevel caps progressive hints (1..MaxHintLevel).
 const MaxHintLevel = 4
 
-// buildFallbackHintResponse uses seeded hint plan + deterministic lines when DeepSeek is off or fails.
+// buildFallbackHintResponse uses seeded hint plan + code/heuristic lines when DeepSeek is off or fails.
 func buildFallbackHintResponse(
 	level int,
 	eval dto.StructuredEvaluation,
 	problemID string,
+	code string,
 ) dto.HintResponse {
 	seeded := problems.SeededHint(problemID, level)
 	if seeded == "" {
 		seeded = "Align with the examples first, then re-read the constraints for edge cases."
 	}
+	extra := codeHeuristicHints(problemID, code, eval)
+	hintText := seeded
+	for _, h := range extra {
+		if strings.TrimSpace(h) == "" {
+			continue
+		}
+		if strings.Contains(strings.ToLower(hintText), strings.ToLower(h[:min(24, len(h))])) {
+			continue
+		}
+		hintText = strings.TrimSpace(hintText + "\n\n" + h)
+	}
+
 	feedback := feedbackLineFromEval(eval)
 	next := nextFocusFromEval(eval)
 	combined := feedback
-	if strings.TrimSpace(seeded) != "" {
-		combined = strings.TrimSpace(feedback + "\n\n" + seeded)
+	if strings.TrimSpace(hintText) != "" {
+		combined = strings.TrimSpace(feedback + "\n\n" + hintText)
 	}
 	return dto.HintResponse{
 		Feedback:            feedback,
-		Hint:                seeded,
+		Hint:                hintText,
 		NextFocus:           next,
 		HintLevel:           level,
 		InterviewerFeedback: combined,
 	}
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }
 
 func feedbackLineFromEval(eval dto.StructuredEvaluation) string {

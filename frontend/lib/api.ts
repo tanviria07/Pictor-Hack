@@ -32,7 +32,7 @@ async function j<T>(path: string, init?: RequestInit): Promise<T> {
   });
   if (!r.ok) {
     const t = await r.text();
-    throw new Error(formatApiErrorMessage(t || r.statusText));
+    throw new Error(formatApiErrorMessage(t || r.statusText, r.status));
   }
   return r.json() as Promise<T>;
 }
@@ -78,7 +78,7 @@ async function runCodeViaQueue(body: {
   }
   if (!submit.ok) {
     const t = await submit.text();
-    throw new Error(formatApiErrorMessage(t || submit.statusText));
+    throw new Error(formatApiErrorMessage(t || submit.statusText, submit.status));
   }
   const created = (await submit.json()) as { job_id: string; status: string };
   const jobId = created.job_id;
@@ -95,7 +95,7 @@ async function runCodeViaQueue(body: {
     });
     if (!pr.ok) {
       const t = await pr.text();
-      throw new Error(formatApiErrorMessage(t || pr.statusText));
+      throw new Error(formatApiErrorMessage(t || pr.statusText, pr.status));
     }
     const data = (await pr.json()) as RunJobPollResponse;
     if (data.status === "failed") {

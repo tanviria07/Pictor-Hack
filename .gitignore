@@ -67,3 +67,8 @@ Thumbs.db
 *.db
 backend-go/data/
 .logs/
+
+# Playwright
+frontend/test-results/
+frontend/playwright-report/
+playwright/.cache/

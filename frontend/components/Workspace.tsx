@@ -19,6 +19,7 @@ import {
 } from "@/lib/api";
 import { deriveCategoriesFromProblems } from "@/lib/catalog";
 import { formatThrownError } from "@/lib/errors";
+import { friendlyEvaluationBanner } from "@/lib/runFeedback";
 import {
   deriveProgress,
   loadLocalProgress,
@@ -246,6 +247,11 @@ export function Workspace() {
     void persist(starter, [], "not_started");
   }, [detail, persist]);
 
+  const evaluationBanner = useMemo(
+    () => (run ? friendlyEvaluationBanner(run) : null),
+    [run],
+  );
+
   const title = useMemo(() => detail?.title ?? "Practice", [detail]);
   const signature = useMemo(() => {
     if (!detail) return "";
@@ -362,6 +368,7 @@ export function Workspace() {
             <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border bg-surface-panel/30 px-4 py-3">
               <button
                 type="button"
+                data-testid="run-code-button"
                 onClick={() => void onRun()}
                 disabled={loading !== "idle" || !problemId}
                 className="rounded-lg border border-accent bg-accent px-3.5 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
@@ -419,6 +426,14 @@ export function Workspace() {
                   )}
                   {run && (
                     <div className="space-y-5">
+                      {evaluationBanner ? (
+                        <p
+                          className="rounded-lg border border-amber-900/35 bg-amber-950/20 px-3 py-2 text-xs leading-relaxed text-amber-100/90"
+                          data-testid="evaluation-banner"
+                        >
+                          {evaluationBanner}
+                        </p>
+                      ) : null}
                       <div className="flex flex-wrap items-center gap-3">
                         <StatusBadge status={run.status} />
                         <span className="text-2xs tabular-nums text-zinc-500">

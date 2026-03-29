@@ -82,7 +82,7 @@ func (h *Handler) Run(w http.ResponseWriter, r *http.Request) {
 // SubmitRunJob enqueues async evaluation (Redis + worker). Returns 503 if async runs are disabled.
 func (h *Handler) SubmitRunJob(w http.ResponseWriter, r *http.Request) {
 	if h.RunJobs == nil {
-		httpx.Error(w, http.StatusServiceUnavailable, httpx.ErrInternal, "async run queue is not configured")
+		httpx.Error(w, http.StatusServiceUnavailable, httpx.ErrQueueUnavailable, "Async code runs are not configured (set REDIS_URL on the API).")
 		return
 	}
 	var req dto.RunRequest
@@ -110,7 +110,7 @@ func (h *Handler) SubmitRunJob(w http.ResponseWriter, r *http.Request) {
 // GetRunJob polls async job status and returns the finalized result when ready.
 func (h *Handler) GetRunJob(w http.ResponseWriter, r *http.Request) {
 	if h.RunJobs == nil {
-		httpx.Error(w, http.StatusServiceUnavailable, httpx.ErrInternal, "async run queue is not configured")
+		httpx.Error(w, http.StatusServiceUnavailable, httpx.ErrQueueUnavailable, "Async code runs are not configured (set REDIS_URL on the API).")
 		return
 	}
 	jobID := chi.URLParam(r, "job_id")
@@ -145,7 +145,7 @@ func (h *Handler) Hint(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		log.Println("hint:", err)
-		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "hint failed")
+		httpx.ErrorWithDetails(w, http.StatusInternalServerError, httpx.ErrHintUnavailable, "Could not build a hint right now.", map[string]string{"reason": err.Error()})
 		return
 	}
 	httpx.JSON(w, http.StatusOK, out)
@@ -164,7 +164,7 @@ func (h *Handler) SaveSession(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := h.Sessions.SaveSession(r.Context(), req); err != nil {
 		log.Println("session save:", err)
-		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "save failed")
+		httpx.ErrorWithDetails(w, http.StatusInternalServerError, httpx.ErrDatabaseError, "Could not save your session.", map[string]string{"reason": err.Error()})
 		return
 	}
 	httpx.JSON(w, http.StatusOK, map[string]bool{"ok": true})
@@ -176,7 +176,7 @@ func (h *Handler) GetSession(w http.ResponseWriter, r *http.Request) {
 	sess, err := h.Sessions.GetSession(r.Context(), pid)
 	if err != nil {
 		log.Println("session get:", err)
-		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "database error")
+		httpx.ErrorWithDetails(w, http.StatusInternalServerError, httpx.ErrDatabaseError, "Could not load your session.", map[string]string{"reason": err.Error()})
 		return
 	}
 	if sess == nil {

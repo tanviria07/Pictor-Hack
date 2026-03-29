@@ -52,7 +52,7 @@ func (s *HintService) Hint(ctx context.Context, req dto.HintRequest) (*dto.HintR
 		}
 	}
 
-	out := buildFallbackHintResponse(level, req.Evaluation, req.ProblemID)
+	out := buildFallbackHintResponse(level, req.Evaluation, req.ProblemID, req.Code)
 	return &out, nil
 }
 

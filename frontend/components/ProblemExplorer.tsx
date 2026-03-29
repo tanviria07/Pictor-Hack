@@ -194,6 +194,7 @@ export function ProblemExplorer({
                             <li key={problem.id}>
                               <button
                                 type="button"
+                                data-testid={`problem-item-${problem.id}`}
                                 onClick={() => onSelectProblem(problem.id)}
                                 className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition-colors duration-150 ${
                                   isSelected
