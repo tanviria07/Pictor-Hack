@@ -43,7 +43,7 @@ const PythonEditor = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex h-full min-h-[200px] items-center justify-center bg-surface-code text-xs text-zinc-500">
-        Loading editorâ€¦
+        Loading editor...
       </div>
     ),
   },
@@ -83,9 +83,9 @@ export function Workspace() {
     (async () => {
       try {
         setCatalogLoading(true);
-        let plist: ProblemSummary[] = [];
+        let problemList: ProblemSummary[] = [];
         try {
-          plist = await listProblems();
+          problemList = await listProblems();
         } catch (e) {
           if (!cancelled) {
             setProblems([]);
@@ -96,20 +96,22 @@ export function Workspace() {
         }
         if (cancelled) return;
 
-        setProblems(plist);
+        setProblems(problemList);
 
-        let cats: CategorySummary[] = [];
+        let categoryList: CategorySummary[] = [];
         try {
-          const c = await listCategories();
-          cats = Array.isArray(c) ? c : [];
+          const categoriesResponse = await listCategories();
+          categoryList = Array.isArray(categoriesResponse)
+            ? categoriesResponse
+            : [];
         } catch {
-          cats = [];
+          categoryList = [];
         }
-        if (cats.length === 0 && plist.length > 0) {
-          cats = deriveCategoriesFromProblems(plist);
+        if (categoryList.length === 0 && problemList.length > 0) {
+          categoryList = deriveCategoriesFromProblems(problemList);
         }
-        setCategories(cats);
-        setProblemId((prev) => prev ?? plist[0]?.id ?? null);
+        setCategories(categoryList);
+        setProblemId((prev) => prev ?? problemList[0]?.id ?? null);
         setErr(null);
       } finally {
         if (!cancelled) setCatalogLoading(false);
@@ -125,24 +127,26 @@ export function Workspace() {
     (async () => {
       try {
         setLoading("load");
-        const d = await getProblem(problemId);
-        setDetail(d);
+        const problemDetail = await getProblem(problemId);
+        setDetail(problemDetail);
         setRun(null);
         setErr(null);
-        const starter = buildStarter(d);
-        const sess = await loadSession(problemId);
-        if (sess?.code) {
-          setCode(sess.code);
-          setHintHistory(sess.hint_history || []);
+
+        const starter = buildStarter(problemDetail);
+        const session = await loadSession(problemId);
+        if (session?.code) {
+          setCode(session.code);
+          setHintHistory(session.hint_history || []);
         } else {
           setCode(starter);
           setHintHistory([]);
         }
-        const merged = mergeProgress(
+
+        const mergedProgress = mergeProgress(
           loadLocalProgress()[problemId] ?? "not_started",
-          sess?.practice_status ?? null,
+          session?.practice_status ?? null,
         );
-        setProgressById((prev) => ({ ...prev, [problemId]: merged }));
+        setProgressById((prev) => ({ ...prev, [problemId]: mergedProgress }));
       } catch (e) {
         setErr(formatThrownError(e));
       } finally {
@@ -163,17 +167,17 @@ export function Workspace() {
       explicitStatus?: PracticeProgress,
     ) => {
       if (!problemId) return;
-      const st =
+      const nextStatus =
         explicitStatus ??
         deriveProgress(run, nextCode, starterForCompare, nextHints.length > 0);
-      setProgressById((prev) => ({ ...prev, [problemId]: st }));
-      setLocalProgress(problemId, st);
+      setProgressById((prev) => ({ ...prev, [problemId]: nextStatus }));
+      setLocalProgress(problemId, nextStatus);
       try {
         await saveSession({
           problem_id: problemId,
           code: nextCode,
           hint_history: nextHints,
-          practice_status: st,
+          practice_status: nextStatus,
         });
       } catch {
         /* non-fatal */
@@ -187,19 +191,19 @@ export function Workspace() {
     setLoading("run");
     setErr(null);
     try {
-      const res = await runCode({
+      const response = await runCode({
         problem_id: problemId,
         language: "python",
         code,
       });
-      setRun(res);
-      const st = deriveProgress(
-        res,
+      setRun(response);
+      const derivedStatus = deriveProgress(
+        response,
         code,
         starterForCompare,
         hintHistory.length > 0,
       );
-      await persist(code, hintHistory, st);
+      await persist(code, hintHistory, derivedStatus);
     } catch (e) {
       setErr(formatThrownError(e));
     } finally {
@@ -215,17 +219,17 @@ export function Workspace() {
     setLoading("hint");
     setErr(null);
     try {
-      const h = await getHint({
+      const hintResponse = await getHint({
         problem_id: problemId,
         code,
         evaluation: run.evaluation,
       });
-      const next = [
+      const nextHints = [
         ...hintHistory,
-        `[L${h.hint_level}] Feedback: ${h.feedback}\nHint: ${h.hint}\nNext: ${h.next_focus}`,
+        `[L${hintResponse.hint_level}] Feedback: ${hintResponse.feedback}\nHint: ${hintResponse.hint}\nNext: ${hintResponse.next_focus}`,
       ];
-      setHintHistory(next);
-      await persist(code, next, "in_progress");
+      setHintHistory(nextHints);
+      await persist(code, nextHints, "in_progress");
     } catch (e) {
       setErr(formatThrownError(e));
     } finally {
@@ -235,11 +239,11 @@ export function Workspace() {
 
   const onReset = useCallback(() => {
     if (!detail) return;
-    const s = buildStarter(detail);
-    setCode(s);
+    const starter = buildStarter(detail);
+    setCode(starter);
     setRun(null);
     setHintHistory([]);
-    void persist(s, [], "not_started");
+    void persist(starter, [], "not_started");
   }, [detail, persist]);
 
   const title = useMemo(() => detail?.title ?? "Practice", [detail]);
@@ -249,7 +253,7 @@ export function Workspace() {
       return `class ${detail.class_name || detail.function_name}`;
     }
     return `def ${detail.function_name}(${detail.parameters
-      .map((x) => x.name)
+      .map((parameter) => parameter.name)
       .join(", ")}) -> ${detail.expected_return_type}`;
   }, [detail]);
 
@@ -297,10 +301,10 @@ export function Workspace() {
         />
 
         <div className="flex min-h-0 min-w-0 flex-1 flex-col xl:flex-row">
-          <aside className="flex w-full shrink-0 flex-col border-b border-border xl:w-[min(100%,26rem)] xl:border-b-0 xl:border-r xl:max-w-[28rem]">
+          <aside className="flex w-full shrink-0 flex-col border-b border-border xl:w-[min(100%,26rem)] xl:max-w-[28rem] xl:border-b-0 xl:border-r">
             <div className="border-b border-border bg-surface-raised/50 px-4 py-2">
               <h1 className="text-base font-semibold leading-snug text-zinc-100 transition-opacity">
-                {loading === "load" && !detail ? "Loadingâ€¦" : title}
+                {loading === "load" && !detail ? "Loading..." : title}
               </h1>
               {detail && (
                 <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -319,18 +323,18 @@ export function Workspace() {
                   </div>
                   <SectionTitle>Examples</SectionTitle>
                   <ul className="space-y-2">
-                    {detail.examples.map((ex, i) => (
+                    {detail.examples.map((example, index) => (
                       <li
-                        key={i}
+                        key={index}
                         className="rounded border border-border bg-surface-panel/80 p-3 font-mono text-xs leading-relaxed text-zinc-300"
                       >
                         <div className="text-zinc-500">Input</div>
-                        <div className="text-zinc-200">{ex.input}</div>
+                        <div className="text-zinc-200">{example.input}</div>
                         <div className="mt-2 text-zinc-500">Output</div>
-                        <div className="text-zinc-200">{ex.output}</div>
-                        {ex.explanation && (
+                        <div className="text-zinc-200">{example.output}</div>
+                        {example.explanation && (
                           <div className="mt-2 border-t border-border pt-2 text-zinc-500">
-                            {ex.explanation}
+                            {example.explanation}
                           </div>
                         )}
                       </li>
@@ -338,14 +342,14 @@ export function Workspace() {
                   </ul>
                   <SectionTitle>Constraints</SectionTitle>
                   <ul className="list-disc space-y-1 pl-4 text-xs text-zinc-400">
-                    {detail.constraints.map((c, i) => (
-                      <li key={i}>{c}</li>
+                    {detail.constraints.map((constraint, index) => (
+                      <li key={index}>{constraint}</li>
                     ))}
                   </ul>
                 </>
               )}
               {loading === "load" && !detail && (
-                <p className="text-sm text-zinc-500">Loading problemâ€¦</p>
+                <p className="text-sm text-zinc-500">Loading problem...</p>
               )}
             </div>
           </aside>
@@ -358,7 +362,7 @@ export function Workspace() {
                 disabled={loading !== "idle" || !problemId}
                 className="rounded border border-accent bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                {loading === "run" ? "Runningâ€¦" : "Run Code"}
+                {loading === "run" ? "Running..." : "Run Code"}
               </button>
               <button
                 type="button"
@@ -366,7 +370,7 @@ export function Workspace() {
                 disabled={loading !== "idle" || !run}
                 className="rounded border border-border bg-surface-panel px-3 py-1.5 text-xs font-medium text-zinc-200 hover:bg-zinc-800/80 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                {loading === "hint" ? "Requestingâ€¦" : "Get Hint"}
+                {loading === "hint" ? "Requesting..." : "Get Hint"}
               </button>
               <button
                 type="button"
@@ -406,7 +410,7 @@ export function Workspace() {
                     <p className="text-xs leading-relaxed text-zinc-500">
                       Run your code to execute visible tests, hidden checks, and
                       receive interviewer notes. Evaluation is deterministic from
-                      the runner â€” not from the language model.
+                      the runner, not from the language model.
                     </p>
                   )}
                   {run && (
@@ -416,7 +420,7 @@ export function Workspace() {
                         <span className="text-2xs tabular-nums text-zinc-500">
                           Visible {run.evaluation.passed_visible_tests}/
                           {run.evaluation.total_visible_tests}
-                          <span className="mx-1.5 text-zinc-700">Â·</span>
+                          <span className="mx-1.5 text-zinc-700">·</span>
                           Hidden {run.evaluation.passed_hidden_tests}/
                           {run.evaluation.total_hidden_tests}
                           <span className="ml-1 text-zinc-600">
@@ -436,22 +440,22 @@ export function Workspace() {
                               </tr>
                             </thead>
                             <tbody>
-                              {run.visible_test_results.map((t) => (
+                              {run.visible_test_results.map((testResult) => (
                                 <tr
-                                  key={t.index}
+                                  key={testResult.index}
                                   className="border-b border-border/60 last:border-0"
                                 >
                                   <td className="px-2 py-1.5 text-zinc-400">
-                                    {t.label ?? `#${t.index + 1}`}
+                                    {testResult.label ?? `#${testResult.index + 1}`}
                                   </td>
                                   <td
                                     className={
-                                      t.passed
+                                      testResult.passed
                                         ? "px-2 py-1.5 text-emerald-400/95"
                                         : "px-2 py-1.5 text-rose-400/95"
                                     }
                                   >
-                                    {t.passed ? "Pass" : "Fail"}
+                                    {testResult.passed ? "Pass" : "Fail"}
                                   </td>
                                 </tr>
                               ))}
@@ -495,9 +499,11 @@ export function Workspace() {
                         <div>
                           <SectionTitle>Focus areas</SectionTitle>
                           <ul className="list-disc space-y-1 pl-4 text-xs text-zinc-400">
-                            {run.evaluation.feedback_targets.map((t, i) => (
-                              <li key={i}>{t}</li>
-                            ))}
+                            {run.evaluation.feedback_targets.map(
+                              (feedbackTarget, index) => (
+                                <li key={index}>{feedbackTarget}</li>
+                              ),
+                            )}
                           </ul>
                         </div>
                       )}
@@ -507,18 +513,20 @@ export function Workspace() {
                         {hintHistory.length === 0 ? (
                           <p className="text-xs text-zinc-500">
                             After a run, request hints. Each step builds on prior
-                            hints (levels 1â€“4).
+                            hints (levels 1-4).
                           </p>
                         ) : (
                           <ol className="space-y-3">
-                            {hintHistory.map((h, i) => (
+                            {hintHistory.map((hint, index) => (
                               <li
-                                key={i}
+                                key={index}
                                 className="border-l-2 border-zinc-700 pl-3 font-mono text-2xs leading-relaxed text-zinc-400"
                               >
-                                <span className="text-zinc-600">{i + 1}.</span>{" "}
+                                <span className="text-zinc-600">
+                                  {index + 1}.
+                                </span>{" "}
                                 <span className="whitespace-pre-wrap text-zinc-300">
-                                  {h}
+                                  {hint}
                                 </span>
                               </li>
                             ))}

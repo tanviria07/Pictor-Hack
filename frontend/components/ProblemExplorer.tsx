@@ -4,21 +4,25 @@ import { useEffect, useMemo, useState } from "react";
 import { deriveCategoriesFromProblems } from "@/lib/catalog";
 import { DifficultyBadge } from "./DifficultyBadge";
 import { PracticeStatusDot } from "./PracticeStatusDot";
-import type { CategorySummary, PracticeProgress, ProblemSummary } from "@/lib/types";
+import type {
+  CategorySummary,
+  PracticeProgress,
+  ProblemSummary,
+} from "@/lib/types";
 
-function matchesSearch(p: ProblemSummary, q: string) {
-  if (!q.trim()) return true;
-  const s = q.toLowerCase();
+function matchesSearch(problem: ProblemSummary, query: string) {
+  if (!query.trim()) return true;
+  const normalizedQuery = query.toLowerCase();
   return (
-    p.title.toLowerCase().includes(s) ||
-    p.id.toLowerCase().includes(s) ||
-    p.function_name.toLowerCase().includes(s)
+    problem.title.toLowerCase().includes(normalizedQuery) ||
+    problem.id.toLowerCase().includes(normalizedQuery) ||
+    problem.function_name.toLowerCase().includes(normalizedQuery)
   );
 }
 
-function matchesDifficulty(p: ProblemSummary, d: string) {
-  if (!d) return true;
-  return p.difficulty.toLowerCase() === d;
+function matchesDifficulty(problem: ProblemSummary, difficulty: string) {
+  if (!difficulty) return true;
+  return problem.difficulty.toLowerCase() === difficulty;
 }
 
 function Chevron({ open }: { open: boolean }) {
@@ -68,32 +72,34 @@ export function ProblemExplorer({
   useEffect(() => {
     setExpanded((prev) => {
       const next = { ...prev };
-      for (const c of displayCategories) {
-        if (next[c.id] === undefined) next[c.id] = true;
+      for (const category of displayCategories) {
+        if (next[category.id] === undefined) next[category.id] = true;
       }
       return next;
     });
   }, [displayCategories]);
 
-  const filtered = useMemo(() => {
+  const filteredProblems = useMemo(() => {
     return problems.filter(
-      (p) => matchesSearch(p, search) && matchesDifficulty(p, difficulty),
+      (problem) =>
+        matchesSearch(problem, search) &&
+        matchesDifficulty(problem, difficulty),
     );
   }, [problems, search, difficulty]);
 
-  const byCat = useMemo(() => {
-    const m = new Map<string, ProblemSummary[]>();
-    for (const c of displayCategories) m.set(c.id, []);
-    for (const p of filtered) {
-      const arr = m.get(p.category);
-      if (arr) arr.push(p);
+  const problemsByCategory = useMemo(() => {
+    const categoryMap = new Map<string, ProblemSummary[]>();
+    for (const category of displayCategories) categoryMap.set(category.id, []);
+    for (const problem of filteredProblems) {
+      const items = categoryMap.get(problem.category);
+      if (items) items.push(problem);
     }
-    return m;
-  }, [displayCategories, filtered]);
+    return categoryMap;
+  }, [displayCategories, filteredProblems]);
 
   return (
     <div className="flex h-full min-h-0 w-full shrink-0 flex-col border-b border-border/80 bg-[#0a0a0c] md:w-[min(100%,19rem)] md:border-b-0 md:border-r md:border-border/80 lg:w-[20.5rem]">
-      {/* Filters — compact strip */}
+      {/* Filters: compact strip */}
       <div className="shrink-0 space-y-2 border-b border-border/60 px-3 py-3 sm:px-3.5">
         <label className="sr-only" htmlFor="problem-search">
           Search problems
@@ -101,7 +107,7 @@ export function ProblemExplorer({
         <input
           id="problem-search"
           type="search"
-          placeholder="Search…"
+          placeholder="Search..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full rounded-md border border-border/60 bg-zinc-950/80 px-3 py-2 text-[13px] leading-snug text-zinc-200 placeholder:text-zinc-600 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] transition-colors focus:border-zinc-500/50 focus:outline-none focus:ring-1 focus:ring-zinc-500/30"
@@ -124,11 +130,10 @@ export function ProblemExplorer({
         </div>
       </div>
 
-      {/* Scrollable list */}
       <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain [scrollbar-gutter:stable]">
         {loading && (
           <p className="px-4 py-6 text-center text-[13px] text-zinc-500">
-            Loading…
+            Loading...
           </p>
         )}
         {!loading && problems.length === 0 && (
@@ -141,31 +146,34 @@ export function ProblemExplorer({
         )}
         {!loading && problems.length > 0 && (
           <div className="divide-y divide-border/40 pb-3">
-            {displayCategories.map((cat) => {
-              const items = byCat.get(cat.id) ?? [];
-              const open = expanded[cat.id] !== false;
+            {displayCategories.map((category) => {
+              const items = problemsByCategory.get(category.id) ?? [];
+              const open = expanded[category.id] !== false;
               return (
-                <section key={cat.id} className="min-w-0">
+                <section key={category.id} className="min-w-0">
                   <button
                     type="button"
                     aria-expanded={open}
                     onClick={() =>
-                      setExpanded((e) => ({ ...e, [cat.id]: !open }))
+                      setExpanded((current) => ({
+                        ...current,
+                        [category.id]: !open,
+                      }))
                     }
                     className="group flex w-full items-center gap-2 px-3 py-2.5 text-left transition-colors hover:bg-white/[0.03] sm:px-3.5"
                   >
                     <Chevron open={open} />
                     <span className="min-w-0 flex-1 truncate text-[13px] font-medium leading-snug tracking-tight text-zinc-100">
-                      {cat.title}
+                      {category.title}
                     </span>
                     <span className="shrink-0 tabular-nums text-[11px] text-zinc-500">
                       {items.length}
                       <span className="text-zinc-600">/</span>
-                      {cat.problem_count}
+                      {category.problem_count}
                     </span>
                   </button>
 
-                  {/* Animated height: grid 0fr → 1fr */}
+                  {/* Animated height: grid 0fr -> 1fr */}
                   <div
                     className={`grid transition-[grid-template-rows] duration-200 ease-out motion-reduce:transition-none ${
                       open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
@@ -178,32 +186,36 @@ export function ProblemExplorer({
                             No matches
                           </li>
                         )}
-                        {items.map((p) => {
-                          const sel = selectedId === p.id;
-                          const st = progress[p.id] ?? "not_started";
+                        {items.map((problem) => {
+                          const isSelected = selectedId === problem.id;
+                          const progressState =
+                            progress[problem.id] ?? "not_started";
                           return (
-                            <li key={p.id}>
+                            <li key={problem.id}>
                               <button
                                 type="button"
-                                onClick={() => onSelectProblem(p.id)}
+                                onClick={() => onSelectProblem(problem.id)}
                                 className={`flex w-full items-center gap-2.5 rounded-md px-2 py-2.5 text-left transition-colors duration-150 sm:px-2.5 ${
-                                  sel
+                                  isSelected
                                     ? "bg-zinc-800/70 ring-1 ring-inset ring-zinc-600/50"
                                     : "hover:bg-white/[0.04]"
                                 } `}
                               >
-                                <PracticeStatusDot status={st} minimal />
+                                <PracticeStatusDot
+                                  status={progressState}
+                                  minimal
+                                />
                                 <span
                                   className={`min-w-0 flex-1 text-[13px] leading-snug ${
-                                    sel
+                                    isSelected
                                       ? "font-medium text-zinc-50"
                                       : "font-normal text-zinc-300"
                                   }`}
                                 >
-                                  {p.title}
+                                  {problem.title}
                                 </span>
                                 <DifficultyBadge
-                                  difficulty={p.difficulty}
+                                  difficulty={problem.difficulty}
                                   compact
                                 />
                               </button>

@@ -66,3 +66,4 @@ Thumbs.db
 # --- Project local data ---
 *.db
 backend-go/data/
+.logs/

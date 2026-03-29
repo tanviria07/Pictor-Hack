@@ -2,7 +2,7 @@
 
 import type { ProblemStatus } from "@/lib/types";
 
-/** Labels match product copy — technical, not playful. */
+/** Labels match product copy and stay technical, not playful. */
 const styles: Record<
   ProblemStatus,
   { label: string; className: string }
@@ -40,12 +40,12 @@ const styles: Record<
 };
 
 export function StatusBadge({ status }: { status: ProblemStatus }) {
-  const s = styles[status];
+  const badge = styles[status];
   return (
     <span
-      className={`inline-flex items-center rounded px-2 py-0.5 text-2xs font-semibold uppercase tracking-wide ${s.className}`}
+      className={`inline-flex items-center rounded px-2 py-0.5 text-2xs font-semibold uppercase tracking-wide ${badge.className}`}
     >
-      {s.label}
+      {badge.label}
     </span>
   );
 }
