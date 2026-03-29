@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "standalone",
   reactStrictMode: true,
   /** Proxy /api to the Go server so the browser uses same-origin requests (no CORS). */
   async rewrites() {

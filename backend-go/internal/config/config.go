@@ -4,7 +4,9 @@ package config
 
 import (
 	"os"
+	"strconv"
 	"strings"
+	"time"
 )
 
 // Config holds all runtime configuration for the API server.
@@ -16,6 +18,15 @@ type Config struct {
 	DeepSeekKey   string
 	DeepSeekURL   string
 	DeepSeekModel string
+
+	RedisURL           string
+	RunQueueKey        string
+	RunJobKeyPrefix    string
+	RunReqKeyPrefix    string
+	RunRawKeyPrefix    string
+	RunFinalKeyPrefix  string
+	RunFinalizeLockPrefix string
+	RunJobTTL          time.Duration
 }
 
 // Load reads environment variables with sensible defaults.
@@ -58,6 +69,40 @@ func Load() Config {
 		dsModel = "deepseek-chat"
 	}
 
+	redisURL := strings.TrimSpace(os.Getenv("REDIS_URL"))
+
+	queue := os.Getenv("RUN_QUEUE_KEY")
+	if queue == "" {
+		queue = "run:queue"
+	}
+	jobPref := os.Getenv("RUN_JOB_KEY_PREFIX")
+	if jobPref == "" {
+		jobPref = "run:job:"
+	}
+	reqPref := os.Getenv("RUN_REQ_KEY_PREFIX")
+	if reqPref == "" {
+		reqPref = "run:req:"
+	}
+	rawPref := os.Getenv("RUN_RAW_RESULT_PREFIX")
+	if rawPref == "" {
+		rawPref = "run:raw:"
+	}
+	finalPref := os.Getenv("RUN_FINAL_RESULT_PREFIX")
+	if finalPref == "" {
+		finalPref = "run:final:"
+	}
+	lockPref := os.Getenv("RUN_FINALIZE_LOCK_PREFIX")
+	if lockPref == "" {
+		lockPref = "run:finalize-lock:"
+	}
+
+	ttlSec := 3600
+	if s := strings.TrimSpace(os.Getenv("RUN_JOB_TTL_SEC")); s != "" {
+		if n, err := strconv.Atoi(s); err == nil && n > 0 {
+			ttlSec = n
+		}
+	}
+
 	return Config{
 		HTTPAddr:      addr,
 		DatabasePath:  db,
@@ -66,5 +111,14 @@ func Load() Config {
 		DeepSeekKey:   os.Getenv("DEEPSEEK_API_KEY"),
 		DeepSeekURL:   dsURL,
 		DeepSeekModel: dsModel,
+
+		RedisURL:              redisURL,
+		RunQueueKey:           queue,
+		RunJobKeyPrefix:       jobPref,
+		RunReqKeyPrefix:       reqPref,
+		RunRawKeyPrefix:       rawPref,
+		RunFinalKeyPrefix:     finalPref,
+		RunFinalizeLockPrefix: lockPref,
+		RunJobTTL:             time.Duration(ttlSec) * time.Second,
 	}
 }

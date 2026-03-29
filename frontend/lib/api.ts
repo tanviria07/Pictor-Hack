@@ -4,6 +4,7 @@ import type {
   HintResponse,
   ProblemDetail,
   ProblemSummary,
+  RunJobPollResponse,
   RunResponse,
   SessionPayload,
 } from "./types";
@@ -55,11 +56,75 @@ export async function getProblem(id: string): Promise<ProblemDetail> {
   return j(`/api/problems/${encodeURIComponent(id)}`);
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** Async path: Redis queue + worker (Docker / scaled deploy). */
+async function runCodeViaQueue(body: {
+  problem_id: string;
+  language: "python";
+  code: string;
+}): Promise<RunResponse> {
+  const url = `${base()}/api/run/jobs`;
+  const submit = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    signal: withTimeout(undefined, 15_000),
+  });
+  if (submit.status === 503 || submit.status === 404) {
+    throw new Error("__ASYNC_RUN_UNAVAILABLE__");
+  }
+  if (!submit.ok) {
+    const t = await submit.text();
+    throw new Error(formatApiErrorMessage(t || submit.statusText));
+  }
+  const created = (await submit.json()) as { job_id: string; status: string };
+  const jobId = created.job_id;
+  if (!jobId) {
+    throw new Error("Invalid async run response: missing job_id");
+  }
+
+  const maxPolls = 360;
+  for (let i = 0; i < maxPolls; i++) {
+    await sleep(500);
+    const pollUrl = `${base()}/api/run/jobs/${encodeURIComponent(jobId)}`;
+    const pr = await fetch(pollUrl, {
+      signal: withTimeout(undefined, 15_000),
+    });
+    if (!pr.ok) {
+      const t = await pr.text();
+      throw new Error(formatApiErrorMessage(t || pr.statusText));
+    }
+    const data = (await pr.json()) as RunJobPollResponse;
+    if (data.status === "failed") {
+      throw new Error(data.error || "Run failed");
+    }
+    if (data.status === "completed" && data.result) {
+      return data.result;
+    }
+  }
+  throw new Error("Run timed out waiting for the worker");
+}
+
 export async function runCode(body: {
   problem_id: string;
   language: "python";
   code: string;
 }): Promise<RunResponse> {
+  const useAsync = process.env.NEXT_PUBLIC_ASYNC_RUN === "1";
+  if (useAsync) {
+    try {
+      return await runCodeViaQueue(body);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      if (msg === "__ASYNC_RUN_UNAVAILABLE__") {
+        return j("/api/run", { method: "POST", body: JSON.stringify(body) });
+      }
+      throw e;
+    }
+  }
   return j("/api/run", { method: "POST", body: JSON.stringify(body) });
 }
 

@@ -20,6 +20,7 @@ import (
 // Handler wires HTTP handlers to services.
 type Handler struct {
 	Runs     *service.RunService
+	RunJobs  *service.RunJobService
 	Hints    *service.HintService
 	Sessions store.SessionRepository
 }
@@ -73,6 +74,58 @@ func (h *Handler) Run(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("run:", err)
 		httpx.MapError(w, err)
+		return
+	}
+	httpx.JSON(w, http.StatusOK, out)
+}
+
+// SubmitRunJob enqueues async evaluation (Redis + worker). Returns 503 if async runs are disabled.
+func (h *Handler) SubmitRunJob(w http.ResponseWriter, r *http.Request) {
+	if h.RunJobs == nil {
+		httpx.Error(w, http.StatusServiceUnavailable, httpx.ErrInternal, "async run queue is not configured")
+		return
+	}
+	var req dto.RunRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	out, err := h.RunJobs.Submit(r.Context(), req)
+	if errors.Is(err, service.ErrUnsupportedLanguage) {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrUnsupportedLanguage, err.Error())
+		return
+	}
+	if errors.Is(err, problems.ErrNotFound) {
+		httpx.Error(w, http.StatusNotFound, httpx.ErrNotFound, "unknown problem_id")
+		return
+	}
+	if err != nil {
+		log.Println("submit run job:", err)
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "failed to enqueue run")
+		return
+	}
+	httpx.JSON(w, http.StatusAccepted, out)
+}
+
+// GetRunJob polls async job status and returns the finalized result when ready.
+func (h *Handler) GetRunJob(w http.ResponseWriter, r *http.Request) {
+	if h.RunJobs == nil {
+		httpx.Error(w, http.StatusServiceUnavailable, httpx.ErrInternal, "async run queue is not configured")
+		return
+	}
+	jobID := chi.URLParam(r, "job_id")
+	if jobID == "" {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "job_id required")
+		return
+	}
+	out, err := h.RunJobs.GetJob(r.Context(), jobID)
+	if errors.Is(err, service.ErrJobNotFound) {
+		httpx.Error(w, http.StatusNotFound, httpx.ErrNotFound, "unknown job_id")
+		return
+	}
+	if err != nil {
+		log.Println("get run job:", err)
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "failed to load job")
 		return
 	}
 	httpx.JSON(w, http.StatusOK, out)

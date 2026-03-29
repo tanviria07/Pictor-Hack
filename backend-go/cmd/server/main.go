@@ -1,9 +1,13 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
+
+	"github.com/redis/go-redis/v9"
 
 	"pictorhack/backend/internal/config"
 	"pictorhack/backend/internal/deepseek"
@@ -20,7 +24,11 @@ func main() {
 	if err := problems.Init(); err != nil {
 		log.Fatal(err)
 	}
-	if err := os.MkdirAll("./data", 0o755); err != nil {
+	dbDir := filepath.Dir(cfg.DatabasePath)
+	if dbDir == "" || dbDir == "." {
+		dbDir = "."
+	}
+	if err := os.MkdirAll(dbDir, 0o755); err != nil {
 		log.Fatal(err)
 	}
 
@@ -32,9 +40,27 @@ func main() {
 
 	rc := runner.New(cfg.RunnerURL)
 	ds := deepseek.New(cfg)
+	runs := service.NewRunService(rc, ds)
+
+	var runJobs *service.RunJobService
+	if cfg.RedisURL != "" {
+		opt, err := redis.ParseURL(cfg.RedisURL)
+		if err != nil {
+			log.Fatal("REDIS_URL parse:", err)
+		}
+		rdb := redis.NewClient(opt)
+		ctx := context.Background()
+		if err := rdb.Ping(ctx).Err(); err != nil {
+			log.Fatal("redis ping:", err)
+		}
+		defer rdb.Close()
+		runJobs = service.NewRunJobService(cfg, rdb, runs)
+		log.Println("async run queue enabled (Redis)")
+	}
 
 	h := &handler.Handler{
-		Runs:     service.NewRunService(rc, ds),
+		Runs:     runs,
+		RunJobs:  runJobs,
 		Hints:    service.NewHintService(ds, st),
 		Sessions: st,
 	}

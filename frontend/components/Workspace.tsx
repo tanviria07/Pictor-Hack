@@ -258,8 +258,8 @@ export function Workspace() {
   }, [detail]);
 
   return (
-    <div className="flex h-screen flex-col bg-surface-base text-zinc-200">
-      <header className="flex shrink-0 items-center justify-between gap-4 border-b border-border px-4 py-2.5">
+    <div className="flex h-screen min-h-0 flex-col overflow-hidden bg-surface-base text-zinc-200">
+      <header className="flex shrink-0 items-center justify-between gap-4 border-b border-border px-4 py-3 sm:px-6">
         <div className="min-w-0">
           <div className="flex items-baseline gap-2">
             <span className="truncate text-sm font-semibold tracking-tight text-zinc-100">
@@ -283,14 +283,14 @@ export function Workspace() {
 
       {err && (
         <div
-          className="shrink-0 border-b border-rose-900/40 bg-rose-950/25 px-4 py-2 text-xs text-rose-200/90"
+          className="shrink-0 border-b border-rose-900/40 bg-rose-950/25 px-4 py-2 text-xs text-rose-200/90 sm:px-6"
           role="alert"
         >
           {err}
         </div>
       )}
 
-      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 lg:flex-row lg:p-5">
         <ProblemExplorer
           categories={categories}
           problems={problems}
@@ -300,9 +300,9 @@ export function Workspace() {
           loading={catalogLoading}
         />
 
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col xl:flex-row">
-          <aside className="flex w-full shrink-0 flex-col border-b border-border xl:w-[min(100%,26rem)] xl:max-w-[28rem] xl:border-b-0 xl:border-r">
-            <div className="border-b border-border bg-surface-raised/50 px-4 py-2">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-hidden xl:flex-row">
+          <aside className="flex w-full shrink-0 flex-col overflow-hidden rounded-xl border border-border bg-surface-raised/50 shadow-sm xl:w-[min(100%,26rem)] xl:max-w-[28rem]">
+            <div className="border-b border-border bg-surface-panel/40 px-5 py-4">
               <h1 className="text-base font-semibold leading-snug text-zinc-100 transition-opacity">
                 {loading === "load" && !detail ? "Loading..." : title}
               </h1>
@@ -315,38 +315,42 @@ export function Workspace() {
                 </div>
               )}
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+            <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 xl:max-h-none max-xl:max-h-[40vh]">
               {detail && (
-                <>
+                <div className="space-y-5">
                   <div className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-300">
                     {detail.description}
                   </div>
-                  <SectionTitle>Examples</SectionTitle>
-                  <ul className="space-y-2">
-                    {detail.examples.map((example, index) => (
-                      <li
-                        key={index}
-                        className="rounded border border-border bg-surface-panel/80 p-3 font-mono text-xs leading-relaxed text-zinc-300"
-                      >
-                        <div className="text-zinc-500">Input</div>
-                        <div className="text-zinc-200">{example.input}</div>
-                        <div className="mt-2 text-zinc-500">Output</div>
-                        <div className="text-zinc-200">{example.output}</div>
-                        {example.explanation && (
-                          <div className="mt-2 border-t border-border pt-2 text-zinc-500">
-                            {example.explanation}
-                          </div>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                  <SectionTitle>Constraints</SectionTitle>
-                  <ul className="list-disc space-y-1 pl-4 text-xs text-zinc-400">
-                    {detail.constraints.map((constraint, index) => (
-                      <li key={index}>{constraint}</li>
-                    ))}
-                  </ul>
-                </>
+                  <div>
+                    <SectionTitle>Examples</SectionTitle>
+                    <ul className="space-y-3">
+                      {detail.examples.map((example, index) => (
+                        <li
+                          key={index}
+                          className="rounded-lg border border-border bg-surface-panel/80 p-4 font-mono text-xs leading-relaxed text-zinc-300 shadow-sm"
+                        >
+                          <div className="text-zinc-500">Input</div>
+                          <div className="text-zinc-200">{example.input}</div>
+                          <div className="mt-3 text-zinc-500">Output</div>
+                          <div className="text-zinc-200">{example.output}</div>
+                          {example.explanation && (
+                            <div className="mt-3 border-t border-border pt-3 text-zinc-500">
+                              {example.explanation}
+                            </div>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <SectionTitle>Constraints</SectionTitle>
+                    <ul className="list-disc space-y-1.5 pl-4 text-xs text-zinc-400">
+                      {detail.constraints.map((constraint, index) => (
+                        <li key={index}>{constraint}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
               )}
               {loading === "load" && !detail && (
                 <p className="text-sm text-zinc-500">Loading problem...</p>
@@ -354,13 +358,13 @@ export function Workspace() {
             </div>
           </aside>
 
-          <main className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border bg-surface-raised/30 px-3 py-2">
+          <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface-raised/40 shadow-sm">
+            <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border bg-surface-panel/30 px-4 py-3">
               <button
                 type="button"
                 onClick={() => void onRun()}
                 disabled={loading !== "idle" || !problemId}
-                className="rounded border border-accent bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-lg border border-accent bg-accent px-3.5 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {loading === "run" ? "Running..." : "Run Code"}
               </button>
@@ -368,7 +372,7 @@ export function Workspace() {
                 type="button"
                 onClick={() => void onHint()}
                 disabled={loading !== "idle" || !run}
-                className="rounded border border-border bg-surface-panel px-3 py-1.5 text-xs font-medium text-zinc-200 hover:bg-zinc-800/80 disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-lg border border-border bg-zinc-100/5 px-3.5 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-zinc-200/10 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {loading === "hint" ? "Requesting..." : "Get Hint"}
               </button>
@@ -376,15 +380,15 @@ export function Workspace() {
                 type="button"
                 onClick={onReset}
                 disabled={!detail}
-                className="rounded px-3 py-1.5 text-xs font-medium text-zinc-500 hover:bg-zinc-800/50 hover:text-zinc-300 disabled:opacity-40"
+                className="rounded-lg px-3.5 py-2 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-200/10 hover:text-zinc-300 disabled:opacity-40"
               >
                 Reset
               </button>
             </div>
 
-            <div className="grid min-h-0 flex-1 grid-rows-[minmax(260px,1fr)_minmax(200px,38%)] border-t border-border/50">
-              <div className="flex min-h-0 flex-col border-b border-border bg-surface-code">
-                <div className="flex shrink-0 items-center justify-between border-b border-border/80 px-3 py-1.5">
+            <div className="grid min-h-0 flex-1 overflow-hidden grid-rows-[minmax(280px,1fr)_minmax(220px,38%)]">
+              <div className="flex min-h-0 flex-col overflow-hidden border-b border-border bg-surface-code">
+                <div className="flex shrink-0 items-center justify-between border-b border-border/80 px-4 py-2">
                   <span className="text-2xs font-medium uppercase tracking-wider text-zinc-500">
                     Code
                   </span>
@@ -400,12 +404,12 @@ export function Workspace() {
               </div>
 
               <div className="flex min-h-0 flex-col overflow-hidden bg-surface-raised/25">
-                <div className="shrink-0 border-b border-border px-3 py-1.5">
+                <div className="shrink-0 border-b border-border px-4 py-2">
                   <span className="text-2xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
                     Evaluation
                   </span>
                 </div>
-                <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
+                <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
                   {!run && (
                     <p className="text-xs leading-relaxed text-zinc-500">
                       Run your code to execute visible tests, hidden checks, and
@@ -420,7 +424,7 @@ export function Workspace() {
                         <span className="text-2xs tabular-nums text-zinc-500">
                           Visible {run.evaluation.passed_visible_tests}/
                           {run.evaluation.total_visible_tests}
-                          <span className="mx-1.5 text-zinc-700">·</span>
+                          <span className="mx-1.5 text-zinc-700">|</span>
                           Hidden {run.evaluation.passed_hidden_tests}/
                           {run.evaluation.total_hidden_tests}
                           <span className="ml-1 text-zinc-600">

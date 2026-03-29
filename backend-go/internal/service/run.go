@@ -37,19 +37,25 @@ func (s *RunService) Execute(ctx context.Context, req dto.RunRequest) (*dto.RunR
 	if err != nil {
 		return nil, err
 	}
-	if s.deepseek.Enabled() {
-		raw, _ := json.MarshalIndent(out.Evaluation, "", "  ")
-		title := req.ProblemID
-		if rp, e := problems.GetPublic(req.ProblemID); e == nil {
-			title = rp.Title
-		}
-		snip := truncateCode(req.Code, 240)
-		user := coach.UserPromptRun(title, req.ProblemID, string(raw), snip)
-		if fb, err := s.deepseek.CoachFeedback(coach.SystemInterviewer, user); err == nil && fb != "" {
-			out.InterviewerFeedback = fb
-		}
-	}
+	s.ApplyCoachFeedback(ctx, req, out)
 	return out, nil
+}
+
+// ApplyCoachFeedback optionally rephrases interviewer_feedback via DeepSeek (wording only).
+func (s *RunService) ApplyCoachFeedback(ctx context.Context, req dto.RunRequest, out *dto.RunResponse) {
+	if out == nil || !s.deepseek.Enabled() {
+		return
+	}
+	raw, _ := json.MarshalIndent(out.Evaluation, "", "  ")
+	title := req.ProblemID
+	if rp, e := problems.GetPublic(req.ProblemID); e == nil {
+		title = rp.Title
+	}
+	snip := truncateCode(req.Code, 240)
+	user := coach.UserPromptRun(title, req.ProblemID, string(raw), snip)
+	if fb, err := s.deepseek.CoachFeedback(coach.SystemInterviewer, user); err == nil && fb != "" {
+		out.InterviewerFeedback = fb
+	}
 }
 
 func truncateCode(s string, n int) string {

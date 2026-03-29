@@ -1,0 +1,87 @@
+# Full stack: Redis queue + Python worker for async code runs, Go API, Next.js UI.
+# Copy .env.example -> .env and adjust. Then: docker compose up --build
+
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "${REDIS_HOST_PORT:-6379}:6379"
+
+  runner:
+    build:
+      context: ./runner-python
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${RUNNER_HOST_PORT:-8001}:8001"
+    env_file:
+      - .env
+    environment:
+      PROBLEMS_DIR: /problems
+      PYTHONPATH: /app
+    volumes:
+      - ./shared/problems:/problems:ro
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
+
+  runner-worker:
+    build:
+      context: ./runner-python
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      PROBLEMS_DIR: /problems
+      PYTHONPATH: /app
+    volumes:
+      - ./shared/problems:/problems:ro
+    command: ["python", "-m", "app.worker"]
+    depends_on:
+      - redis
+
+  backend:
+    build:
+      context: ./backend-go
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_HOST_PORT:-8080}:8080"
+    env_file:
+      - .env
+    environment:
+      PORT: "8080"
+      REDIS_URL: redis://redis:6379/0
+      RUNNER_URL: http://runner:8001
+      DATABASE_PATH: /data/pictorhack.db
+      PROBLEMS_DATA_DIR: /problems
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
+    volumes:
+      - sqlite_data:/data
+      - ./shared/problems:/problems:ro
+    depends_on:
+      - redis
+      - runner
+      - runner-worker
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        BACKEND_URL: http://backend:8080
+        NEXT_PUBLIC_ASYNC_RUN: "1"
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_HOST_PORT:-3000}:3000"
+    env_file:
+      - .env
+    environment:
+      BACKEND_URL: http://backend:8080
+      NODE_ENV: production
+    depends_on:
+      - backend
+
+volumes:
+  sqlite_data:

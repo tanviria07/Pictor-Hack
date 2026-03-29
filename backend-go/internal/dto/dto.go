@@ -156,3 +156,17 @@ type ProblemDetail struct {
 	VisibleTestCount   int         `json:"visible_test_count"`
 	HiddenTestCount    int         `json:"hidden_test_count"`
 }
+
+// RunJobSubmitResponse is returned from POST /api/run/jobs (async queue).
+type RunJobSubmitResponse struct {
+	JobID  string `json:"job_id"`
+	Status string `json:"status"`
+}
+
+// RunJobPollResponse is returned from GET /api/run/jobs/:job_id while polling.
+type RunJobPollResponse struct {
+	JobID  string        `json:"job_id"`
+	Status string        `json:"status"`
+	Error  *string       `json:"error,omitempty"`
+	Result *RunResponse  `json:"result,omitempty"`
+}

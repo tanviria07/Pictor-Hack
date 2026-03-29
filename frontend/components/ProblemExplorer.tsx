@@ -98,9 +98,9 @@ export function ProblemExplorer({
   }, [displayCategories, filteredProblems]);
 
   return (
-    <div className="flex h-full min-h-0 w-full shrink-0 flex-col border-b border-border/80 bg-[#0a0a0c] md:w-[min(100%,19rem)] md:border-b-0 md:border-r md:border-border/80 lg:w-[20.5rem]">
+    <div className="flex h-full min-h-0 w-full shrink-0 flex-col overflow-hidden rounded-xl border border-border/80 bg-[#0a0a0c] shadow-sm md:w-[min(100%,19rem)] lg:w-[20.5rem]">
       {/* Filters: compact strip */}
-      <div className="shrink-0 space-y-2 border-b border-border/60 px-3 py-3 sm:px-3.5">
+      <div className="shrink-0 space-y-2 border-b border-border/60 bg-surface-panel/20 px-4 py-4">
         <label className="sr-only" htmlFor="problem-search">
           Search problems
         </label>
@@ -110,7 +110,7 @@ export function ProblemExplorer({
           placeholder="Search..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-md border border-border/60 bg-zinc-950/80 px-3 py-2 text-[13px] leading-snug text-zinc-200 placeholder:text-zinc-600 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] transition-colors focus:border-zinc-500/50 focus:outline-none focus:ring-1 focus:ring-zinc-500/30"
+          className="w-full rounded-lg border border-border/60 bg-zinc-950/80 px-3 py-2 text-[13px] leading-snug text-zinc-200 placeholder:text-zinc-600 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] transition-colors focus:border-zinc-500/50 focus:outline-none focus:ring-1 focus:ring-zinc-500/30"
         />
         <div className="flex gap-2">
           <label className="sr-only" htmlFor="problem-difficulty">
@@ -120,7 +120,7 @@ export function ProblemExplorer({
             id="problem-difficulty"
             value={difficulty}
             onChange={(e) => setDifficulty(e.target.value)}
-            className="min-w-0 flex-1 cursor-pointer rounded-md border border-border/60 bg-zinc-950/80 py-2 pl-2.5 pr-8 text-[13px] leading-snug text-zinc-300 transition-colors focus:border-zinc-500/50 focus:outline-none focus:ring-1 focus:ring-zinc-500/30"
+            className="min-w-0 flex-1 cursor-pointer rounded-lg border border-border/60 bg-zinc-950/80 py-2 pl-2.5 pr-8 text-[13px] leading-snug text-zinc-300 transition-colors focus:border-zinc-500/50 focus:outline-none focus:ring-1 focus:ring-zinc-500/30"
           >
             <option value="">All levels</option>
             <option value="easy">Easy</option>
@@ -160,7 +160,7 @@ export function ProblemExplorer({
                         [category.id]: !open,
                       }))
                     }
-                    className="group flex w-full items-center gap-2 px-3 py-2.5 text-left transition-colors hover:bg-white/[0.03] sm:px-3.5"
+                    className="group flex w-full items-center gap-2 px-4 py-3 text-left transition-colors hover:bg-white/[0.03]"
                   >
                     <Chevron open={open} />
                     <span className="min-w-0 flex-1 truncate text-[13px] font-medium leading-snug tracking-tight text-zinc-100">
@@ -180,7 +180,7 @@ export function ProblemExplorer({
                     }`}
                   >
                     <div className="min-h-0 overflow-hidden">
-                      <ul className="space-y-px px-2 pb-2.5 pt-0.5 sm:px-2.5">
+                      <ul className="space-y-px px-3 pb-3 pt-1">
                         {items.length === 0 && (
                           <li className="px-2 py-3 text-center text-[12px] text-zinc-500">
                             No matches
@@ -195,9 +195,9 @@ export function ProblemExplorer({
                               <button
                                 type="button"
                                 onClick={() => onSelectProblem(problem.id)}
-                                className={`flex w-full items-center gap-2.5 rounded-md px-2 py-2.5 text-left transition-colors duration-150 sm:px-2.5 ${
+                                className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition-colors duration-150 ${
                                   isSelected
-                                    ? "bg-zinc-800/70 ring-1 ring-inset ring-zinc-600/50"
+                                    ? "bg-zinc-800/70 shadow-sm ring-1 ring-inset ring-zinc-600/50"
                                     : "hover:bg-white/[0.04]"
                                 } `}
                               >

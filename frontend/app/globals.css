@@ -11,6 +11,12 @@
   --text-muted: #71717a;
 }
 
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   @apply bg-[var(--surface-base)] text-zinc-200 antialiased;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";

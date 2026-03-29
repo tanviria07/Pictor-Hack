@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -49,6 +51,13 @@ type rawProblem struct {
 }
 
 func Init() error {
+	if dir := strings.TrimSpace(os.Getenv("PROBLEMS_DATA_DIR")); dir != "" {
+		return initFromDisk(dir)
+	}
+	return initFromEmbed()
+}
+
+func initFromEmbed() error {
 	m := make(map[string]rawProblem)
 	ids := make([]string, 0)
 	byCat := make(map[string][]string)
@@ -92,6 +101,65 @@ func Init() error {
 		return err
 	}
 
+	return commitProblemIndex(m, ids, byCat)
+}
+
+func initFromDisk(root string) error {
+	st, err := os.Stat(root)
+	if err != nil {
+		return fmt.Errorf("PROBLEMS_DATA_DIR: %w", err)
+	}
+	if !st.IsDir() {
+		return fmt.Errorf("PROBLEMS_DATA_DIR is not a directory: %s", root)
+	}
+
+	m := make(map[string]rawProblem)
+	ids := make([]string, 0)
+	byCat := make(map[string][]string)
+
+	err = filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+		if !strings.HasSuffix(strings.ToLower(path), ".json") {
+			return nil
+		}
+		b, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		var p rawProblem
+		if err := json.Unmarshal(b, &p); err != nil {
+			return fmt.Errorf("parse %s: %w", path, err)
+		}
+		if p.ID == "" {
+			return fmt.Errorf("missing id in %s", path)
+		}
+		if p.Category == "" {
+			return fmt.Errorf("missing category in %s", path)
+		}
+		if !isKnownCategory(p.Category) {
+			return fmt.Errorf("unknown category %q in %s", p.Category, path)
+		}
+		if _, dup := m[p.ID]; dup {
+			return fmt.Errorf("duplicate problem id %q (%s)", p.ID, path)
+		}
+		m[p.ID] = p
+		ids = append(ids, p.ID)
+		byCat[p.Category] = append(byCat[p.Category], p.ID)
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	return commitProblemIndex(m, ids, byCat)
+}
+
+func commitProblemIndex(m map[string]rawProblem, ids []string, byCat map[string][]string) error {
 	sort.Strings(ids)
 	for k := range byCat {
 		sort.Strings(byCat[k])
