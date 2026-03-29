@@ -26,7 +26,10 @@ type Config struct {
 	RunRawKeyPrefix    string
 	RunFinalKeyPrefix  string
 	RunFinalizeLockPrefix string
-	RunJobTTL          time.Duration
+	RunJobTTL             time.Duration
+
+	MaxCodeBytes         int
+	RateLimitPerMinute   int
 }
 
 // Load reads environment variables with sensible defaults.
@@ -103,6 +106,20 @@ func Load() Config {
 		}
 	}
 
+	maxCode := 256 * 1024
+	if s := strings.TrimSpace(os.Getenv("MAX_CODE_BYTES")); s != "" {
+		if n, err := strconv.Atoi(s); err == nil && n > 0 {
+			maxCode = n
+		}
+	}
+
+	rpm := 120
+	if s := strings.TrimSpace(os.Getenv("RATE_LIMIT_PER_MINUTE")); s != "" {
+		if n, err := strconv.Atoi(s); err == nil && n > 0 {
+			rpm = n
+		}
+	}
+
 	return Config{
 		HTTPAddr:      addr,
 		DatabasePath:  db,
@@ -120,5 +137,8 @@ func Load() Config {
 		RunFinalKeyPrefix:     finalPref,
 		RunFinalizeLockPrefix: lockPref,
 		RunJobTTL:             time.Duration(ttlSec) * time.Second,
+
+		MaxCodeBytes:       maxCode,
+		RateLimitPerMinute: rpm,
 	}
 }

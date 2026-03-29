@@ -7,6 +7,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 
@@ -15,14 +16,16 @@ import (
 	"pictorhack/backend/internal/problems"
 	"pictorhack/backend/internal/service"
 	"pictorhack/backend/internal/store"
+	"pictorhack/backend/internal/validation"
 )
 
 // Handler wires HTTP handlers to services.
 type Handler struct {
-	Runs     *service.RunService
-	RunJobs  *service.RunJobService
-	Hints    *service.HintService
-	Sessions store.SessionRepository
+	Runs         *service.RunService
+	RunJobs      *service.RunJobService
+	Hints        *service.HintService
+	Sessions     store.SessionRepository
+	MaxCodeBytes int // max submitted code size; if zero, a default is used in validateRunInput
 }
 
 // Health returns process liveness.
@@ -59,11 +62,43 @@ func (h *Handler) GetProblem(w http.ResponseWriter, r *http.Request) {
 	httpx.JSON(w, http.StatusOK, p)
 }
 
+func (h *Handler) maxCodeBytes() int {
+	if h.MaxCodeBytes > 0 {
+		return h.MaxCodeBytes
+	}
+	return 256 * 1024
+}
+
+func (h *Handler) validateRunInput(w http.ResponseWriter, req *dto.RunRequest) bool {
+	validation.NormalizeRunRequest(req)
+	if err := validation.ValidateRunRequest(req, h.maxCodeBytes()); err != nil {
+		msg := err.Error()
+		if !strings.HasSuffix(msg, ".") {
+			msg += "."
+		}
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, msg)
+		return false
+	}
+	return true
+}
+
 // Run forwards code to the Python runner and returns its evaluation (optionally rephrased feedback).
 func (h *Handler) Run(w http.ResponseWriter, r *http.Request) {
 	var req dto.RunRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	if !h.validateRunInput(w, &req) {
+		return
+	}
+	if _, err := problems.GetPublic(req.ProblemID); err != nil {
+		if errors.Is(err, problems.ErrNotFound) {
+			httpx.Error(w, http.StatusNotFound, httpx.ErrNotFound, "unknown problem_id")
+			return
+		}
+		log.Println("run problem lookup:", err)
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "failed to load problem")
 		return
 	}
 	out, err := h.Runs.Execute(r.Context(), req)
@@ -88,6 +123,9 @@ func (h *Handler) SubmitRunJob(w http.ResponseWriter, r *http.Request) {
 	var req dto.RunRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	if !h.validateRunInput(w, &req) {
 		return
 	}
 	out, err := h.RunJobs.Submit(r.Context(), req)

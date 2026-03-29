@@ -11,11 +11,14 @@ import (
 )
 
 // NewRouter mounts API routes and middleware.
-func NewRouter(h *handler.Handler, corsOrigins []string) http.Handler {
+// rateLimitPerMinute caps requests per client IP (OPTIONS excluded). Use a high value in tests.
+func NewRouter(h *handler.Handler, corsOrigins []string, rateLimitPerMinute int) http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(appmw.SecurityHeaders)
 	r.Use(appmw.CORS(corsOrigins))
+	r.Use(appmw.IPRateLimit(rateLimitPerMinute))
 
 	r.Get("/health", h.Health)
 

@@ -1,7 +1,7 @@
 """
-Entry point executed in a subprocess for timeout isolation.
+Entry point executed in a subprocess or Docker container for timeout isolation.
 
-MVP: wall-clock bound + crash containment. Not a substitute for kernel-level sandboxing.
+Reads JSON from stdin, or from the file path in argv[1] (used for read-only bind mounts).
 """
 
 from __future__ import annotations
@@ -11,7 +11,11 @@ import sys
 
 
 def main() -> None:
-    payload = json.loads(sys.stdin.read())
+    if len(sys.argv) > 1:
+        with open(sys.argv[1], encoding="utf-8") as f:
+            payload = json.load(f)
+    else:
+        payload = json.loads(sys.stdin.read())
     code = payload["code"]
     problem_id = payload["problem_id"]
 

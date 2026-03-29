@@ -33,6 +33,12 @@ def run_user_code(req: RunRequest) -> RunResponse:
     if req.language != "python":
         raise ValueError("Only python is supported in MVP.")
 
+    use_docker = os.environ.get("RUNNER_USE_DOCKER", "0") == "1"
+    if use_docker:
+        from app.docker_runner import run_in_docker
+
+        return run_in_docker(req)
+
     use_sub = os.environ.get("RUNNER_USE_SUBPROCESS", "1") == "1"
     if use_sub:
         return _run_in_subprocess(req)

@@ -1,13 +1,7 @@
 """
-MVP safety checks before executing user code.
+Static checks before executing user code: allowlisted imports only, restricted builtins.
 
-Production-grade sandboxing would require:
-- OS-level isolation (containers, gVisor, Firecracker, or dedicated judge VMs)
-- seccomp / AppArmor profiles blocking syscalls
-- Resource limits (CPU, memory, file descriptors, process count)
-- Network egress disabled
-- Read-only filesystem except a controlled temp workspace
-- Per-submission UID separation
+Docker + OS isolation are the primary boundary; this layer blocks obvious abuse in-process.
 """
 
 from __future__ import annotations
@@ -15,23 +9,31 @@ from __future__ import annotations
 import ast
 from typing import FrozenSet
 
-# MVP: block obvious foot-guns; not a complete security boundary.
-DISALLOWED_IMPORTS: FrozenSet[str] = frozenset(
+# Top-level module names users may import (stdlib-style, no I/O or process primitives).
+ALLOWED_IMPORT_ROOTS: FrozenSet[str] = frozenset(
     {
-        "os",
-        "subprocess",
-        "sys",
-        "shutil",
-        "socket",
-        "multiprocessing",
-        "ctypes",
-        "importlib",
-        "pty",
-        "signal",
-        "pickle",
-        "marshal",
-        "threading",
-        "asyncio",
+        "typing",
+        "collections",
+        "itertools",
+        "functools",
+        "operator",
+        "heapq",
+        "bisect",
+        "math",
+        "string",
+        "re",
+        "copy",
+        "enum",
+        "random",
+        "decimal",
+        "fractions",
+        "json",
+        "queue",
+        "statistics",
+        "dataclasses",
+        "abc",
+        "contextlib",
+        "types",
     }
 )
 
@@ -64,13 +66,20 @@ def assert_code_imports_safe(source: str) -> None:
         if isinstance(node, ast.Import):
             for alias in node.names:
                 root = alias.name.split(".")[0]
-                if root in DISALLOWED_IMPORTS:
-                    raise SafetyError(f"Import '{alias.name}' is not allowed in the MVP sandbox.")
+                if root not in ALLOWED_IMPORT_ROOTS:
+                    raise SafetyError(
+                        f"Import '{alias.name}' is not allowed. Only a fixed set of standard modules may be used."
+                    )
         elif isinstance(node, ast.ImportFrom):
-            if node.module:
-                root = node.module.split(".")[0]
-                if root in DISALLOWED_IMPORTS:
-                    raise SafetyError(f"Import from '{node.module}' is not allowed.")
+            if node.level != 0:
+                raise SafetyError("Relative imports are not allowed.")
+            if not node.module:
+                raise SafetyError("Invalid import statement.")
+            root = node.module.split(".")[0]
+            if root not in ALLOWED_IMPORT_ROOTS:
+                raise SafetyError(
+                    f"Import from '{node.module}' is not allowed. Only a fixed set of standard modules may be used."
+                )
 
 
 def build_restricted_builtins() -> dict:
@@ -79,7 +88,6 @@ def build_restricted_builtins() -> dict:
     safe = {name: getattr(bi, name) for name in dir(bi) if not name.startswith("_")}
     for name in DISALLOWED_BUILTINS:
         safe.pop(name, None)
-    # Keep essentials
     safe["__build_class__"] = getattr(bi, "__build_class__")
     safe["__name__"] = "__user__"
     return safe

@@ -18,6 +18,7 @@ const (
 	ErrQueueUnavailable     = "queue_unavailable"
 	ErrDatabaseError        = "database_error"
 	ErrHintUnavailable = "hint_unavailable"
+	ErrRateLimited     = "rate_limited"
 )
 
 // Error writes a structured JSON error: { "code", "message", "details"? }.

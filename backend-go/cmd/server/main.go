@@ -59,13 +59,14 @@ func main() {
 	}
 
 	h := &handler.Handler{
-		Runs:     runs,
-		RunJobs:  runJobs,
-		Hints:    service.NewHintService(ds, st),
-		Sessions: st,
+		Runs:         runs,
+		RunJobs:      runJobs,
+		Hints:        service.NewHintService(ds, st),
+		Sessions:     st,
+		MaxCodeBytes: cfg.MaxCodeBytes,
 	}
 
-	srv := httpapi.NewRouter(h, cfg.CORSOrigins)
+	srv := httpapi.NewRouter(h, cfg.CORSOrigins, cfg.RateLimitPerMinute)
 	log.Println("Pictor Hack API listening on", cfg.HTTPAddr)
 	log.Fatal(http.ListenAndServe(cfg.HTTPAddr, srv))
 }

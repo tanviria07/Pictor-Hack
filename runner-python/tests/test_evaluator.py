@@ -87,6 +87,17 @@ def two_sum(nums, target):
     assert "SafetyError" in (ev.error_type or "") or "not allowed" in (ev.error_message or "").lower()
 
 
+def test_safety_relative_import():
+    code = """
+from . import foo
+def two_sum(nums, target):
+    return [0, 1]
+"""
+    ev = evaluate_with_problem_id(code.strip(), "two-sum")
+    assert ev.status == "runtime_error"
+    assert "SafetyError" in (ev.error_type or "") or "relative" in (ev.error_message or "").lower()
+
+
 def test_always_none_incomplete():
     code = """
 def two_sum(nums, target):

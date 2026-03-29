@@ -46,10 +46,11 @@ func newTestHandler(t *testing.T, runnerHandler http.HandlerFunc) (*handler.Hand
 	runs := service.NewRunService(rc, ds)
 
 	h := &handler.Handler{
-		Runs:     runs,
-		RunJobs:  nil,
-		Hints:    service.NewHintService(ds, st),
-		Sessions: st,
+		Runs:         runs,
+		RunJobs:      nil,
+		Hints:        service.NewHintService(ds, st),
+		Sessions:     st,
+		MaxCodeBytes: 1 << 20,
 	}
 	return h, func() { _ = st.Close() }
 }
@@ -60,7 +61,7 @@ func TestHealth(t *testing.T) {
 	})
 	defer cleanup()
 
-	srv := httpapi.NewRouter(h, []string{"*"})
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
 	rec := httptest.NewRecorder()
 	srv.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/health", nil))
 	if rec.Code != http.StatusOK {
@@ -71,7 +72,7 @@ func TestHealth(t *testing.T) {
 func TestGetProblem_notFound(t *testing.T) {
 	h, cleanup := newTestHandler(t, nil)
 	defer cleanup()
-	srv := httpapi.NewRouter(h, []string{"*"})
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
 	rec := httptest.NewRecorder()
 	srv.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/api/problems/does-not-exist", nil))
 	if rec.Code != http.StatusNotFound {
@@ -87,7 +88,7 @@ func TestGetProblem_notFound(t *testing.T) {
 func TestGetProblem_ok(t *testing.T) {
 	h, cleanup := newTestHandler(t, nil)
 	defer cleanup()
-	srv := httpapi.NewRouter(h, []string{"*"})
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
 	rec := httptest.NewRecorder()
 	srv.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/api/problems/two-sum", nil))
 	if rec.Code != http.StatusOK {
@@ -95,10 +96,44 @@ func TestGetProblem_ok(t *testing.T) {
 	}
 }
 
+func TestRun_invalidProblemIDFormat(t *testing.T) {
+	h, cleanup := newTestHandler(t, func(w http.ResponseWriter, r *http.Request) {
+		t.Fatal("runner should not be called")
+	})
+	defer cleanup()
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
+	payload := map[string]string{"problem_id": "Two-Sum", "language": "python", "code": "def twoSum():\n    pass"}
+	b, _ := json.Marshal(payload)
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodPost, "/api/run", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	srv.ServeHTTP(rec, req)
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("status %d %s", rec.Code, rec.Body.String())
+	}
+}
+
+func TestRun_unknownProblem(t *testing.T) {
+	h, cleanup := newTestHandler(t, func(w http.ResponseWriter, r *http.Request) {
+		t.Fatal("runner should not be called")
+	})
+	defer cleanup()
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
+	payload := map[string]string{"problem_id": "zzz-unknown-problem-99", "language": "python", "code": "def twoSum():\n    pass"}
+	b, _ := json.Marshal(payload)
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodPost, "/api/run", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	srv.ServeHTTP(rec, req)
+	if rec.Code != http.StatusNotFound {
+		t.Fatalf("status %d %s", rec.Code, rec.Body.String())
+	}
+}
+
 func TestRun_badJSON(t *testing.T) {
 	h, cleanup := newTestHandler(t, nil)
 	defer cleanup()
-	srv := httpapi.NewRouter(h, []string{"*"})
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/api/run", bytes.NewBufferString("not-json"))
 	srv.ServeHTTP(rec, req)
@@ -137,7 +172,7 @@ func TestRun_runnerSuccess(t *testing.T) {
 		_, _ = io.WriteString(w, runBody)
 	})
 	defer cleanup()
-	srv := httpapi.NewRouter(h, []string{"*"})
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
 	payload := map[string]string{"problem_id": "two-sum", "language": "python", "code": "def twoSum(nums, target):\n    return []"}
 	b, _ := json.Marshal(payload)
 	rec := httptest.NewRecorder()
@@ -154,7 +189,7 @@ func TestRun_runnerUnavailable(t *testing.T) {
 		w.WriteHeader(http.StatusInternalServerError)
 	})
 	defer cleanup()
-	srv := httpapi.NewRouter(h, []string{"*"})
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
 	payload := map[string]string{"problem_id": "two-sum", "language": "python", "code": "x"}
 	b, _ := json.Marshal(payload)
 	rec := httptest.NewRecorder()
@@ -174,7 +209,7 @@ func TestRun_runnerUnavailable(t *testing.T) {
 func TestSaveSession_validation(t *testing.T) {
 	h, cleanup := newTestHandler(t, nil)
 	defer cleanup()
-	srv := httpapi.NewRouter(h, []string{"*"})
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/api/session/save", bytes.NewBufferString(`{"code":"","hint_history":[]}`))
 	req.Header.Set("Content-Type", "application/json")
@@ -187,7 +222,7 @@ func TestSaveSession_validation(t *testing.T) {
 func TestSaveAndGetSession(t *testing.T) {
 	h, cleanup := newTestHandler(t, nil)
 	defer cleanup()
-	srv := httpapi.NewRouter(h, []string{"*"})
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
 
 	save := map[string]any{
 		"problem_id": "two-sum",
@@ -214,7 +249,7 @@ func TestSaveAndGetSession(t *testing.T) {
 func TestGetSession_notFound(t *testing.T) {
 	h, cleanup := newTestHandler(t, nil)
 	defer cleanup()
-	srv := httpapi.NewRouter(h, []string{"*"})
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
 	rec := httptest.NewRecorder()
 	srv.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/api/session/unknown-problem-xyz", nil))
 	if rec.Code != http.StatusNotFound {
@@ -225,7 +260,7 @@ func TestGetSession_notFound(t *testing.T) {
 func TestHint_notFoundProblem(t *testing.T) {
 	h, cleanup := newTestHandler(t, nil)
 	defer cleanup()
-	srv := httpapi.NewRouter(h, []string{"*"})
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
 	body := map[string]any{
 		"problem_id": "nope",
 		"code":       "",
@@ -244,7 +279,7 @@ func TestHint_notFoundProblem(t *testing.T) {
 func TestSubmitRunJob_whenDisabled(t *testing.T) {
 	h, cleanup := newTestHandler(t, nil)
 	defer cleanup()
-	srv := httpapi.NewRouter(h, []string{"*"})
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
 	b, _ := json.Marshal(map[string]string{"problem_id": "two-sum", "language": "python", "code": "x"})
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/api/run/jobs", bytes.NewReader(b))
@@ -259,7 +294,7 @@ func TestSubmitRunJob_whenDisabled(t *testing.T) {
 func TestGetRunJob_routeMissing(t *testing.T) {
 	h, cleanup := newTestHandler(t, nil)
 	defer cleanup()
-	srv := httpapi.NewRouter(h, []string{"*"})
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
 	rec := httptest.NewRecorder()
 	srv.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/api/run/jobs/job-1", nil))
 	if rec.Code != http.StatusNotFound {
