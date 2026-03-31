@@ -1,0 +1,82 @@
+{
+  "id": "precode-db-09-list-alias",
+  "slug": "precode-db-09-list-alias",
+  "title": "List Copy",
+  "difficulty": "medium",
+  "category": "precode-debugging",
+  "description": "Return reversed copy of nums without mutating nums.",
+  "examples": [
+    {
+      "input": "[1,2,3]",
+      "output": "[3,2,1]"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "rev_copy",
+  "starter_code": "def rev_copy(nums):\n    nums.reverse()\n    return nums\n",
+  "parameters": [
+    {
+      "name": "nums",
+      "type": "List[int]"
+    }
+  ],
+  "expected_return_type": "List[int]",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "expected": [
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          9
+        ]
+      ],
+      "expected": [
+        9
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        [
+          1,
+          2
+        ]
+      ],
+      "expected": [
+        2,
+        1
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Slice copy before reverse or use reversed(list).",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "copy",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "debugging",
+    "lists"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

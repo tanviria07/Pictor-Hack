@@ -1,0 +1,66 @@
+{
+  "id": "precode-cf-06-sum-to-n",
+  "slug": "precode-cf-06-sum-to-n",
+  "title": "Sum 1 Through N",
+  "difficulty": "easy",
+  "category": "precode-control-flow",
+  "description": "Return 1+...+n for n>=1.",
+  "examples": [
+    {
+      "input": "5",
+      "output": "15"
+    }
+  ],
+  "constraints": [
+    "n >= 1"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "sum_to_n",
+  "starter_code": "def sum_to_n(n):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        1
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        5
+      ],
+      "expected": 15
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        100
+      ],
+      "expected": 5050
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Loop or formula.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "sum",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "loops",
+    "arithmetic"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

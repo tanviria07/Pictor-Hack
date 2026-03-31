@@ -1,0 +1,89 @@
+{
+  "id": "precode-dz-07-two-sum-brute",
+  "slug": "precode-dz-07-two-sum-brute",
+  "title": "Two Sum Brute Force Indices",
+  "difficulty": "easy",
+  "category": "precode-dicts-sets",
+  "description": "Return [i,j] with i<j and nums[i]+nums[j]==target, or []. First pair.",
+  "examples": [
+    {
+      "input": "see statement",
+      "output": "see tests"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "two_sum_brute",
+  "starter_code": "def two_sum_brute(nums, target):\n    pass\n",
+  "parameters": [
+    {
+      "name": "nums",
+      "type": "List[int]"
+    },
+    {
+      "name": "target",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "List[int]",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          2,
+          7,
+          11,
+          15
+        ],
+        9
+      ],
+      "expected": [
+        0,
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          1
+        ],
+        2
+      ],
+      "expected": [
+        0,
+        1
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        [
+          1,
+          2
+        ],
+        5
+      ],
+      "expected": []
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Use dict or set as needed.",
+    "level_2": "Trace a small example.",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "brute",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "lists",
+    "loops"
+  ],
+  "tags": [
+    "precode",
+    "dicts"
+  ]
+}

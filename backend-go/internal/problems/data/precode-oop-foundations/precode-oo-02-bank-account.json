@@ -1,0 +1,96 @@
+{
+  "id": "precode-oo-02-bank-account",
+  "slug": "precode-oo-02-bank-account",
+  "title": "Bank Account",
+  "difficulty": "easy",
+  "category": "precode-oop-foundations",
+  "description": "BankAccount(balance) with deposit(amount), withdraw(amount), get_balance(). No negative balance.",
+  "examples": [
+    {
+      "input": "",
+      "output": ""
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "class",
+  "class_name": "BankAccount",
+  "function_name": "BankAccount",
+  "starter_code": "class BankAccount:\n    def __init__(self, balance=0):\n        pass\n    def deposit(self, amount):\n        pass\n    def withdraw(self, amount):\n        pass\n    def get_balance(self):\n        pass\n",
+  "parameters": [
+    {
+      "name": "balance",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "class",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "ops": [
+        "BankAccount",
+        "deposit",
+        "get_balance",
+        "withdraw",
+        "get_balance"
+      ],
+      "args": [
+        [
+          0
+        ],
+        [
+          10
+        ],
+        [],
+        [
+          3
+        ],
+        []
+      ],
+      "expected": [
+        null,
+        null,
+        10,
+        null,
+        7
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "ops": [
+        "BankAccount",
+        "withdraw",
+        "get_balance"
+      ],
+      "args": [
+        [
+          5
+        ],
+        [
+          10
+        ],
+        []
+      ],
+      "expected": [
+        null,
+        null,
+        5
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Track balance on self.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "bank",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "classes",
+    "methods"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

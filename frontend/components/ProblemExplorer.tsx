@@ -44,6 +44,51 @@ function Chevron({ open }: { open: boolean }) {
   );
 }
 
+type TrackGroup = {
+  trackId: string;
+  trackTitle: string;
+  trackDescription?: string;
+  categories: CategorySummary[];
+};
+
+function groupCategoriesByTrack(categories: CategorySummary[]): TrackGroup[] {
+  const groups: TrackGroup[] = [];
+  for (const c of categories) {
+    const tid = c.track_id || "dsa";
+    const last = groups[groups.length - 1];
+    if (last && last.trackId === tid) {
+      last.categories.push(c);
+    } else {
+      groups.push({
+        trackId: tid,
+        trackTitle: c.track_title || (tid === "precode100" ? "PreCode 100" : "NeetCode 150"),
+        trackDescription:
+          tid === "precode100"
+            ? "Recommended path before DSA: Python fundamentals, problem-solving habits, and OOP."
+            : undefined,
+        categories: [c],
+      });
+    }
+  }
+  return groups;
+}
+
+function trackSolvedCount(
+  problems: ProblemSummary[],
+  progress: Record<string, PracticeProgress>,
+  categoryIds: string[],
+): { solved: number; total: number } {
+  let solved = 0;
+  let total = 0;
+  const set = new Set(categoryIds);
+  for (const p of problems) {
+    if (!set.has(p.category)) continue;
+    total++;
+    if (progress[p.id] === "solved") solved++;
+  }
+  return { solved, total };
+}
+
 export function ProblemExplorer({
   categories,
   problems,
@@ -68,6 +113,11 @@ export function ProblemExplorer({
     if (problems.length === 0) return [];
     return deriveCategoriesFromProblems(problems);
   }, [categories, problems]);
+
+  const trackGroups = useMemo(
+    () => groupCategoriesByTrack(displayCategories),
+    [displayCategories],
+  );
 
   useEffect(() => {
     setExpanded((prev) => {
@@ -99,7 +149,6 @@ export function ProblemExplorer({
 
   return (
     <div className="flex h-full min-h-0 w-full shrink-0 flex-col overflow-hidden rounded-xl border border-border/80 bg-[#0a0a0c] shadow-sm md:w-[min(100%,19rem)] lg:w-[20.5rem]">
-      {/* Filters: compact strip */}
       <div className="shrink-0 space-y-2 border-b border-border/60 bg-surface-panel/20 px-4 py-4">
         <label className="sr-only" htmlFor="problem-search">
           Search problems
@@ -146,87 +195,122 @@ export function ProblemExplorer({
         )}
         {!loading && problems.length > 0 && (
           <div className="divide-y divide-border/40 pb-3">
-            {displayCategories.map((category) => {
-              const items = problemsByCategory.get(category.id) ?? [];
-              const open = expanded[category.id] !== false;
+            {trackGroups.map((group) => {
+              const catIds = group.categories.map((c) => c.id);
+              const { solved, total } = trackSolvedCount(
+                filteredProblems,
+                progress,
+                catIds,
+              );
               return (
-                <section key={category.id} className="min-w-0">
-                  <button
-                    type="button"
-                    aria-expanded={open}
-                    onClick={() =>
-                      setExpanded((current) => ({
-                        ...current,
-                        [category.id]: !open,
-                      }))
-                    }
-                    className="group flex w-full items-center gap-2 px-4 py-3 text-left transition-colors hover:bg-white/[0.03]"
-                  >
-                    <Chevron open={open} />
-                    <span className="min-w-0 flex-1 truncate text-[13px] font-medium leading-snug tracking-tight text-zinc-100">
-                      {category.title}
-                    </span>
-                    <span className="shrink-0 tabular-nums text-[11px] text-zinc-500">
-                      {items.length}
-                      <span className="text-zinc-600">/</span>
-                      {category.problem_count}
-                    </span>
-                  </button>
-
-                  {/* Animated height: grid 0fr -> 1fr */}
-                  <div
-                    className={`grid transition-[grid-template-rows] duration-200 ease-out motion-reduce:transition-none ${
-                      open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-                    }`}
-                  >
-                    <div className="min-h-0 overflow-hidden">
-                      <ul className="space-y-px px-3 pb-3 pt-1">
-                        {items.length === 0 && (
-                          <li className="px-2 py-3 text-center text-[12px] text-zinc-500">
-                            No matches
-                          </li>
-                        )}
-                        {items.map((problem) => {
-                          const isSelected = selectedId === problem.id;
-                          const progressState =
-                            progress[problem.id] ?? "not_started";
-                          return (
-                            <li key={problem.id}>
-                              <button
-                                type="button"
-                                data-testid={`problem-item-${problem.id}`}
-                                onClick={() => onSelectProblem(problem.id)}
-                                className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition-colors duration-150 ${
-                                  isSelected
-                                    ? "bg-zinc-800/70 shadow-sm ring-1 ring-inset ring-zinc-600/50"
-                                    : "hover:bg-white/[0.04]"
-                                } `}
-                              >
-                                <PracticeStatusDot
-                                  status={progressState}
-                                  minimal
-                                />
-                                <span
-                                  className={`min-w-0 flex-1 text-[13px] leading-snug ${
-                                    isSelected
-                                      ? "font-medium text-zinc-50"
-                                      : "font-normal text-zinc-300"
-                                  }`}
-                                >
-                                  {problem.title}
-                                </span>
-                                <DifficultyBadge
-                                  difficulty={problem.difficulty}
-                                  compact
-                                />
-                              </button>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
+                <div key={group.trackId} className="px-0 pt-0">
+                  <div className="border-b border-border/30 bg-zinc-950/40 px-4 py-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-400/95">
+                      {group.trackTitle}
+                    </p>
+                    {group.trackDescription && (
+                      <p className="mt-1.5 text-[11px] leading-relaxed text-zinc-500">
+                        {group.trackDescription}
+                      </p>
+                    )}
+                    <p className="mt-2 text-[11px] tabular-nums text-zinc-600">
+                      Progress in view:{" "}
+                      <span className="text-zinc-400">
+                        {solved}/{total} solved
+                      </span>
+                    </p>
                   </div>
-                </section>
+                  {group.categories.map((category) => {
+                    const items = problemsByCategory.get(category.id) ?? [];
+                    const open = expanded[category.id] !== false;
+                    return (
+                      <section key={category.id} className="min-w-0">
+                        <button
+                          type="button"
+                          aria-expanded={open}
+                          onClick={() =>
+                            setExpanded((current) => ({
+                              ...current,
+                              [category.id]: !open,
+                            }))
+                          }
+                          className="group flex w-full items-center gap-2 px-4 py-3 text-left transition-colors hover:bg-white/[0.03]"
+                        >
+                          <Chevron open={open} />
+                          <span className="min-w-0 flex-1 truncate text-[13px] font-medium leading-snug tracking-tight text-zinc-100">
+                            {category.title}
+                          </span>
+                          <span className="shrink-0 tabular-nums text-[11px] text-zinc-500">
+                            {items.length}
+                            <span className="text-zinc-600">/</span>
+                            {category.problem_count}
+                          </span>
+                        </button>
+                        {category.section_description &&
+                          group.trackId === "precode100" && (
+                            <p className="px-4 pb-2 text-[11px] leading-relaxed text-zinc-600">
+                              {category.section_description}
+                            </p>
+                          )}
+
+                        <div
+                          className={`grid transition-[grid-template-rows] duration-200 ease-out motion-reduce:transition-none ${
+                            open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                          }`}
+                        >
+                          <div className="min-h-0 overflow-hidden">
+                            <ul className="space-y-px px-3 pb-3 pt-1">
+                              {items.length === 0 && (
+                                <li className="px-2 py-3 text-center text-[12px] text-zinc-500">
+                                  No matches
+                                </li>
+                              )}
+                              {items.map((problem) => {
+                                const isSelected = selectedId === problem.id;
+                                const progressState =
+                                  progress[problem.id] ?? "not_started";
+                                return (
+                                  <li key={problem.id}>
+                                    <button
+                                      type="button"
+                                      data-testid={`problem-item-${problem.id}`}
+                                      onClick={() =>
+                                        onSelectProblem(problem.id)
+                                      }
+                                      className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition-colors duration-150 ${
+                                        isSelected
+                                          ? "bg-zinc-800/70 shadow-sm ring-1 ring-inset ring-zinc-600/50"
+                                          : "hover:bg-white/[0.04]"
+                                      } `}
+                                    >
+                                      <PracticeStatusDot
+                                        status={progressState}
+                                        minimal
+                                      />
+                                      <span
+                                        className={`min-w-0 flex-1 text-[13px] leading-snug ${
+                                          isSelected
+                                            ? "font-medium text-zinc-50"
+                                            : "font-normal text-zinc-300"
+                                        }`}
+                                      >
+                                        {problem.title}
+                                      </span>
+                                      <DifficultyBadge
+                                        difficulty={problem.difficulty}
+                                        compact
+                                      />
+                                    </button>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                        </div>
+                      </section>
+                    );
+                  })}
+                </div>
               );
             })}
           </div>

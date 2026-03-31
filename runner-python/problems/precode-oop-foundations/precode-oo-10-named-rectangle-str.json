@@ -1,0 +1,84 @@
+{
+  "id": "precode-oo-10-named-rectangle-str",
+  "slug": "precode-oo-10-named-rectangle-str",
+  "title": "Rectangle With String Form",
+  "difficulty": "easy",
+  "category": "precode-oop-foundations",
+  "description": "Rectangle(w,h) with __str__ returning 'WxH'.",
+  "examples": [
+    {
+      "input": "",
+      "output": ""
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "class",
+  "class_name": "RectStr",
+  "function_name": "RectStr",
+  "starter_code": "class RectStr:\n    def __init__(self, w, h):\n        pass\n    def __str__(self):\n        pass\n",
+  "parameters": [
+    {
+      "name": "w",
+      "type": "int"
+    },
+    {
+      "name": "h",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "class",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "ops": [
+        "RectStr",
+        "__str__"
+      ],
+      "args": [
+        [
+          3,
+          4
+        ],
+        []
+      ],
+      "expected": [
+        null,
+        "3x4"
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "ops": [
+        "RectStr",
+        "__str__"
+      ],
+      "args": [
+        [
+          10,
+          2
+        ],
+        []
+      ],
+      "expected": [
+        null,
+        "10x2"
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "__str__ returns descriptive string.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "str",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "classes",
+    "strings"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

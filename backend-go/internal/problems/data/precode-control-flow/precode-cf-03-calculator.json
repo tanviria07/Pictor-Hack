@@ -1,0 +1,78 @@
+{
+  "id": "precode-cf-03-calculator",
+  "slug": "precode-cf-03-calculator",
+  "title": "Four-Function Calculator",
+  "difficulty": "easy",
+  "category": "precode-control-flow",
+  "description": "`op` is '+', '-', '*', or '//'. Integer division; b never 0.",
+  "examples": [
+    {
+      "input": "6,2,'//'",
+      "output": "3"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "calculate",
+  "starter_code": "def calculate(a, b, op):\n    pass\n",
+  "parameters": [
+    {
+      "name": "a",
+      "type": "int"
+    },
+    {
+      "name": "b",
+      "type": "int"
+    },
+    {
+      "name": "op",
+      "type": "str"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        2,
+        3,
+        "+"
+      ],
+      "expected": 5
+    },
+    {
+      "args": [
+        10,
+        2,
+        "//"
+      ],
+      "expected": 5
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        4,
+        5,
+        "*"
+      ],
+      "expected": 20
+    }
+  ],
+  "hint_plan": {
+    "level_1": "if/elif on op string.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "dispatch",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "conditionals",
+    "strings"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

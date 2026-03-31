@@ -1,0 +1,89 @@
+{
+  "id": "precode-db-07-dict-accidental-mutation",
+  "slug": "precode-db-07-dict-accidental-mutation",
+  "title": "Copy Before Mutate",
+  "difficulty": "medium",
+  "category": "precode-debugging",
+  "description": "Return new dict equal to d with key k set to v without mutating input d.",
+  "examples": [
+    {
+      "input": "{'a':1},'b',2",
+      "output": "{'a':1,'b':2}"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "set_key_copy",
+  "starter_code": "def set_key_copy(d, k, v):\n    d[k] = v\n    return d\n",
+  "parameters": [
+    {
+      "name": "d",
+      "type": "dict"
+    },
+    {
+      "name": "k",
+      "type": "str"
+    },
+    {
+      "name": "v",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "dict",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        {
+          "a": 1
+        },
+        "b",
+        2
+      ],
+      "expected": {
+        "a": 1,
+        "b": 2
+      }
+    },
+    {
+      "args": [
+        {},
+        "x",
+        1
+      ],
+      "expected": {
+        "x": 1
+      }
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        {
+          "z": 0
+        },
+        "z",
+        9
+      ],
+      "expected": {
+        "z": 9
+      }
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Copy dict first: dict(d) or d.copy().",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "copy",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "debugging",
+    "dictionaries"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

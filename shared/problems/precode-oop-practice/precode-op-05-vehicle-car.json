@@ -1,0 +1,71 @@
+{
+  "id": "precode-op-05-vehicle-car",
+  "slug": "precode-op-05-vehicle-car",
+  "title": "Vehicle And Car",
+  "difficulty": "medium",
+  "category": "precode-oop-practice",
+  "description": "Vehicle(kind) with wheels() returning 0; Car inherits Vehicle, wheels returns 4.",
+  "examples": [
+    {
+      "input": "",
+      "output": ""
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "class",
+  "class_name": "Car",
+  "function_name": "Car",
+  "starter_code": "class Vehicle:\n    def __init__(self, kind):\n        pass\n    def wheels(self):\n        pass\n\nclass Car(Vehicle):\n    def __init__(self):\n        pass\n    def wheels(self):\n        pass\n",
+  "parameters": [],
+  "expected_return_type": "class",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "ops": [
+        "Car",
+        "wheels"
+      ],
+      "args": [
+        [],
+        []
+      ],
+      "expected": [
+        null,
+        4
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "ops": [
+        "Vehicle",
+        "wheels"
+      ],
+      "args": [
+        [
+          "x"
+        ],
+        []
+      ],
+      "expected": [
+        null,
+        0
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Override in subclass.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "inherit",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "inheritance",
+    "classes"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

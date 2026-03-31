@@ -1,0 +1,76 @@
+{
+  "id": "precode-ps-02-running-sum",
+  "slug": "precode-ps-02-running-sum",
+  "title": "Running Sum",
+  "difficulty": "easy",
+  "category": "precode-problem-solving",
+  "description": "Return list of prefix sums.",
+  "examples": [
+    {
+      "input": "[1,2,3]",
+      "output": "[1,3,6]"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "running_sum",
+  "starter_code": "def running_sum(nums):\n    pass\n",
+  "parameters": [
+    {
+      "name": "nums",
+      "type": "List[int]"
+    }
+  ],
+  "expected_return_type": "List[int]",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "expected": [
+        1,
+        3,
+        6
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        [
+          5
+        ]
+      ],
+      "expected": [
+        5
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Accumulate total as you iterate.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "prefix",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "lists",
+    "loops"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

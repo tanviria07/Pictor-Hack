@@ -1,0 +1,80 @@
+{
+  "id": "precode-pb-03-swap-pair",
+  "slug": "precode-pb-03-swap-pair",
+  "title": "Swap Pair Values",
+  "difficulty": "easy",
+  "category": "precode-python-basics",
+  "description": "Return `(y, x)` so callers receive swapped values.",
+  "examples": [
+    {
+      "input": "1, 2",
+      "output": "(2, 1)"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "swap_pair",
+  "starter_code": "def swap_pair(x, y):\n    pass\n",
+  "parameters": [
+    {
+      "name": "x",
+      "type": "int"
+    },
+    {
+      "name": "y",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "Tuple[int, int]",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        1,
+        2
+      ],
+      "expected": [
+        2,
+        1
+      ]
+    },
+    {
+      "args": [
+        0,
+        0
+      ],
+      "expected": [
+        0,
+        0
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        9,
+        -1
+      ],
+      "expected": [
+        -1,
+        9
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Return two values as a tuple.",
+    "level_2": "Order is (y, x).",
+    "level_3": "return (y, x)",
+    "level_4": "Tuple syntax uses commas."
+  },
+  "canonical_solution_summary": "return (y, x)",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "tuples",
+    "functions"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

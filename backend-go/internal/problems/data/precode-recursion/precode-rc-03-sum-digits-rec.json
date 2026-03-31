@@ -1,0 +1,63 @@
+{
+  "id": "precode-rc-03-sum-digits-rec",
+  "slug": "precode-rc-03-sum-digits-rec",
+  "title": "Sum Digits Recursive",
+  "difficulty": "easy",
+  "category": "precode-recursion",
+  "description": "Sum decimal digits of non-negative n recursively.",
+  "examples": [
+    {
+      "input": "123",
+      "output": "6"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "sum_digits_rec",
+  "starter_code": "def sum_digits_rec(n):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        0
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        123
+      ],
+      "expected": 6
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        999
+      ],
+      "expected": 27
+    }
+  ],
+  "hint_plan": {
+    "level_1": "n%10 + sum_digits(n//10)",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "digits",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "recursion"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

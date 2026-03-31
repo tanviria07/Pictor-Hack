@@ -1,0 +1,64 @@
+{
+  "id": "precode-sl-02-count-vowels",
+  "slug": "precode-sl-02-count-vowels",
+  "title": "Count Vowels",
+  "difficulty": "easy",
+  "category": "precode-strings-lists",
+  "description": "Count letters in aeiou (case-insensitive).",
+  "examples": [
+    {
+      "input": "hello",
+      "output": "2"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "count_vowels",
+  "starter_code": "def count_vowels(s):\n    pass\n",
+  "parameters": [
+    {
+      "name": "s",
+      "type": "str"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        "hello"
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        "AEIOU"
+      ],
+      "expected": 5
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        ""
+      ],
+      "expected": 0
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Lowercase s and count chars in a set.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "count vowels",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "strings",
+    "loops"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

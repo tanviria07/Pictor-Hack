@@ -1,0 +1,78 @@
+{
+  "id": "precode-ps-06-strictly-ascending",
+  "slug": "precode-ps-06-strictly-ascending",
+  "title": "Strictly Ascending List",
+  "difficulty": "easy",
+  "category": "precode-problem-solving",
+  "description": "True if every element is greater than the previous (empty and singleton True).",
+  "examples": [
+    {
+      "input": "[1,2,3]",
+      "output": "True"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "is_strictly_ascending",
+  "starter_code": "def is_strictly_ascending(nums):\n    pass\n",
+  "parameters": [
+    {
+      "name": "nums",
+      "type": "List[int]"
+    }
+  ],
+  "expected_return_type": "bool",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        [
+          1,
+          1
+        ]
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": true
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        [
+          9
+        ]
+      ],
+      "expected": true
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Compare neighbors.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "pairwise",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "loops"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

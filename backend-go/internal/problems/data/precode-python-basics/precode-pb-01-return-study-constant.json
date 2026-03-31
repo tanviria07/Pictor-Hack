@@ -1,0 +1,50 @@
+{
+  "id": "precode-pb-01-return-study-constant",
+  "slug": "precode-pb-01-return-study-constant",
+  "title": "Return a Constant",
+  "difficulty": "easy",
+  "category": "precode-python-basics",
+  "description": "Implement `answer` so it returns the integer `7`.",
+  "examples": [
+    {
+      "input": "answer()",
+      "output": "7"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "answer",
+  "starter_code": "def answer():\n    pass\n",
+  "parameters": [],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [],
+      "expected": 7
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [],
+      "expected": 7
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Return a single integer literal.",
+    "level_2": "The name must be `answer`.",
+    "level_3": "Use `return 7`.",
+    "level_4": "Do not print; return."
+  },
+  "canonical_solution_summary": "return 7",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "variables",
+    "functions"
+  ],
+  "tags": [
+    "precode",
+    "basics"
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "id": "precode-oo-05-student-gpa",
+  "slug": "precode-oo-05-student-gpa",
+  "title": "Student GPA",
+  "difficulty": "medium",
+  "category": "precode-oop-foundations",
+  "description": "Student(name) with add_grade(g) and gpa() returning sum/n (grades list).",
+  "examples": [
+    {
+      "input": "",
+      "output": ""
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "class",
+  "class_name": "Student",
+  "function_name": "Student",
+  "starter_code": "class Student:\n    def __init__(self, name):\n        pass\n    def add_grade(self, g):\n        pass\n    def gpa(self):\n        pass\n",
+  "parameters": [
+    {
+      "name": "name",
+      "type": "str"
+    }
+  ],
+  "expected_return_type": "class",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "ops": [
+        "Student",
+        "add_grade",
+        "add_grade",
+        "gpa"
+      ],
+      "args": [
+        [
+          "Ann"
+        ],
+        [
+          4
+        ],
+        [
+          2
+        ],
+        []
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        3.0
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "ops": [
+        "Student",
+        "gpa"
+      ],
+      "args": [
+        [
+          "B"
+        ],
+        []
+      ],
+      "expected": [
+        null,
+        0.0
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Keep list of grades.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "student",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "classes"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

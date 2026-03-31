@@ -1,0 +1,87 @@
+{
+  "id": "precode-op-02-library",
+  "slug": "precode-op-02-library",
+  "title": "Library Add Borrow",
+  "difficulty": "medium",
+  "category": "precode-oop-practice",
+  "description": "Library has books set; add_book(title), has_book(title).",
+  "examples": [
+    {
+      "input": "",
+      "output": ""
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "class",
+  "class_name": "Library",
+  "function_name": "Library",
+  "starter_code": "class Library:\n    def __init__(self):\n        pass\n    def add_book(self, title):\n        pass\n    def has_book(self, title):\n        pass\n",
+  "parameters": [],
+  "expected_return_type": "class",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "ops": [
+        "Library",
+        "add_book",
+        "has_book",
+        "has_book"
+      ],
+      "args": [
+        [],
+        [
+          "A"
+        ],
+        [
+          "A"
+        ],
+        [
+          "B"
+        ]
+      ],
+      "expected": [
+        null,
+        null,
+        true,
+        false
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "ops": [
+        "Library",
+        "add_book",
+        "has_book"
+      ],
+      "args": [
+        [],
+        [
+          "X"
+        ],
+        [
+          "X"
+        ]
+      ],
+      "expected": [
+        null,
+        null,
+        true
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Use a set.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "library",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "classes"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

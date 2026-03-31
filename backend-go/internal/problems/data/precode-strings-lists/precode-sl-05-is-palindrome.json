@@ -1,0 +1,69 @@
+{
+  "id": "precode-sl-05-is-palindrome",
+  "slug": "precode-sl-05-is-palindrome",
+  "title": "String Palindrome",
+  "difficulty": "easy",
+  "category": "precode-strings-lists",
+  "description": "True if `s` reads the same forwards and backwards.",
+  "examples": [
+    {
+      "input": "aba",
+      "output": "True"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "is_palindrome",
+  "starter_code": "def is_palindrome(s):\n    pass\n",
+  "parameters": [
+    {
+      "name": "s",
+      "type": "str"
+    }
+  ],
+  "expected_return_type": "bool",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        "aba"
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        "ab"
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        ""
+      ],
+      "expected": true
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        "racecar"
+      ],
+      "expected": true
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Compare to reverse.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "palindrome",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "strings"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

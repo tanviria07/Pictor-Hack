@@ -50,11 +50,14 @@ export interface RunJobPollResponse {
   result?: RunResponse;
 }
 
-/** Curated curriculum bucket (NeetCode-style). */
+/** Curated curriculum bucket (NeetCode-style + PreCode 100). */
 export interface CategorySummary {
   id: string;
   title: string;
   problem_count: number;
+  track_id?: string;
+  track_title?: string;
+  section_description?: string;
 }
 
 export interface ProblemSummary {
@@ -64,6 +67,11 @@ export interface ProblemSummary {
   category: string;
   category_title: string;
   function_name: string;
+  slug?: string;
+  track_id?: string;
+  track_title?: string;
+  skill_tags?: string[];
+  tags?: string[];
 }
 
 export interface ProblemDetail extends ProblemSummary {
@@ -77,6 +85,7 @@ export interface ProblemDetail extends ProblemSummary {
   expected_return_type: string;
   visible_test_count: number;
   hidden_test_count: number;
+  section_description?: string;
 }
 
 export interface HintResponse {

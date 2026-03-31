@@ -1,0 +1,89 @@
+{
+  "id": "precode-oo-08-queue-simple",
+  "slug": "precode-oo-08-queue-simple",
+  "title": "Simple Queue",
+  "difficulty": "medium",
+  "category": "precode-oop-foundations",
+  "description": "Queue enqueue(x), dequeue() FIFO, front() without removing.",
+  "examples": [
+    {
+      "input": "",
+      "output": ""
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "class",
+  "class_name": "Queue",
+  "function_name": "Queue",
+  "starter_code": "class Queue:\n    def __init__(self):\n        pass\n    def enqueue(self, x):\n        pass\n    def dequeue(self):\n        pass\n    def front(self):\n        pass\n",
+  "parameters": [],
+  "expected_return_type": "class",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "ops": [
+        "Queue",
+        "enqueue",
+        "enqueue",
+        "front",
+        "dequeue",
+        "front"
+      ],
+      "args": [
+        [],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [],
+        [],
+        []
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        1,
+        1,
+        2
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "ops": [
+        "Queue",
+        "enqueue",
+        "dequeue"
+      ],
+      "args": [
+        [],
+        [
+          9
+        ],
+        []
+      ],
+      "expected": [
+        null,
+        null,
+        9
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "collections.deque or list pop(0) \u2014 list ok for small n.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "queue",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "classes"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

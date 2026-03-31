@@ -1,0 +1,81 @@
+{
+  "id": "precode-ds-04-dict-get",
+  "slug": "precode-ds-04-dict-get",
+  "title": "Dictionary Get",
+  "difficulty": "easy",
+  "category": "precode-core-data-structures",
+  "description": "Return d.get(k, default).",
+  "examples": [
+    {
+      "input": "d,k",
+      "output": "default if missing"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "dict_get",
+  "starter_code": "def dict_get(d, k, default):\n    pass\n",
+  "parameters": [
+    {
+      "name": "d",
+      "type": "dict"
+    },
+    {
+      "name": "k",
+      "type": "str"
+    },
+    {
+      "name": "default",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        {
+          "a": 1
+        },
+        "a",
+        0
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        {},
+        "x",
+        -1
+      ],
+      "expected": -1
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        {
+          "z": 9
+        },
+        "z",
+        0
+      ],
+      "expected": 9
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Use .get",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "get",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "dictionaries"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

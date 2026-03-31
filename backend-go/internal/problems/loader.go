@@ -31,6 +31,7 @@ var (
 
 type rawProblem struct {
 	ID                         string            `json:"id"`
+	Slug                       string            `json:"slug,omitempty"`
 	Title                      string            `json:"title"`
 	Difficulty                 string            `json:"difficulty"`
 	Category                   string            `json:"category"`
@@ -48,6 +49,8 @@ type rawProblem struct {
 	HintPlan                   map[string]string `json:"hint_plan"`
 	CanonicalSolutionSummary   string            `json:"canonical_solution_summary"`
 	DisallowedFullSolution     bool              `json:"disallowed_full_solution_exposure"`
+	SkillTags                  []string          `json:"skill_tags,omitempty"`
+	Tags                       []string          `json:"tags,omitempty"`
 }
 
 func Init() error {
@@ -159,15 +162,22 @@ func initFromDisk(root string) error {
 	return commitProblemIndex(m, ids, byCat)
 }
 
-func commitProblemIndex(m map[string]rawProblem, ids []string, byCat map[string][]string) error {
-	sort.Strings(ids)
+func commitProblemIndex(m map[string]rawProblem, _ []string, byCat map[string][]string) error {
 	for k := range byCat {
 		sort.Strings(byCat[k])
 	}
 
+	// Curriculum order: follow AllCategories, then alphabetical order within each category.
+	var ordered []string
+	for _, cm := range AllCategories {
+		if ids, ok := byCat[cm.ID]; ok {
+			ordered = append(ordered, ids...)
+		}
+	}
+
 	mu.Lock()
 	byID = m
-	orderIDs = ids
+	orderIDs = ordered
 	byCategoryID = byCat
 	mu.Unlock()
 	return nil
@@ -184,9 +194,12 @@ func ListCategorySummaries() []dto.CategorySummary {
 			n = len(byCategoryID[c.ID])
 		}
 		out = append(out, dto.CategorySummary{
-			ID:           c.ID,
-			Title:        c.Title,
-			ProblemCount: n,
+			ID:                 c.ID,
+			Title:              c.Title,
+			ProblemCount:       n,
+			TrackID:            c.TrackID,
+			TrackTitle:         c.TrackTitle,
+			SectionDescription: c.SectionDescription,
 		})
 	}
 	return out
@@ -222,6 +235,11 @@ func ListSummaries(categoryFilter, difficultyFilter string) []dto.ProblemSummary
 		if diff != "" && normalizeDifficulty(p.Difficulty) != diff {
 			continue
 		}
+		tid, tt := TrackMetaForCategory(p.Category)
+		slug := p.Slug
+		if slug == "" {
+			slug = p.ID
+		}
 		out = append(out, dto.ProblemSummary{
 			ID:            p.ID,
 			Title:         p.Title,
@@ -229,6 +247,11 @@ func ListSummaries(categoryFilter, difficultyFilter string) []dto.ProblemSummary
 			Category:      p.Category,
 			CategoryTitle: categoryTitle(p.Category),
 			FunctionName:  p.FunctionName,
+			Slug:          slug,
+			TrackID:       tid,
+			TrackTitle:    tt,
+			SkillTags:     append([]string(nil), p.SkillTags...),
+			Tags:          append([]string(nil), p.Tags...),
 		})
 	}
 	return out
@@ -240,6 +263,11 @@ func GetPublic(id string) (*dto.ProblemDetail, error) {
 	mu.RUnlock()
 	if !ok {
 		return nil, ErrNotFound
+	}
+	tid, tt := TrackMetaForCategory(p.Category)
+	slug := p.Slug
+	if slug == "" {
+		slug = p.ID
 	}
 	return &dto.ProblemDetail{
 		ID:                 p.ID,
@@ -258,6 +286,12 @@ func GetPublic(id string) (*dto.ProblemDetail, error) {
 		ExpectedReturnType: p.ExpectedReturnType,
 		VisibleTestCount:   len(p.VisibleTests),
 		HiddenTestCount:    len(p.HiddenTests),
+		Slug:               slug,
+		TrackID:            tid,
+		TrackTitle:         tt,
+		SectionDescription: SectionDescriptionForCategory(p.Category),
+		SkillTags:          append([]string(nil), p.SkillTags...),
+		Tags:               append([]string(nil), p.Tags...),
 	}, nil
 }
 

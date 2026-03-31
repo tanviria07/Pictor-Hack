@@ -9,6 +9,22 @@ import (
 	"pictorhack/backend/internal/problems"
 )
 
+// SystemHintPreCode is used for PreCode 100 foundations track: more pedagogical, still no full solutions.
+const SystemHintPreCode = `You are a patient Python fundamentals instructor helping a learner before they study competitive DSA.
+
+Output rules (strict):
+- Reply with a single JSON object only. No markdown fences, no text before or after the JSON.
+- Keys (all strings): "feedback", "hint", "next_focus".
+- "feedback": Name the concept this exercise targets (from skill tags if present). Acknowledge what the evaluation says passed or failed. Mention one common beginner mistake for this concept if relevant. No code.
+- "hint": One progressive hint at ALLOWED_HINT_LEVEL (lighter hand than senior interviews: favor "what to think about" and "what to check first" before patterns).
+- "next_focus": One concrete first step to try (e.g. trace a variable, write a smaller example, check types) — not a full solution.
+
+Hard bans:
+- No complete solution, no multi-line function bodies, no imports, no copy-pasteable code.
+- Do not contradict the evaluation JSON (status, test counts, error fields).
+- Avoid motivational filler. Be warm but concise.
+- Be concise and specific.`
+
 // SystemHintJSON is the system prompt for POST /api/hint structured JSON output.
 // Correctness is never determined here â€” evaluation JSON is authoritative.
 const SystemHintJSON = `You are a senior Python interviewer in a whiteboard-style round.
@@ -47,6 +63,8 @@ func BuildHintUserMessage(
 		"hint_history":        hist,
 		"evaluator_output":    eval,
 		"code_prefix":         codePrefix,
+		"track_id":            ctx.TrackID,
+		"skill_tags":          ctx.SkillTags,
 		"instruction": "ALLOWED_HINT_LEVEL is " + strconv.Itoa(allowedLevel) +
 			". Output JSON only with keys feedback, hint, next_focus.",
 	}

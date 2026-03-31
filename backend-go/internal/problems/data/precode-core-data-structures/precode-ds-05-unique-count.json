@@ -1,0 +1,72 @@
+{
+  "id": "precode-ds-05-unique-count",
+  "slug": "precode-ds-05-unique-count",
+  "title": "Unique Count",
+  "difficulty": "easy",
+  "category": "precode-core-data-structures",
+  "description": "Return number of distinct ints in nums.",
+  "examples": [
+    {
+      "input": "[1,1,2]",
+      "output": "2"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "unique_count",
+  "starter_code": "def unique_count(nums):\n    pass\n",
+  "parameters": [
+    {
+      "name": "nums",
+      "type": "List[int]"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          1,
+          1,
+          2
+        ]
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": 0
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        [
+          3,
+          3,
+          3
+        ]
+      ],
+      "expected": 1
+    }
+  ],
+  "hint_plan": {
+    "level_1": "len(set(nums))",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "set",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "sets",
+    "lists"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "id": "precode-dz-02-first-unique-char-index",
+  "slug": "precode-dz-02-first-unique-char-index",
+  "title": "First Unique Character Index",
+  "difficulty": "easy",
+  "category": "precode-dicts-sets",
+  "description": "Return lowest index of char that appears exactly once, or -1.",
+  "examples": [
+    {
+      "input": "see statement",
+      "output": "see tests"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "first_unique_index",
+  "starter_code": "def first_unique_index(s):\n    pass\n",
+  "parameters": [
+    {
+      "name": "s",
+      "type": "str"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        "leetcode"
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        "aabb"
+      ],
+      "expected": -1
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        "a"
+      ],
+      "expected": 0
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Use dict or set as needed.",
+    "level_2": "Trace a small example.",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "unique",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "dictionaries"
+  ],
+  "tags": [
+    "precode",
+    "dicts"
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "id": "precode-ps-08-reverse-digits",
+  "slug": "precode-ps-08-reverse-digits",
+  "title": "Reverse Digits",
+  "difficulty": "easy",
+  "category": "precode-problem-solving",
+  "description": "Reverse decimal digits of positive integer `n` (1200 -> 21).",
+  "examples": [
+    {
+      "input": "1200",
+      "output": "21"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "reverse_int_positive",
+  "starter_code": "def reverse_int_positive(n):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        1200
+      ],
+      "expected": 21
+    },
+    {
+      "args": [
+        7
+      ],
+      "expected": 7
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        100
+      ],
+      "expected": 1
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Extract digits with % 10 and // 10.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "reverse",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "loops"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

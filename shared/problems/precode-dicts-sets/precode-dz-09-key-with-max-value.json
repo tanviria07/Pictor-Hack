@@ -1,0 +1,72 @@
+{
+  "id": "precode-dz-09-key-with-max-value",
+  "slug": "precode-dz-09-key-with-max-value",
+  "title": "Key With Maximum Value",
+  "difficulty": "easy",
+  "category": "precode-dicts-sets",
+  "description": "Return key with largest int value; tie: smallest key lexicographically.",
+  "examples": [
+    {
+      "input": "see statement",
+      "output": "see tests"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "max_key",
+  "starter_code": "def max_key(d):\n    pass\n",
+  "parameters": [
+    {
+      "name": "d",
+      "type": "dict"
+    }
+  ],
+  "expected_return_type": "str",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        {
+          "a": 1,
+          "b": 2
+        }
+      ],
+      "expected": "b"
+    },
+    {
+      "args": [
+        {
+          "x": 5
+        }
+      ],
+      "expected": "x"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        {
+          "m": 1,
+          "a": 1
+        }
+      ],
+      "expected": "a"
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Use dict or set as needed.",
+    "level_2": "Trace a small example.",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "max key",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "dictionaries"
+  ],
+  "tags": [
+    "precode",
+    "dicts"
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "id": "precode-db-02-wrong-compare",
+  "slug": "precode-db-02-wrong-compare",
+  "title": "Fix Comparison",
+  "difficulty": "easy",
+  "category": "precode-debugging",
+  "description": "Return True if a equals b. Starter used `is` by mistake.",
+  "examples": [
+    {
+      "input": "3,3",
+      "output": "True"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "ints_equal",
+  "starter_code": "def ints_equal(a, b):\n    return a is b\n",
+  "parameters": [
+    {
+      "name": "a",
+      "type": "int"
+    },
+    {
+      "name": "b",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "bool",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        3,
+        3
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        1,
+        2
+      ],
+      "expected": false
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        100,
+        100
+      ],
+      "expected": true
+    }
+  ],
+  "hint_plan": {
+    "level_1": "`is` is identity, not value equality for ints cached.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "use ==",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "debugging",
+    "conditionals"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

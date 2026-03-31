@@ -1,0 +1,86 @@
+{
+  "id": "precode-oo-04-book",
+  "slug": "precode-oo-04-book",
+  "title": "Book Class",
+  "difficulty": "easy",
+  "category": "precode-oop-foundations",
+  "description": "Book(title, author) with get_title(), get_author().",
+  "examples": [
+    {
+      "input": "",
+      "output": ""
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "class",
+  "class_name": "Book",
+  "function_name": "Book",
+  "starter_code": "class Book:\n    def __init__(self, title, author):\n        pass\n    def get_title(self):\n        pass\n    def get_author(self):\n        pass\n",
+  "parameters": [
+    {
+      "name": "title",
+      "type": "str"
+    },
+    {
+      "name": "author",
+      "type": "str"
+    }
+  ],
+  "expected_return_type": "class",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "ops": [
+        "Book",
+        "get_title",
+        "get_author"
+      ],
+      "args": [
+        [
+          "T",
+          "A"
+        ],
+        [],
+        []
+      ],
+      "expected": [
+        null,
+        "T",
+        "A"
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "ops": [
+        "Book",
+        "get_title"
+      ],
+      "args": [
+        [
+          "X",
+          "Y"
+        ],
+        []
+      ],
+      "expected": [
+        null,
+        "X"
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Save attributes.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "book",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "classes"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

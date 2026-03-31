@@ -1,0 +1,69 @@
+{
+  "id": "precode-pb-07-sign",
+  "slug": "precode-pb-07-sign",
+  "title": "Sign of a Number",
+  "difficulty": "easy",
+  "category": "precode-python-basics",
+  "description": "Return -1, 0, or 1 for negative, zero, or positive `n`.",
+  "examples": [
+    {
+      "input": "-4",
+      "output": "-1"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "sign",
+  "starter_code": "def sign(n):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        -5
+      ],
+      "expected": -1
+    },
+    {
+      "args": [
+        0
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        3
+      ],
+      "expected": 1
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        100
+      ],
+      "expected": 1
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Compare to zero.",
+    "level_2": "Three branches.",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "cmp-style sign",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "conditionals"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

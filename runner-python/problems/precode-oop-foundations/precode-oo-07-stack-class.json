@@ -1,0 +1,98 @@
+{
+  "id": "precode-oo-07-stack-class",
+  "slug": "precode-oo-07-stack-class",
+  "title": "Stack Class",
+  "difficulty": "medium",
+  "category": "precode-oop-foundations",
+  "description": "Stack with push(x), pop() removes last, peek() returns top without removing.",
+  "examples": [
+    {
+      "input": "",
+      "output": ""
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "class",
+  "class_name": "Stack",
+  "function_name": "Stack",
+  "starter_code": "class Stack:\n    def __init__(self):\n        pass\n    def push(self, x):\n        pass\n    def pop(self):\n        pass\n    def peek(self):\n        pass\n",
+  "parameters": [],
+  "expected_return_type": "class",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "ops": [
+        "Stack",
+        "push",
+        "push",
+        "peek",
+        "pop",
+        "peek"
+      ],
+      "args": [
+        [],
+        [
+          5
+        ],
+        [
+          7
+        ],
+        [],
+        [],
+        []
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        7,
+        7,
+        5
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "ops": [
+        "Stack",
+        "push",
+        "push",
+        "pop",
+        "peek"
+      ],
+      "args": [
+        [],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [],
+        []
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        2,
+        1
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Use a list internally.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "stack",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "classes",
+    "lists"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

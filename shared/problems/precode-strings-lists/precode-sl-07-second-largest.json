@@ -1,0 +1,76 @@
+{
+  "id": "precode-sl-07-second-largest",
+  "slug": "precode-sl-07-second-largest",
+  "title": "Second Largest Value",
+  "difficulty": "medium",
+  "category": "precode-strings-lists",
+  "description": "Return second largest distinct value (len >= 2).",
+  "examples": [
+    {
+      "input": "[1,2,3,4]",
+      "output": "3"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "second_largest",
+  "starter_code": "def second_largest(nums):\n    pass\n",
+  "parameters": [
+    {
+      "name": "nums",
+      "type": "List[int]"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          4
+        ]
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        [
+          10,
+          20
+        ]
+      ],
+      "expected": 10
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        [
+          5,
+          1,
+          5,
+          2
+        ]
+      ],
+      "expected": 2
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Sort unique or track max and second.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "second max",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "lists"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

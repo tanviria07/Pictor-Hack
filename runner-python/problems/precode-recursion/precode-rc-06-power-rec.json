@@ -1,0 +1,70 @@
+{
+  "id": "precode-rc-06-power-rec",
+  "slug": "precode-rc-06-power-rec",
+  "title": "Integer Power",
+  "difficulty": "easy",
+  "category": "precode-recursion",
+  "description": "Return base**exp for exp>=0 using recursion.",
+  "examples": [
+    {
+      "input": "3,4",
+      "output": "81"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "int_power",
+  "starter_code": "def int_power(base, exp):\n    pass\n",
+  "parameters": [
+    {
+      "name": "base",
+      "type": "int"
+    },
+    {
+      "name": "exp",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        2,
+        0
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        3,
+        4
+      ],
+      "expected": 81
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        2,
+        10
+      ],
+      "expected": 1024
+    }
+  ],
+  "hint_plan": {
+    "level_1": "exp==0 -> 1",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "power",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "recursion"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "id": "precode-sl-01-reverse-string",
+  "slug": "precode-sl-01-reverse-string",
+  "title": "Reverse String",
+  "difficulty": "easy",
+  "category": "precode-strings-lists",
+  "description": "Return `s` reversed.",
+  "examples": [
+    {
+      "input": "ab",
+      "output": "ba"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "reverse_string",
+  "starter_code": "def reverse_string(s):\n    pass\n",
+  "parameters": [
+    {
+      "name": "s",
+      "type": "str"
+    }
+  ],
+  "expected_return_type": "str",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        "ab"
+      ],
+      "expected": "ba"
+    },
+    {
+      "args": [
+        ""
+      ],
+      "expected": ""
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        "hello"
+      ],
+      "expected": "olleh"
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Slicing with step -1.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "s[::-1]",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "strings",
+    "slicing"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "id": "precode-op-08-savings-interest",
+  "slug": "precode-op-08-savings-interest",
+  "title": "Savings Interest",
+  "difficulty": "easy",
+  "category": "precode-oop-practice",
+  "description": "SavingsAccount(balance) with apply_interest(rate) multiplying balance by (1+rate) rounded to 2 decimals.",
+  "examples": [
+    {
+      "input": "",
+      "output": ""
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "class",
+  "class_name": "SavingsAccount",
+  "function_name": "SavingsAccount",
+  "starter_code": "class SavingsAccount:\n    def __init__(self, balance):\n        pass\n    def apply_interest(self, rate):\n        pass\n    def balance(self):\n        pass\n",
+  "parameters": [
+    {
+      "name": "balance",
+      "type": "float"
+    }
+  ],
+  "expected_return_type": "class",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "ops": [
+        "SavingsAccount",
+        "apply_interest",
+        "balance"
+      ],
+      "args": [
+        [
+          100.0
+        ],
+        [
+          0.1
+        ],
+        []
+      ],
+      "expected": [
+        null,
+        null,
+        110.0
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "ops": [
+        "SavingsAccount",
+        "apply_interest",
+        "balance"
+      ],
+      "args": [
+        [
+          50.0
+        ],
+        [
+          0.0
+        ],
+        []
+      ],
+      "expected": [
+        null,
+        null,
+        50.0
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Update self.balance.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "interest",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "classes"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

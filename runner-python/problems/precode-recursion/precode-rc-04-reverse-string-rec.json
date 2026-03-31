@@ -1,0 +1,64 @@
+{
+  "id": "precode-rc-04-reverse-string-rec",
+  "slug": "precode-rc-04-reverse-string-rec",
+  "title": "Reverse String Recursive",
+  "difficulty": "medium",
+  "category": "precode-recursion",
+  "description": "Reverse `s` using recursion only (no [::-1] in your logic \u2014 ok to use slicing in helper).",
+  "examples": [
+    {
+      "input": "ab",
+      "output": "ba"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "reverse_str_rec",
+  "starter_code": "def reverse_str_rec(s):\n    pass\n",
+  "parameters": [
+    {
+      "name": "s",
+      "type": "str"
+    }
+  ],
+  "expected_return_type": "str",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        "ab"
+      ],
+      "expected": "ba"
+    },
+    {
+      "args": [
+        ""
+      ],
+      "expected": ""
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        "hello"
+      ],
+      "expected": "olleh"
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Last char + reverse(prefix)",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "recursive string",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "recursion",
+    "strings"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

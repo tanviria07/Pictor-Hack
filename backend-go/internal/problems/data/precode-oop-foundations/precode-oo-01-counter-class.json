@@ -1,0 +1,76 @@
+{
+  "id": "precode-oo-01-counter-class",
+  "slug": "precode-oo-01-counter-class",
+  "title": "Counter Class",
+  "difficulty": "easy",
+  "category": "precode-oop-foundations",
+  "description": "Class `Counter` with __init__(self), increment(self)->None, value(self)->int starting at 0.",
+  "examples": [
+    {
+      "input": "ops",
+      "output": "see tests"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "class",
+  "class_name": "Counter",
+  "function_name": "Counter",
+  "starter_code": "class Counter:\n    def __init__(self):\n        pass\n    def increment(self):\n        pass\n    def value(self):\n        pass\n",
+  "parameters": [],
+  "expected_return_type": "class",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "ops": [
+        "Counter",
+        "increment",
+        "increment",
+        "value"
+      ],
+      "args": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        2
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "ops": [
+        "Counter",
+        "value"
+      ],
+      "args": [
+        [],
+        []
+      ],
+      "expected": [
+        null,
+        0
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Store count on self.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "counter",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "classes",
+    "methods"
+  ],
+  "tags": [
+    "precode",
+    "oop"
+  ]
+}

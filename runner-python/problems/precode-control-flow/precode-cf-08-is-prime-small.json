@@ -1,0 +1,72 @@
+{
+  "id": "precode-cf-08-is-prime-small",
+  "slug": "precode-cf-08-is-prime-small",
+  "title": "Is Prime Small N",
+  "difficulty": "medium",
+  "category": "precode-control-flow",
+  "description": "Return whether n>=2 is prime (trial division).",
+  "examples": [
+    {
+      "input": "7",
+      "output": "True"
+    }
+  ],
+  "constraints": [
+    "n <= 1000"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "is_prime",
+  "starter_code": "def is_prime(n):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "bool",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        2
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        9
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        17
+      ],
+      "expected": true
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        1
+      ],
+      "expected": false
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Try divisors 2..n-1 or to sqrt.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "prime",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "loops",
+    "conditionals"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

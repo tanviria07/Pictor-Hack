@@ -1,0 +1,70 @@
+{
+  "id": "precode-pb-09-integer-average",
+  "slug": "precode-pb-09-integer-average",
+  "title": "Integer Average",
+  "difficulty": "easy",
+  "category": "precode-python-basics",
+  "description": "Return floor average `(a + b) // 2`.",
+  "examples": [
+    {
+      "input": "3,4",
+      "output": "3"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "int_avg",
+  "starter_code": "def int_avg(a, b):\n    pass\n",
+  "parameters": [
+    {
+      "name": "a",
+      "type": "int"
+    },
+    {
+      "name": "b",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        3,
+        4
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        5,
+        5
+      ],
+      "expected": 5
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        0,
+        1
+      ],
+      "expected": 0
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Integer division //",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "(a+b)//2",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "arithmetic"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

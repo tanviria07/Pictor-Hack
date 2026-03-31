@@ -1,0 +1,70 @@
+{
+  "id": "precode-pb-06-even-or-odd",
+  "slug": "precode-pb-06-even-or-odd",
+  "title": "Even or Odd Label",
+  "difficulty": "easy",
+  "category": "precode-python-basics",
+  "description": "Return `'even'` or `'odd'` for integer `n`.",
+  "examples": [
+    {
+      "input": "4",
+      "output": "'even'"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "even_or_odd",
+  "starter_code": "def even_or_odd(n):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "str",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        4
+      ],
+      "expected": "even"
+    },
+    {
+      "args": [
+        7
+      ],
+      "expected": "odd"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        0
+      ],
+      "expected": "even"
+    },
+    {
+      "args": [
+        -2
+      ],
+      "expected": "even"
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Use n % 2.",
+    "level_2": "Zero is even.",
+    "level_3": "Compare remainder to 0.",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "n % 2 == 0",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "conditionals",
+    "arithmetic"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

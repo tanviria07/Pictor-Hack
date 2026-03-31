@@ -1,0 +1,70 @@
+{
+  "id": "precode-sl-09-starts-with",
+  "slug": "precode-sl-09-starts-with",
+  "title": "Starts With Prefix",
+  "difficulty": "easy",
+  "category": "precode-strings-lists",
+  "description": "True if `s` starts with `p` (use string startswith or manual).",
+  "examples": [
+    {
+      "input": "hello, he",
+      "output": "True"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "starts_with",
+  "starter_code": "def starts_with(s, p):\n    pass\n",
+  "parameters": [
+    {
+      "name": "s",
+      "type": "str"
+    },
+    {
+      "name": "p",
+      "type": "str"
+    }
+  ],
+  "expected_return_type": "bool",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        "hello",
+        "he"
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        "abc",
+        "x"
+      ],
+      "expected": false
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        "",
+        ""
+      ],
+      "expected": true
+    }
+  ],
+  "hint_plan": {
+    "level_1": "startswith method.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "prefix",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "strings"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

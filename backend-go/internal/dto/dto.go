@@ -122,19 +122,27 @@ type Parameter struct {
 
 // CategorySummary is GET /api/categories item.
 type CategorySummary struct {
-	ID           string `json:"id"`
-	Title        string `json:"title"`
-	ProblemCount int    `json:"problem_count"`
+	ID                 string `json:"id"`
+	Title              string `json:"title"`
+	ProblemCount       int    `json:"problem_count"`
+	TrackID            string `json:"track_id,omitempty"`
+	TrackTitle         string `json:"track_title,omitempty"`
+	SectionDescription string `json:"section_description,omitempty"`
 }
 
 // ProblemSummary is GET /api/problems item.
 type ProblemSummary struct {
-	ID            string `json:"id"`
-	Title         string `json:"title"`
-	Difficulty    string `json:"difficulty"`
-	Category      string `json:"category"`
-	CategoryTitle string `json:"category_title"`
-	FunctionName  string `json:"function_name"`
+	ID            string   `json:"id"`
+	Title         string   `json:"title"`
+	Difficulty    string   `json:"difficulty"`
+	Category      string   `json:"category"`
+	CategoryTitle string   `json:"category_title"`
+	FunctionName  string   `json:"function_name"`
+	Slug          string   `json:"slug,omitempty"`
+	TrackID       string   `json:"track_id,omitempty"`
+	TrackTitle    string   `json:"track_title,omitempty"`
+	SkillTags     []string `json:"skill_tags,omitempty"`
+	Tags          []string `json:"tags,omitempty"`
 }
 
 // ProblemDetail is GET /api/problems/:id (no hidden test payloads).
@@ -155,6 +163,12 @@ type ProblemDetail struct {
 	ExpectedReturnType string      `json:"expected_return_type"`
 	VisibleTestCount   int         `json:"visible_test_count"`
 	HiddenTestCount    int         `json:"hidden_test_count"`
+	Slug               string      `json:"slug,omitempty"`
+	TrackID            string      `json:"track_id,omitempty"`
+	TrackTitle         string      `json:"track_title,omitempty"`
+	SectionDescription string      `json:"section_description,omitempty"`
+	SkillTags          []string    `json:"skill_tags,omitempty"`
+	Tags               []string    `json:"tags,omitempty"`
 }
 
 // RunJobSubmitResponse is returned from POST /api/run/jobs (async queue).

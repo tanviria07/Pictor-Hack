@@ -1,0 +1,84 @@
+{
+  "id": "precode-oo-06-point",
+  "slug": "precode-oo-06-point",
+  "title": "Point Distance",
+  "difficulty": "easy",
+  "category": "precode-oop-foundations",
+  "description": "Point(x,y) with distance_from_origin returning sqrt(x*x+y*y) \u2014 use **0.5 or math.sqrt.",
+  "examples": [
+    {
+      "input": "",
+      "output": ""
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "class",
+  "class_name": "Point",
+  "function_name": "Point",
+  "starter_code": "class Point:\n    def __init__(self, x, y):\n        pass\n    def distance_from_origin(self):\n        pass\n",
+  "parameters": [
+    {
+      "name": "x",
+      "type": "int"
+    },
+    {
+      "name": "y",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "class",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "ops": [
+        "Point",
+        "distance_from_origin"
+      ],
+      "args": [
+        [
+          3,
+          4
+        ],
+        []
+      ],
+      "expected": [
+        null,
+        5.0
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "ops": [
+        "Point",
+        "distance_from_origin"
+      ],
+      "args": [
+        [
+          0,
+          0
+        ],
+        []
+      ],
+      "expected": [
+        null,
+        0.0
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "**(1/2) for sqrt.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "point",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "classes",
+    "math"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

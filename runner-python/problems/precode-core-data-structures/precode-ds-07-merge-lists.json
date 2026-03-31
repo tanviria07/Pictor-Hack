@@ -1,0 +1,83 @@
+{
+  "id": "precode-ds-07-merge-lists",
+  "slug": "precode-ds-07-merge-lists",
+  "title": "Merge Two Lists",
+  "difficulty": "easy",
+  "category": "precode-core-data-structures",
+  "description": "Return concatenation a + b.",
+  "examples": [
+    {
+      "input": "[1],[2]",
+      "output": "[1,2]"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "merge_lists",
+  "starter_code": "def merge_lists(a, b):\n    pass\n",
+  "parameters": [
+    {
+      "name": "a",
+      "type": "List[int]"
+    },
+    {
+      "name": "b",
+      "type": "List[int]"
+    }
+  ],
+  "expected_return_type": "List[int]",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [],
+        [
+          1
+        ]
+      ],
+      "expected": [
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          1,
+          2
+        ],
+        [
+          3
+        ]
+      ],
+      "expected": [
+        1,
+        2,
+        3
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        [],
+        []
+      ],
+      "expected": []
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Use + on lists.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "concat",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "lists"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

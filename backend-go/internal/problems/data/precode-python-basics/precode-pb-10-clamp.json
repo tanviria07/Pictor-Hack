@@ -1,0 +1,79 @@
+{
+  "id": "precode-pb-10-clamp",
+  "slug": "precode-pb-10-clamp",
+  "title": "Clamp to Inclusive Range",
+  "difficulty": "medium",
+  "category": "precode-python-basics",
+  "description": "Clamp `x` to `[lo, hi]`.",
+  "examples": [
+    {
+      "input": "x=5,0,10",
+      "output": "5"
+    }
+  ],
+  "constraints": [
+    "lo <= hi"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "clamp",
+  "starter_code": "def clamp(x, lo, hi):\n    pass\n",
+  "parameters": [
+    {
+      "name": "x",
+      "type": "int"
+    },
+    {
+      "name": "lo",
+      "type": "int"
+    },
+    {
+      "name": "hi",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        5,
+        0,
+        10
+      ],
+      "expected": 5
+    },
+    {
+      "args": [
+        -1,
+        0,
+        3
+      ],
+      "expected": 0
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        3,
+        3,
+        3
+      ],
+      "expected": 3
+    }
+  ],
+  "hint_plan": {
+    "level_1": "min/max trick or if/elif.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "clamp",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "conditionals"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

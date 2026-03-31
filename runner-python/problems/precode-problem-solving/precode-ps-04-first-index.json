@@ -1,0 +1,76 @@
+{
+  "id": "precode-ps-04-first-index",
+  "slug": "precode-ps-04-first-index",
+  "title": "First Index Of Value",
+  "difficulty": "easy",
+  "category": "precode-problem-solving",
+  "description": "Return first index of `x` in `nums`, or -1.",
+  "examples": [
+    {
+      "input": "[1,2,3], 2",
+      "output": "1"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "first_index",
+  "starter_code": "def first_index(nums, x):\n    pass\n",
+  "parameters": [
+    {
+      "name": "nums",
+      "type": "List[int]"
+    },
+    {
+      "name": "x",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          3
+        ],
+        2
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        [],
+        1
+      ],
+      "expected": -1
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        [
+          5
+        ],
+        5
+      ],
+      "expected": 0
+    }
+  ],
+  "hint_plan": {
+    "level_1": "enumerate or range(len)",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "linear",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "loops"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

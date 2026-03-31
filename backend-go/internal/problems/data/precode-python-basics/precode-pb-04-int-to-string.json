@@ -1,0 +1,64 @@
+{
+  "id": "precode-pb-04-int-to-string",
+  "slug": "precode-pb-04-int-to-string",
+  "title": "Integer to String",
+  "difficulty": "easy",
+  "category": "precode-python-basics",
+  "description": "Convert `n` to its decimal string with `str`.",
+  "examples": [
+    {
+      "input": "42",
+      "output": "'42'"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "int_to_str",
+  "starter_code": "def int_to_str(n):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "str",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        0
+      ],
+      "expected": "0"
+    },
+    {
+      "args": [
+        -3
+      ],
+      "expected": "-3"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        1001
+      ],
+      "expected": "1001"
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Built-in str converts numbers.",
+    "level_2": "Call str on n.",
+    "level_3": "return str(n)",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "str(n)",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "strings",
+    "types"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

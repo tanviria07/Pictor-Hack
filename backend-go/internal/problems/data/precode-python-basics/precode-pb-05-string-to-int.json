@@ -1,0 +1,64 @@
+{
+  "id": "precode-pb-05-string-to-int",
+  "slug": "precode-pb-05-string-to-int",
+  "title": "String to Integer",
+  "difficulty": "easy",
+  "category": "precode-python-basics",
+  "description": "Parse valid integer string `s` with `int`.",
+  "examples": [
+    {
+      "input": "'12'",
+      "output": "12"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "str_to_int",
+  "starter_code": "def str_to_int(s):\n    pass\n",
+  "parameters": [
+    {
+      "name": "s",
+      "type": "str"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        "0"
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        "-7"
+      ],
+      "expected": -7
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        "404"
+      ],
+      "expected": 404
+    }
+  ],
+  "hint_plan": {
+    "level_1": "int() parses integer strings.",
+    "level_2": "return int(s)",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "int(s)",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "strings",
+    "types"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

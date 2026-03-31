@@ -1,0 +1,79 @@
+{
+  "id": "precode-op-01-shopping-cart",
+  "slug": "precode-op-01-shopping-cart",
+  "title": "Shopping Cart",
+  "difficulty": "medium",
+  "category": "precode-oop-practice",
+  "description": "Cart with add_item(price), total().",
+  "examples": [
+    {
+      "input": "",
+      "output": ""
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "class",
+  "class_name": "ShoppingCart",
+  "function_name": "ShoppingCart",
+  "starter_code": "class ShoppingCart:\n    def __init__(self):\n        pass\n    def add_item(self, price):\n        pass\n    def total(self):\n        pass\n",
+  "parameters": [],
+  "expected_return_type": "class",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "ops": [
+        "ShoppingCart",
+        "add_item",
+        "add_item",
+        "total"
+      ],
+      "args": [
+        [],
+        [
+          10
+        ],
+        [
+          5
+        ],
+        []
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        15
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "ops": [
+        "ShoppingCart",
+        "total"
+      ],
+      "args": [
+        [],
+        []
+      ],
+      "expected": [
+        null,
+        0
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Accumulate prices.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "cart",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "classes",
+    "methods"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

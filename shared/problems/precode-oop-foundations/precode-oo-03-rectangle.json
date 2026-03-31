@@ -1,0 +1,86 @@
+{
+  "id": "precode-oo-03-rectangle",
+  "slug": "precode-oo-03-rectangle",
+  "title": "Rectangle Area",
+  "difficulty": "easy",
+  "category": "precode-oop-foundations",
+  "description": "Rectangle(w,h) with area() and perimeter().",
+  "examples": [
+    {
+      "input": "",
+      "output": ""
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "class",
+  "class_name": "Rectangle",
+  "function_name": "Rectangle",
+  "starter_code": "class Rectangle:\n    def __init__(self, w, h):\n        pass\n    def area(self):\n        pass\n    def perimeter(self):\n        pass\n",
+  "parameters": [
+    {
+      "name": "w",
+      "type": "int"
+    },
+    {
+      "name": "h",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "class",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "ops": [
+        "Rectangle",
+        "area",
+        "perimeter"
+      ],
+      "args": [
+        [
+          3,
+          4
+        ],
+        [],
+        []
+      ],
+      "expected": [
+        null,
+        12,
+        14
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "ops": [
+        "Rectangle",
+        "area"
+      ],
+      "args": [
+        [
+          2,
+          2
+        ],
+        []
+      ],
+      "expected": [
+        null,
+        4
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Store w,h.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "rect",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "classes"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

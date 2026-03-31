@@ -1,0 +1,79 @@
+{
+  "id": "precode-db-03-mutable-default",
+  "slug": "precode-db-03-mutable-default",
+  "title": "Avoid Mutable Default",
+  "difficulty": "medium",
+  "category": "precode-debugging",
+  "description": "Append value to a list and return it. Starter uses mutable default list.",
+  "examples": [
+    {
+      "input": "1",
+      "output": "[1]"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "append_value",
+  "starter_code": "def append_value(value, items=[]):\n    items.append(value)\n    return items\n",
+  "parameters": [
+    {
+      "name": "value",
+      "type": "int"
+    },
+    {
+      "name": "items",
+      "type": "Optional[List[int]]"
+    }
+  ],
+  "expected_return_type": "List[int]",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        1,
+        null
+      ],
+      "expected": [
+        1
+      ]
+    },
+    {
+      "args": [
+        2,
+        [
+          1
+        ]
+      ],
+      "expected": [
+        1,
+        2
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        3,
+        []
+      ],
+      "expected": [
+        3
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Use None default and create new list inside.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "mutable default",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "debugging"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

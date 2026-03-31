@@ -1,0 +1,92 @@
+{
+  "id": "precode-ps-01-fizzbuzz-list",
+  "slug": "precode-ps-01-fizzbuzz-list",
+  "title": "FizzBuzz List To N",
+  "difficulty": "easy",
+  "category": "precode-problem-solving",
+  "description": "Return list of strings for 1..n using classic fizzbuzz rules.",
+  "examples": [
+    {
+      "input": "n=3",
+      "output": "['1','2','fizz']"
+    }
+  ],
+  "constraints": [
+    "n >= 1"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "fizzbuzz_list",
+  "starter_code": "def fizzbuzz_list(n):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "List[str]",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        3
+      ],
+      "expected": [
+        "1",
+        "2",
+        "fizz"
+      ]
+    },
+    {
+      "args": [
+        5
+      ],
+      "expected": [
+        "1",
+        "2",
+        "fizz",
+        "4",
+        "buzz"
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        15
+      ],
+      "expected": [
+        "1",
+        "2",
+        "fizz",
+        "4",
+        "buzz",
+        "fizz",
+        "7",
+        "8",
+        "fizz",
+        "buzz",
+        "11",
+        "fizz",
+        "13",
+        "14",
+        "fizzbuzz"
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Build result in a loop.",
+    "level_2": "Check divisibility in order 15,3,5.",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "iterate",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "loops",
+    "conditionals"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

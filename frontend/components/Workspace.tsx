@@ -272,16 +272,27 @@ export function Workspace() {
               Pictor Hack
             </span>
             <span className="hidden text-2xs text-zinc-600 sm:inline">
-              NeetCode-style
+              {detail?.track_id === "precode100"
+                ? "PreCode foundations"
+                : "NeetCode-style"}
             </span>
           </div>
           <p className="mt-0.5 text-2xs text-zinc-500">
-            You write the solution; we run tests and give structured feedback.
+            {detail?.track_id === "precode100"
+              ? "Foundations-first practice: small steps, clear tests, and hints that teach."
+              : "You write the solution; we run tests and give structured feedback."}
           </p>
         </div>
         {detail && (
-          <div className="hidden shrink-0 items-center gap-2 sm:flex">
-            <DifficultyBadge difficulty={detail.difficulty} />
+          <div className="hidden shrink-0 flex-col items-end gap-1 sm:flex">
+            <div className="flex items-center gap-2">
+              {detail.track_title && (
+                <span className="rounded border border-emerald-800/50 bg-emerald-950/40 px-2 py-0.5 text-2xs font-medium text-emerald-200/90">
+                  {detail.track_title}
+                </span>
+              )}
+              <DifficultyBadge difficulty={detail.difficulty} />
+            </div>
             <span className="text-2xs text-zinc-600">{detail.category_title}</span>
           </div>
         )}
@@ -313,11 +324,30 @@ export function Workspace() {
                 {loading === "load" && !detail ? "Loading..." : title}
               </h1>
               {detail && (
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <DifficultyBadge difficulty={detail.difficulty} />
-                  <code className="break-all font-mono text-2xs text-zinc-500">
-                    {signature}
-                  </code>
+                <div className="mt-2 space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {detail.track_title && (
+                      <span className="rounded border border-emerald-800/50 bg-emerald-950/40 px-2 py-0.5 text-2xs font-medium text-emerald-200/90">
+                        {detail.track_title}
+                      </span>
+                    )}
+                    <DifficultyBadge difficulty={detail.difficulty} />
+                    <code className="break-all font-mono text-2xs text-zinc-500">
+                      {signature}
+                    </code>
+                  </div>
+                  {detail.skill_tags && detail.skill_tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {detail.skill_tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-md border border-zinc-700/60 bg-zinc-900/60 px-2 py-0.5 text-2xs text-zinc-400"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

@@ -1,0 +1,71 @@
+{
+  "id": "precode-pb-02-sum-two-integers",
+  "slug": "precode-pb-02-sum-two-integers",
+  "title": "Sum Two Integers",
+  "difficulty": "easy",
+  "category": "precode-python-basics",
+  "description": "Return the sum of `a` and `b`.",
+  "examples": [
+    {
+      "input": "2, 3",
+      "output": "5"
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "sum_two",
+  "starter_code": "def sum_two(a, b):\n    pass\n",
+  "parameters": [
+    {
+      "name": "a",
+      "type": "int"
+    },
+    {
+      "name": "b",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "int",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        2,
+        3
+      ],
+      "expected": 5
+    },
+    {
+      "args": [
+        0,
+        0
+      ],
+      "expected": 0
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        100,
+        -25
+      ],
+      "expected": 75
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Add with `+`.",
+    "level_2": "Both parameters are integers.",
+    "level_3": "return a + b",
+    "level_4": "Works for negatives."
+  },
+  "canonical_solution_summary": "return a + b",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "functions",
+    "arithmetic"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

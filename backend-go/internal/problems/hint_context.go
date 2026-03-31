@@ -12,6 +12,8 @@ type HintPromptContext struct {
 	Summary      string // Short narrative: truncated description + constraints + reference angle
 	Signature    string // Expected entrypoint shape (names only)
 	FunctionName string
+	TrackID      string
+	SkillTags    []string
 }
 
 const maxDescriptionRunes = 450
@@ -55,12 +57,15 @@ func BuildHintPromptContext(problemID string) (HintPromptContext, error) {
 		sig = "class " + p.ClassName
 	}
 
+	tid, _ := TrackMetaForCategory(p.Category)
 	return HintPromptContext{
 		Title:        p.Title,
 		Difficulty:   p.Difficulty,
 		Summary:      strings.TrimSpace(sb.String()),
 		Signature:    sig,
 		FunctionName: p.FunctionName,
+		TrackID:      tid,
+		SkillTags:    append([]string(nil), p.SkillTags...),
 	}, nil
 }
 

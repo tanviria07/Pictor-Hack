@@ -42,8 +42,12 @@ func (s *HintService) Hint(ctx context.Context, req dto.HintRequest) (*dto.HintR
 		return nil, err
 	}
 
+	sys := coach.SystemHintJSON
+	if pctx.TrackID == "precode100" {
+		sys = coach.SystemHintPreCode
+	}
 	if s.deepseek.Enabled() {
-		raw, err := s.deepseek.HintJSONCompletion(ctx, coach.SystemHintJSON, userMsg)
+		raw, err := s.deepseek.HintJSONCompletion(ctx, sys, userMsg)
 		if err == nil && raw != "" {
 			parsed, perr := deepseek.ParseHintJSON(raw)
 			if perr == nil {

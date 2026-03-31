@@ -1,0 +1,74 @@
+{
+  "id": "precode-oo-09-timer",
+  "slug": "precode-oo-09-timer",
+  "title": "Stopwatch Ticks",
+  "difficulty": "easy",
+  "category": "precode-oop-foundations",
+  "description": "Timer with tick() incrementing count, count() returns ticks.",
+  "examples": [
+    {
+      "input": "",
+      "output": ""
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "class",
+  "class_name": "Timer",
+  "function_name": "Timer",
+  "starter_code": "class Timer:\n    def __init__(self):\n        pass\n    def tick(self):\n        pass\n    def count(self):\n        pass\n",
+  "parameters": [],
+  "expected_return_type": "class",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "ops": [
+        "Timer",
+        "tick",
+        "tick",
+        "count"
+      ],
+      "args": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        2
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "ops": [
+        "Timer",
+        "count"
+      ],
+      "args": [
+        [],
+        []
+      ],
+      "expected": [
+        null,
+        0
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Internal counter.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "timer",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "classes"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

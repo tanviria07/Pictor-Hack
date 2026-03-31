@@ -1,0 +1,77 @@
+{
+  "id": "precode-cf-09-fizzbuzz-value",
+  "slug": "precode-cf-09-fizzbuzz-value",
+  "title": "FizzBuzz Single",
+  "difficulty": "easy",
+  "category": "precode-control-flow",
+  "description": "Classic fizzbuzz for one n (positive).",
+  "examples": [
+    {
+      "input": "15",
+      "output": "'fizzbuzz'"
+    }
+  ],
+  "constraints": [
+    "n >= 1"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "fizzbuzz_value",
+  "starter_code": "def fizzbuzz_value(n):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "str",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        3
+      ],
+      "expected": "fizz"
+    },
+    {
+      "args": [
+        5
+      ],
+      "expected": "buzz"
+    },
+    {
+      "args": [
+        15
+      ],
+      "expected": "fizzbuzz"
+    },
+    {
+      "args": [
+        7
+      ],
+      "expected": "7"
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        30
+      ],
+      "expected": "fizzbuzz"
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Check 15 first.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "fizzbuzz",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "conditionals"
+  ],
+  "tags": [
+    "precode"
+  ]
+}

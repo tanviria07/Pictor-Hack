@@ -4,7 +4,15 @@ import type { CategorySummary, ProblemSummary } from "./types";
 export function deriveCategoriesFromProblems(
   problems: ProblemSummary[],
 ): CategorySummary[] {
-  const map = new Map<string, { title: string; count: number }>();
+  const map = new Map<
+    string,
+    {
+      title: string;
+      count: number;
+      trackId?: string;
+      trackTitle?: string;
+    }
+  >();
   for (const p of problems) {
     const id = p.category || "uncategorized";
     const title = p.category_title || id;
@@ -12,7 +20,12 @@ export function deriveCategoriesFromProblems(
     if (cur) {
       cur.count += 1;
     } else {
-      map.set(id, { title, count: 1 });
+      map.set(id, {
+        title,
+        count: 1,
+        trackId: p.track_id,
+        trackTitle: p.track_title,
+      });
     }
   }
   return Array.from(map.entries())
@@ -20,6 +33,13 @@ export function deriveCategoriesFromProblems(
       id,
       title: v.title,
       problem_count: v.count,
+      track_id: v.trackId,
+      track_title: v.trackTitle,
     }))
-    .sort((a, b) => a.title.localeCompare(b.title));
+    .sort((a, b) => {
+      const ap = a.track_id === "precode100" ? 0 : 1;
+      const bp = b.track_id === "precode100" ? 0 : 1;
+      if (ap !== bp) return ap - bp;
+      return a.title.localeCompare(b.title);
+    });
 }

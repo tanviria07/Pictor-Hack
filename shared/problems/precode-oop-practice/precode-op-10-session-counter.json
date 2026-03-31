@@ -1,0 +1,86 @@
+{
+  "id": "precode-op-10-session-counter",
+  "slug": "precode-op-10-session-counter",
+  "title": "Login Session",
+  "difficulty": "easy",
+  "category": "precode-oop-practice",
+  "description": "Session with login() sets active True, logout() False, is_active().",
+  "examples": [
+    {
+      "input": "",
+      "output": ""
+    }
+  ],
+  "constraints": [],
+  "execution_mode": "class",
+  "class_name": "Session",
+  "function_name": "Session",
+  "starter_code": "class Session:\n    def __init__(self):\n        pass\n    def login(self):\n        pass\n    def logout(self):\n        pass\n    def is_active(self):\n        pass\n",
+  "parameters": [],
+  "expected_return_type": "class",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "ops": [
+        "Session",
+        "is_active",
+        "login",
+        "is_active",
+        "logout",
+        "is_active"
+      ],
+      "args": [
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+      ],
+      "expected": [
+        null,
+        false,
+        null,
+        true,
+        null,
+        false
+      ]
+    }
+  ],
+  "hidden_tests": [
+    {
+      "ops": [
+        "Session",
+        "login",
+        "logout",
+        "is_active"
+      ],
+      "args": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "expected": [
+        null,
+        null,
+        null,
+        false
+      ]
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Boolean flag.",
+    "level_2": "",
+    "level_3": "",
+    "level_4": ""
+  },
+  "canonical_solution_summary": "session",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "classes"
+  ],
+  "tags": [
+    "precode"
+  ]
+}
