@@ -4,7 +4,7 @@
   "title": "Sum Nested One Level",
   "difficulty": "medium",
   "category": "precode-core-data-structures",
-  "description": "nested is list of lists of ints; return total of all ints.",
+  "description": "`nested` is a list of lists of integers (one level of nesting). Return the sum of every integer inside.",
   "examples": [
     {
       "input": "[[1,2],[3]]",
@@ -73,6 +73,7 @@
     "loops"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "data-structures"
   ]
 }

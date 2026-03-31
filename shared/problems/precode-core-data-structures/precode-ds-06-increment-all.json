@@ -4,7 +4,7 @@
   "title": "Increment All Elements",
   "difficulty": "easy",
   "category": "precode-core-data-structures",
-  "description": "Return new list with each value +1.",
+  "description": "Return a **new** list where each number is one greater than in `nums` (do not mutate the input list).",
   "examples": [
     {
       "input": "[0,1]",
@@ -68,6 +68,7 @@
     "lists"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "data-structures"
   ]
 }

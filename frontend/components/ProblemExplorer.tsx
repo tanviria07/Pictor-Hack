@@ -299,6 +299,7 @@ export function ProblemExplorer({
                                       <DifficultyBadge
                                         difficulty={problem.difficulty}
                                         compact
+                                        trackId={problem.track_id}
                                       />
                                     </button>
                                   </li>

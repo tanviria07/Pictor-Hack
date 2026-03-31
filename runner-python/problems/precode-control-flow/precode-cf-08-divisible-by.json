@@ -1,0 +1,81 @@
+{
+  "id": "precode-cf-08-divisible-by",
+  "slug": "precode-cf-08-divisible-by",
+  "title": "Evenly Divisible",
+  "difficulty": "easy",
+  "category": "precode-control-flow",
+  "description": "Return `True` if `n` is evenly divisible by `k` (remainder zero: `n % k == 0`). Assume `k > 0`. Note: `0` is divisible by any positive `k`.",
+  "examples": [
+    {
+      "input": "10, 2",
+      "output": "True"
+    }
+  ],
+  "constraints": [
+    "k > 0"
+  ],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "is_divisible",
+  "starter_code": "def is_divisible(n, k):\n    pass\n",
+  "parameters": [
+    {
+      "name": "n",
+      "type": "int"
+    },
+    {
+      "name": "k",
+      "type": "int"
+    }
+  ],
+  "expected_return_type": "bool",
+  "comparison": "",
+  "visible_tests": [
+    {
+      "args": [
+        10,
+        2
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        10,
+        3
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        0,
+        5
+      ],
+      "expected": true
+    }
+  ],
+  "hidden_tests": [
+    {
+      "args": [
+        25,
+        5
+      ],
+      "expected": true
+    }
+  ],
+  "hint_plan": {
+    "level_1": "Divisibility means remainder 0 when you divide.",
+    "level_2": "The operator `%` gives the remainder.",
+    "level_3": "Return whether `n % k == 0`.",
+    "level_4": "Think about why 0 % k is 0 for positive k."
+  },
+  "canonical_solution_summary": "n % k == 0",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": [
+    "conditionals",
+    "arithmetic"
+  ],
+  "tags": [
+    "precode",
+    "control-flow"
+  ]
+}

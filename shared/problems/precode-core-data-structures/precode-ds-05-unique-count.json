@@ -4,7 +4,7 @@
   "title": "Unique Count",
   "difficulty": "easy",
   "category": "precode-core-data-structures",
-  "description": "Return number of distinct ints in nums.",
+  "description": "Return how many **different** integers appear in `nums` (duplicates count once).",
   "examples": [
     {
       "input": "[1,1,2]",
@@ -67,6 +67,7 @@
     "lists"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "data-structures"
   ]
 }

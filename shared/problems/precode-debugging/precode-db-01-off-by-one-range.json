@@ -47,10 +47,10 @@
     }
   ],
   "hint_plan": {
-    "level_1": "Trace loop: range(n) starts at 0.",
-    "level_2": "",
-    "level_3": "",
-    "level_4": ""
+    "level_1": "You want 1 + 2 + \u2026 + n, but the loop adds 0 + 1 + \u2026 + (n - 1).",
+    "level_2": "`range(n)` runs `n` times starting at 0; it never includes `n` as a value to add.",
+    "level_3": "Loop over `range(1, n + 1)` or change what you add each step.",
+    "level_4": "Trace with n=5: current code sums 0..4, not 1..5."
   },
   "canonical_solution_summary": "range(1,n+1)",
   "disallowed_full_solution_exposure": true,
@@ -59,6 +59,7 @@
     "loops"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "debugging"
   ]
 }

@@ -1,17 +1,19 @@
 {
-  "id": "precode-pb-01-return-study-constant",
-  "slug": "precode-pb-01-return-study-constant",
-  "title": "Return a Constant",
+  "id": "precode-pb-01-return-seven",
+  "slug": "precode-pb-01-return-seven",
+  "title": "Return Seven",
   "difficulty": "easy",
   "category": "precode-python-basics",
-  "description": "Implement `answer` so it returns the integer `7`.",
+  "description": "Define a function named `answer` with no parameters. It should **return** the integer `7`. In Python, `print` shows output to the user; `return` hands a value back to the caller\u2014here we only need `return`.",
   "examples": [
     {
       "input": "answer()",
       "output": "7"
     }
   ],
-  "constraints": [],
+  "constraints": [
+    "The function name must be exactly `answer`."
+  ],
   "execution_mode": "function",
   "class_name": "",
   "function_name": "answer",
@@ -32,10 +34,10 @@
     }
   ],
   "hint_plan": {
-    "level_1": "Return a single integer literal.",
-    "level_2": "The name must be `answer`.",
-    "level_3": "Use `return 7`.",
-    "level_4": "Do not print; return."
+    "level_1": "The tests call `answer()` and check the returned value.",
+    "level_2": "Use a `return` statement, not `print`.",
+    "level_3": "Return the integer 7: `return 7`.",
+    "level_4": "Run passes when visible and hidden checks agree with the reference behavior."
   },
   "canonical_solution_summary": "return 7",
   "disallowed_full_solution_exposure": true,

@@ -1,10 +1,10 @@
 {
   "id": "precode-ps-10-total-service-time",
   "slug": "precode-ps-10-total-service-time",
-  "title": "Sequential Service Times",
-  "difficulty": "medium",
+  "title": "Total Minutes for All Jobs",
+  "difficulty": "easy",
   "category": "precode-problem-solving",
-  "description": "One clerk serves jobs in order; return sum of service_times (total time to finish all).",
+  "description": "Imagine a single clerk handles jobs back-to-back. Each value in `service_times` is the minutes that job takes. Return the **total minutes** for every job combined\u2014that is the sum of all numbers in the list.",
   "examples": [
     {
       "input": "[3,2,1]",
@@ -64,10 +64,10 @@
     }
   ],
   "hint_plan": {
-    "level_1": "Sum the list.",
-    "level_2": "",
-    "level_3": "",
-    "level_4": ""
+    "level_1": "Total time is additive when jobs run one after another.",
+    "level_2": "You do not need nested loops here.",
+    "level_3": "Python\u2019s `sum` on the list matches the story.",
+    "level_4": "Empty list \u2192 0."
   },
   "canonical_solution_summary": "sum",
   "disallowed_full_solution_exposure": true,
@@ -76,6 +76,7 @@
     "lists"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "problem-solving"
   ]
 }

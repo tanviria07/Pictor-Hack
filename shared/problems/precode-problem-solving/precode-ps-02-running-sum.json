@@ -4,7 +4,7 @@
   "title": "Running Sum",
   "difficulty": "easy",
   "category": "precode-problem-solving",
-  "description": "Return list of prefix sums.",
+  "description": "Return a new list of **running totals**: index `i` holds the sum of `nums[0]` through `nums[i]`.",
   "examples": [
     {
       "input": "[1,2,3]",
@@ -71,6 +71,7 @@
     "loops"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "problem-solving"
   ]
 }

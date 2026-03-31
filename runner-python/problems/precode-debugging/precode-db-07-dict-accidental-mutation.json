@@ -72,9 +72,9 @@
     }
   ],
   "hint_plan": {
-    "level_1": "Copy dict first: dict(d) or d.copy().",
-    "level_2": "",
-    "level_3": "",
+    "level_1": "Assigning `d[k] = v` changes the dict the caller passed in.",
+    "level_2": "Callers expect the original mapping left unchanged.",
+    "level_3": "Copy first: `out = dict(d)` then `out[k] = v` and return `out`.",
     "level_4": ""
   },
   "canonical_solution_summary": "copy",
@@ -84,6 +84,7 @@
     "dictionaries"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "debugging"
   ]
 }

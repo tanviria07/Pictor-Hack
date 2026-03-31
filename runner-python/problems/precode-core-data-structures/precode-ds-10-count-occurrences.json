@@ -4,7 +4,7 @@
   "title": "Count Value Occurrences",
   "difficulty": "easy",
   "category": "precode-core-data-structures",
-  "description": "Return how many times x appears in nums.",
+  "description": "Return how many times `x` appears in `nums`.",
   "examples": [
     {
       "input": "[1,1,2],1",
@@ -74,6 +74,7 @@
     "loops"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "data-structures"
   ]
 }

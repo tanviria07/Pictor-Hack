@@ -4,7 +4,7 @@
   "title": "Sum 1 Through N",
   "difficulty": "easy",
   "category": "precode-control-flow",
-  "description": "Return 1+...+n for n>=1.",
+  "description": "Return the sum 1 + 2 + \u2026 + `n` for `n >= 1` (triangular number).",
   "examples": [
     {
       "input": "5",
@@ -61,6 +61,7 @@
     "arithmetic"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "control-flow"
   ]
 }

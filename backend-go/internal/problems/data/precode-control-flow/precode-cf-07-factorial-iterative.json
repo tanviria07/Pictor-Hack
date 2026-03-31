@@ -4,7 +4,7 @@
   "title": "Factorial Iterative",
   "difficulty": "easy",
   "category": "precode-control-flow",
-  "description": "Return n! for 0<=n<=12.",
+  "description": "Return `n` factorial (`n!`) for `0 <= n <= 12`. Use a loop (no recursion here).",
   "examples": [
     {
       "input": "5",
@@ -58,6 +58,7 @@
     "loops"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "control-flow"
   ]
 }

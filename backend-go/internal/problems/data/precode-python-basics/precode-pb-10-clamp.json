@@ -2,17 +2,17 @@
   "id": "precode-pb-10-clamp",
   "slug": "precode-pb-10-clamp",
   "title": "Clamp to Inclusive Range",
-  "difficulty": "medium",
+  "difficulty": "easy",
   "category": "precode-python-basics",
-  "description": "Clamp `x` to `[lo, hi]`.",
+  "description": "Keep `x` inside the inclusive range `[lo, hi]`: if `x < lo` return `lo`, if `x > hi` return `hi`, else return `x`.",
   "examples": [
     {
-      "input": "x=5,0,10",
+      "input": "x=5, lo=0, hi=10",
       "output": "5"
     }
   ],
   "constraints": [
-    "lo <= hi"
+    "Assume lo <= hi."
   ],
   "execution_mode": "function",
   "class_name": "",
@@ -74,6 +74,7 @@
     "conditionals"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "basics"
   ]
 }

@@ -4,7 +4,7 @@
   "title": "Merge Two Lists",
   "difficulty": "easy",
   "category": "precode-core-data-structures",
-  "description": "Return concatenation a + b.",
+  "description": "Return one list containing every element of `a` followed by every element of `b` (list concatenation).",
   "examples": [
     {
       "input": "[1],[2]",
@@ -78,6 +78,7 @@
     "lists"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "data-structures"
   ]
 }

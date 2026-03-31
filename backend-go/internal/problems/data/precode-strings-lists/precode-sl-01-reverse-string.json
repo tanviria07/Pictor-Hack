@@ -59,6 +59,7 @@
     "slicing"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "strings-lists"
   ]
 }

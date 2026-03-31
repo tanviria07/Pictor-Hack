@@ -4,7 +4,7 @@
   "title": "Count Divisors",
   "difficulty": "easy",
   "category": "precode-control-flow",
-  "description": "Count `d` in `1..n` with `n % d == 0`.",
+  "description": "Count how many integers `d` from 1 through `n` divide `n` evenly (`n % d == 0`).",
   "examples": [
     {
       "input": "6",
@@ -61,6 +61,7 @@
     "functions"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "control-flow"
   ]
 }

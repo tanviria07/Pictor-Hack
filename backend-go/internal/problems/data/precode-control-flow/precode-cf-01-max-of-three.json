@@ -73,6 +73,7 @@
     "functions"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "control-flow"
   ]
 }

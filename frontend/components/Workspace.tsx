@@ -291,7 +291,10 @@ export function Workspace() {
                   {detail.track_title}
                 </span>
               )}
-              <DifficultyBadge difficulty={detail.difficulty} />
+              <DifficultyBadge
+                difficulty={detail.difficulty}
+                trackId={detail.track_id}
+              />
             </div>
             <span className="text-2xs text-zinc-600">{detail.category_title}</span>
           </div>
@@ -331,7 +334,10 @@ export function Workspace() {
                         {detail.track_title}
                       </span>
                     )}
-                    <DifficultyBadge difficulty={detail.difficulty} />
+                    <DifficultyBadge
+                      difficulty={detail.difficulty}
+                      trackId={detail.track_id}
+                    />
                     <code className="break-all font-mono text-2xs text-zinc-500">
                       {signature}
                     </code>

@@ -4,7 +4,7 @@
   "title": "Leap Year",
   "difficulty": "easy",
   "category": "precode-control-flow",
-  "description": "Gregorian leap year rules.",
+  "description": "A year is a leap year in the Gregorian calendar if it is divisible by 4, except years divisible by 100, unless also divisible by 400. Return whether `year` is a leap year.",
   "examples": [
     {
       "input": "2000",
@@ -64,6 +64,7 @@
     "conditionals"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "control-flow"
   ]
 }

@@ -63,10 +63,10 @@
     }
   ],
   "hint_plan": {
-    "level_1": "Use None default and create new list inside.",
-    "level_2": "",
-    "level_3": "",
-    "level_4": ""
+    "level_1": "A default argument like `[]` is created once and reused across calls.",
+    "level_2": "That shared list makes later calls see leftover items\u2014classic Python gotcha.",
+    "level_3": "Use `items=None` and set `items = []` inside the function when needed.",
+    "level_4": "Or build a fresh list each time before appending."
   },
   "canonical_solution_summary": "mutable default",
   "disallowed_full_solution_exposure": true,
@@ -74,6 +74,7 @@
     "debugging"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "debugging"
   ]
 }

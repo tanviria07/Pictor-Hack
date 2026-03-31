@@ -4,7 +4,7 @@
   "title": "Last List Element",
   "difficulty": "easy",
   "category": "precode-core-data-structures",
-  "description": "Return last element of non-empty `items`.",
+  "description": "Return the last element of non-empty `items`.",
   "examples": [
     {
       "input": "[1,2,3]",
@@ -69,6 +69,7 @@
     "lists"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "data-structures"
   ]
 }

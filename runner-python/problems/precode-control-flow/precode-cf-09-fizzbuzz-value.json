@@ -4,7 +4,7 @@
   "title": "FizzBuzz Single",
   "difficulty": "easy",
   "category": "precode-control-flow",
-  "description": "Classic fizzbuzz for one n (positive).",
+  "description": "For a positive integer `n`, return a string: `\"fizzbuzz\"` if divisible by 15, `\"fizz\"` by 3, `\"buzz\"` by 5, otherwise the decimal string of `n` (e.g. `\"7\"`).",
   "examples": [
     {
       "input": "15",
@@ -72,6 +72,7 @@
     "conditionals"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "control-flow"
   ]
 }

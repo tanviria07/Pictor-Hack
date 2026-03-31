@@ -1,10 +1,10 @@
 {
   "id": "precode-rc-10-gcd-rec",
   "slug": "precode-rc-10-gcd-rec",
-  "title": "GCD Euclidean Recursive",
+  "title": "Greatest Common Divisor (Recursive)",
   "difficulty": "medium",
   "category": "precode-recursion",
-  "description": "Return gcd(a,b) for non-negative integers (gcd(n,0)=n).",
+  "description": "Return the **greatest common divisor** of non-negative integers `a` and `b` (the largest integer that divides both). Use the usual rule: `gcd(n, 0) = n`. This is the classic Euclidean algorithm\u2014handy for simplifying ratios and shared measures.",
   "examples": [
     {
       "input": "48,18",
@@ -66,6 +66,7 @@
     "math"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "recursion"
   ]
 }

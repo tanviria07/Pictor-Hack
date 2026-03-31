@@ -4,7 +4,7 @@
   "title": "Four-Function Calculator",
   "difficulty": "easy",
   "category": "precode-control-flow",
-  "description": "`op` is '+', '-', '*', or '//'. Integer division; b never 0.",
+  "description": "`op` is '+', '-', '*', or '//'. Use integer division for '//'; `b` is never 0.",
   "examples": [
     {
       "input": "6,2,'//'",
@@ -73,6 +73,7 @@
     "strings"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "control-flow"
   ]
 }

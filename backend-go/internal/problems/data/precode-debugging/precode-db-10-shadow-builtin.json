@@ -53,9 +53,9 @@
     }
   ],
   "hint_plan": {
-    "level_1": "Rename inner counter variable.",
-    "level_2": "",
-    "level_3": "",
+    "level_1": "The name `len` now refers to an integer, so `len(nums)` no longer calls the built-in.",
+    "level_2": "Shadowing builtins causes confusing `TypeError`s.",
+    "level_3": "Rename the counter (e.g. `count`) and use the real `len` or your counter consistently.",
     "level_4": ""
   },
   "canonical_solution_summary": "no shadow",
@@ -64,6 +64,7 @@
     "debugging"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "debugging"
   ]
 }

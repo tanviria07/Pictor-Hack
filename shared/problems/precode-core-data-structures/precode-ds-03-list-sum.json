@@ -4,7 +4,7 @@
   "title": "Sum a List",
   "difficulty": "easy",
   "category": "precode-core-data-structures",
-  "description": "Return sum of ints in nums.",
+  "description": "Return the sum of all integers in `nums` (empty list sums to `0`).",
   "examples": [
     {
       "input": "[1,2,3]",
@@ -67,6 +67,7 @@
     "loops"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "data-structures"
   ]
 }

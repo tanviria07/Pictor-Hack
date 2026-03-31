@@ -65,9 +65,9 @@
     }
   ],
   "hint_plan": {
-    "level_1": "Slice copy before reverse or use reversed(list).",
-    "level_2": "",
-    "level_3": "",
+    "level_1": "`.reverse()` reverses the list **in place** and returns `None`.",
+    "level_2": "The caller\u2019s list is modified, which breaks the \u201ccopy\u201d requirement.",
+    "level_3": "Work on a copy: `nums[::-1]` or `list(reversed(nums))`.",
     "level_4": ""
   },
   "canonical_solution_summary": "copy",
@@ -77,6 +77,7 @@
     "lists"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "debugging"
   ]
 }

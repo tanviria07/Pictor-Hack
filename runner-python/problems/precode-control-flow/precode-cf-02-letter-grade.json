@@ -4,7 +4,7 @@
   "title": "Letter Grade",
   "difficulty": "easy",
   "category": "precode-control-flow",
-  "description": "Map 0-100 score to A/B/C/D/F (90/80/70/60 thresholds).",
+  "description": "Map a score from 0\u2013100 to a letter grade: A\u226590, B\u226580, C\u226570, D\u226560, else F.",
   "examples": [
     {
       "input": "92",
@@ -82,6 +82,7 @@
     "conditionals"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "control-flow"
   ]
 }

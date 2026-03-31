@@ -1,5 +1,45 @@
 import type { CategorySummary, ProblemSummary } from "./types";
 
+/**
+ * Matches backend `AllCategories` order so the sidebar stays curriculum-ordered
+ * when the client falls back to deriving categories from `/api/problems` alone.
+ */
+export const CURRICULUM_CATEGORY_ORDER: readonly string[] = [
+  "precode-python-basics",
+  "precode-control-flow",
+  "precode-core-data-structures",
+  "precode-strings-lists",
+  "precode-dicts-sets",
+  "precode-problem-solving",
+  "precode-recursion",
+  "precode-oop-foundations",
+  "precode-oop-practice",
+  "precode-debugging",
+  "arrays-hashing",
+  "two-pointers",
+  "sliding-window",
+  "stack",
+  "binary-search",
+  "linked-list",
+  "trees",
+  "tries",
+  "heap-priority-queue",
+  "backtracking",
+  "graphs",
+  "advanced-graphs",
+  "dp-1d",
+  "dp-2d",
+  "greedy",
+  "intervals",
+  "math-geometry",
+  "bit-manipulation",
+];
+
+function curriculumIndex(id: string): number {
+  const i = CURRICULUM_CATEGORY_ORDER.indexOf(id);
+  return i === -1 ? 10_000 : i;
+}
+
 /** Build category rows from problem summaries when GET /api/categories is unavailable. */
 export function deriveCategoriesFromProblems(
   problems: ProblemSummary[],
@@ -37,9 +77,9 @@ export function deriveCategoriesFromProblems(
       track_title: v.trackTitle,
     }))
     .sort((a, b) => {
-      const ap = a.track_id === "precode100" ? 0 : 1;
-      const bp = b.track_id === "precode100" ? 0 : 1;
-      if (ap !== bp) return ap - bp;
+      const oa = curriculumIndex(a.id);
+      const ob = curriculumIndex(b.id);
+      if (oa !== ob) return oa - ob;
       return a.title.localeCompare(b.title);
     });
 }

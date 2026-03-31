@@ -301,3 +301,35 @@ func TestGetRunJob_routeMissing(t *testing.T) {
 		t.Fatalf("expected 404, got %d", rec.Code)
 	}
 }
+
+// Regression: GET /api/problems/:id must never expose hidden test payloads or solution summaries.
+func TestGetProblem_publicResponseShape(t *testing.T) {
+	h, cleanup := newTestHandler(t, nil)
+	defer cleanup()
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
+	rec := httptest.NewRecorder()
+	srv.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/api/problems/precode-pb-01-return-seven", nil))
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status %d %s", rec.Code, rec.Body.String())
+	}
+	var m map[string]json.RawMessage
+	if err := json.Unmarshal(rec.Body.Bytes(), &m); err != nil {
+		t.Fatal(err)
+	}
+	for _, leak := range []string{
+		"hidden_tests",
+		"visible_tests",
+		"canonical_solution_summary",
+		"hint_plan",
+	} {
+		if _, ok := m[leak]; ok {
+			t.Fatalf("public API must not include %q", leak)
+		}
+	}
+	if _, ok := m["hidden_test_count"]; !ok {
+		t.Fatal("expected hidden_test_count for UI")
+	}
+	if _, ok := m["visible_test_count"]; !ok {
+		t.Fatal("expected visible_test_count for UI")
+	}
+}

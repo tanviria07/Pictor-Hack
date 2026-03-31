@@ -4,7 +4,7 @@
   "title": "FizzBuzz List To N",
   "difficulty": "easy",
   "category": "precode-problem-solving",
-  "description": "Return list of strings for 1..n using classic fizzbuzz rules.",
+  "description": "Build a list of strings for the integers `1` through `n` (inclusive) using the usual FizzBuzz rules.",
   "examples": [
     {
       "input": "n=3",
@@ -87,6 +87,7 @@
     "conditionals"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "problem-solving"
   ]
 }

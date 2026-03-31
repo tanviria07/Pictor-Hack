@@ -4,7 +4,7 @@
   "title": "Count Non-Overlapping Substrings",
   "difficulty": "medium",
   "category": "precode-strings-lists",
-  "description": "Count non-overlapping occurrences of `sub` in `s` (skip ahead after each match).",
+  "description": "Count how many times `sub` appears in `s` **without overlaps**: after each match, continue searching **after** the end of that match.",
   "examples": [
     {
       "input": "aaaa, aa",
@@ -65,6 +65,7 @@
     "strings"
   ],
   "tags": [
-    "precode"
+    "precode",
+    "strings-lists"
   ]
 }
