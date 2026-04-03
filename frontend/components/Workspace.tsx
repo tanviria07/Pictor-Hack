@@ -43,8 +43,15 @@ const PythonEditor = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-full min-h-[200px] items-center justify-center bg-surface-code text-xs text-zinc-500">
-        Loading editor...
+      <div className="flex h-full min-h-[240px] flex-col bg-[#0d0d12]">
+        <div className="h-9 shrink-0 border-b border-zinc-800/80 bg-[#08080c]" />
+        <div className="flex flex-1 animate-pulse flex-col gap-2 p-4">
+          <div className="h-3 w-3/4 rounded bg-zinc-800/60" />
+          <div className="h-3 w-1/2 rounded bg-zinc-800/40" />
+          <div className="h-3 w-5/6 rounded bg-zinc-800/50" />
+          <div className="mt-4 h-3 w-2/3 rounded bg-zinc-800/35" />
+        </div>
+        <div className="h-8 shrink-0 border-t border-zinc-800/80 bg-[#08080c]" />
       </div>
     ),
   },
@@ -429,19 +436,36 @@ export function Workspace() {
               </button>
             </div>
 
-            <div className="grid min-h-0 flex-1 overflow-hidden grid-rows-[minmax(280px,1fr)_minmax(220px,38%)]">
-              <div className="flex min-h-0 flex-col overflow-hidden border-b border-border bg-surface-code">
-                <div className="flex shrink-0 items-center justify-between border-b border-border/80 px-4 py-2">
-                  <span className="text-2xs font-medium uppercase tracking-wider text-zinc-500">
-                    Code
+            <div className="grid min-h-0 flex-1 overflow-hidden grid-rows-[minmax(320px,1fr)_minmax(200px,36%)]">
+              <div className="group flex min-h-0 flex-col overflow-hidden border-b border-border bg-surface-code shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)]">
+                <div className="flex shrink-0 items-center justify-between border-b border-border/80 bg-[#0a0a0e]/90 px-4 py-2.5 backdrop-blur-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xs font-semibold uppercase tracking-[0.14em] text-zinc-400">
+                      Code
+                    </span>
+                    <span
+                      className="hidden rounded-md border border-zinc-800/90 bg-zinc-900/50 px-1.5 py-0.5 font-mono text-[0.6rem] text-zinc-500 sm:inline"
+                      title="Monaco Editor with Python syntax and bracket guides"
+                    >
+                      Monaco
+                    </span>
+                  </div>
+                  <span className="font-mono text-2xs font-medium text-emerald-500/90">
+                    Python 3
                   </span>
-                  <span className="font-mono text-2xs text-zinc-600">Python</span>
                 </div>
                 <div className="min-h-0 flex-1">
                   <PythonEditor
                     value={code}
                     onChange={setCode}
                     disabled={loading === "run" || loading === "hint"}
+                    onRun={
+                      loading === "idle" && problemId
+                        ? () => {
+                            void onRun();
+                          }
+                        : undefined
+                    }
                   />
                 </div>
               </div>
