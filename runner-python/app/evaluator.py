@@ -18,7 +18,7 @@ from typing import Any, Callable, Optional
 from app.incomplete import is_incomplete_function
 from app.models import ProblemMeta, StructuredEvaluation, VisibleTestResult
 from app.problem_hooks import postprocess_result, postprocess_value, prepare_args
-from app.problems import load_problem
+from app.problems import ProblemLoadError, load_problem
 from app.safety import SafetyError, assert_code_imports_safe, build_restricted_builtins
 from app.testing import normalize_expected
 
@@ -646,5 +646,25 @@ def evaluate_user_code(code: str, problem: dict[str, Any]) -> StructuredEvaluati
 
 
 def evaluate_with_problem_id(code: str, problem_id: str) -> StructuredEvaluation:
-    problem = load_problem(problem_id)
+    try:
+        problem = load_problem(problem_id)
+    except ProblemLoadError as e:
+        return StructuredEvaluation(
+            status="internal_error",
+            syntax_ok=True,
+            function_found=False,
+            signature_ok=False,
+            passed_visible_tests=0,
+            total_visible_tests=0,
+            passed_hidden_tests=0,
+            total_hidden_tests=0,
+            error_type="ProblemLoadError",
+            error_message=str(e),
+            failing_case_summary=None,
+            likely_stage="platform",
+            feedback_targets=[
+                "Internal platform error while loading this problem. Your code may be correct.",
+            ],
+            visible_test_results=[],
+        )
     return evaluate_user_code(code, problem)

@@ -546,12 +546,34 @@ export function Workspace() {
                       {(run.evaluation.error_type ||
                         run.evaluation.error_message) && (
                         <div>
-                          <SectionTitle>Execution</SectionTitle>
-                          <div className="rounded border border-orange-900/40 bg-orange-950/20 p-2.5 font-mono text-2xs text-orange-100/90">
-                            <div className="font-medium text-orange-200/95">
+                          <SectionTitle>
+                            {run.status === "internal_error"
+                              ? "Platform"
+                              : "Execution"}
+                          </SectionTitle>
+                          <div
+                            className={
+                              run.status === "internal_error"
+                                ? "rounded border border-amber-900/45 bg-amber-950/25 p-2.5 font-mono text-2xs text-amber-100/90"
+                                : "rounded border border-orange-900/40 bg-orange-950/20 p-2.5 font-mono text-2xs text-orange-100/90"
+                            }
+                          >
+                            <div
+                              className={
+                                run.status === "internal_error"
+                                  ? "font-medium text-amber-200/95"
+                                  : "font-medium text-orange-200/95"
+                              }
+                            >
                               {run.evaluation.error_type}
                             </div>
-                            <pre className="mt-1 max-h-32 overflow-auto whitespace-pre-wrap text-orange-100/75">
+                            <pre
+                              className={
+                                run.status === "internal_error"
+                                  ? "mt-1 max-h-32 overflow-auto whitespace-pre-wrap text-amber-100/80"
+                                  : "mt-1 max-h-32 overflow-auto whitespace-pre-wrap text-orange-100/75"
+                              }
+                            >
                               {run.evaluation.error_message}
                             </pre>
                           </div>

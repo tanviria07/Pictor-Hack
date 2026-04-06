@@ -17,6 +17,11 @@ const styles: Record<
     className:
       "border border-orange-800/60 bg-orange-950/40 text-orange-200/95",
   },
+  internal_error: {
+    label: "Platform Error",
+    className:
+      "border border-amber-800/55 bg-amber-950/35 text-amber-100/95",
+  },
   incomplete: {
     label: "Incomplete",
     className:

@@ -12,10 +12,21 @@ import sys
 
 def main() -> None:
     if len(sys.argv) > 1:
-        with open(sys.argv[1], encoding="utf-8") as f:
-            payload = json.load(f)
+        from pathlib import Path
+
+        raw = Path(sys.argv[1]).read_bytes()
+        try:
+            payload = json.loads(raw.decode("utf-8"))
+        except UnicodeDecodeError as e:
+            sys.stderr.write(f"payload file is not UTF-8: {e}\n")
+            raise SystemExit(2) from e
     else:
-        payload = json.loads(sys.stdin.read())
+        raw = sys.stdin.buffer.read()
+        try:
+            payload = json.loads(raw.decode("utf-8"))
+        except UnicodeDecodeError as e:
+            sys.stderr.write(f"stdin is not valid UTF-8: {e}\n")
+            raise SystemExit(2) from e
     code = payload["code"]
     problem_id = payload["problem_id"]
 
@@ -31,7 +42,9 @@ def main() -> None:
         visible_test_results=ev.visible_test_results,
         interviewer_feedback=note,
     )
-    sys.stdout.write(resp.model_dump_json())
+    # Binary stdout so the parent always receives UTF-8 bytes (not cp1252 on Windows).
+    sys.stdout.buffer.write(resp.model_dump_json().encode("utf-8"))
+    sys.stdout.buffer.flush()
 
 
 if __name__ == "__main__":

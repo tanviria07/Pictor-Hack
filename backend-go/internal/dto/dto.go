@@ -7,12 +7,13 @@ package dto
 type ProblemStatus string
 
 const (
-	StatusSyntaxError  ProblemStatus = "syntax_error"
-	StatusRuntimeError ProblemStatus = "runtime_error"
-	StatusIncomplete ProblemStatus = "incomplete"
-	StatusPartial    ProblemStatus = "partial"
-	StatusWrong      ProblemStatus = "wrong"
-	StatusCorrect    ProblemStatus = "correct"
+	StatusSyntaxError   ProblemStatus = "syntax_error"
+	StatusRuntimeError  ProblemStatus = "runtime_error"
+	StatusInternalError ProblemStatus = "internal_error"
+	StatusIncomplete    ProblemStatus = "incomplete"
+	StatusPartial       ProblemStatus = "partial"
+	StatusWrong         ProblemStatus = "wrong"
+	StatusCorrect       ProblemStatus = "correct"
 )
 
 // StructuredEvaluation is produced exclusively by the Python runner.

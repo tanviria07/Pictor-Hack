@@ -10,8 +10,9 @@ from pathlib import Path
 
 from app.evaluator import evaluate_with_problem_id
 from app.feedback import deterministic_interviewer_note
+from app.internal_errors import parse_subprocess_stdout_json
 from app.models import RunRequest, RunResponse, StructuredEvaluation
-from app.problems import load_problem, problem_path
+from app.problems import ProblemLoadError, load_problem, problem_path
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -20,7 +21,7 @@ def _problem_test_counts(problem_id: str) -> tuple[int, int]:
     try:
         p = load_problem(problem_id)
         return len(p.get("visible_tests", [])), len(p.get("hidden_tests", []))
-    except OSError:
+    except (OSError, ProblemLoadError, FileNotFoundError):
         return 0, 0
 
 
@@ -55,6 +56,9 @@ def _run_in_subprocess(req: RunRequest) -> RunResponse:
     payload = {"code": req.code, "problem_id": req.problem_id}
     env = os.environ.copy()
     env["PYTHONPATH"] = str(ROOT)
+    # Force UTF-8 stdio in the child (Windows cp1252 stdout breaks parent's UTF-8 decode).
+    env.setdefault("PYTHONUTF8", "1")
+    env.setdefault("PYTHONIOENCODING", "utf-8")
     tv, th = _problem_test_counts(req.problem_id)
     try:
         proc = subprocess.run(
@@ -116,29 +120,9 @@ def _run_in_subprocess(req: RunRequest) -> RunResponse:
             interviewer_feedback=deterministic_interviewer_note(ev),
         )
 
-    try:
-        data = json.loads(proc.stdout.decode("utf-8"))
-        return RunResponse.model_validate(data)
-    except Exception as exc:  # noqa: BLE001
-        ev = StructuredEvaluation(
-            status="runtime_error",
-            syntax_ok=True,
-            function_found=False,
-            signature_ok=False,
-            passed_visible_tests=0,
-            total_visible_tests=tv,
-            passed_hidden_tests=0,
-            total_hidden_tests=th,
-            error_type="RunnerParseError",
-            error_message=str(exc),
-            failing_case_summary=None,
-            likely_stage="internal",
-            feedback_targets=["Internal runner issue - try again after simplifying your submission."],
-            visible_test_results=[],
-        )
-        return RunResponse(
-            status="runtime_error",
-            evaluation=ev,
-            visible_test_results=[],
-            interviewer_feedback=deterministic_interviewer_note(ev),
-        )
+    return parse_subprocess_stdout_json(
+        proc.stdout,
+        problem_id=req.problem_id,
+        visible_count=tv,
+        hidden_count=th,
+    )

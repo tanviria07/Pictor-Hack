@@ -10,6 +10,11 @@ def deterministic_interviewer_note(ev: StructuredEvaluation) -> str:
         return "Looks good — your implementation satisfies the visible checks and the hidden battery."
     if ev.status == "syntax_error":
         return "Syntax issue first — I cannot run tests until this parses cleanly."
+    if ev.status == "internal_error":
+        return (
+            "Internal platform error while loading this problem or running the evaluator. "
+            "Your code may be correct — try again later or pick another problem and report this if it persists."
+        )
     if ev.status == "runtime_error":
         return "We hit a runtime error while executing your code; stabilize the happy path, then tighten edge cases."
     if ev.status == "incomplete":

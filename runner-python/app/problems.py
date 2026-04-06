@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-import json
 import os
 from pathlib import Path
 from typing import Any
+
+from app.problem_io import ProblemLoadError, read_problem_json
 
 _DEFAULT_DIR = Path(__file__).resolve().parent.parent / "problems"
 
@@ -22,7 +23,7 @@ def load_problem(problem_id: str) -> dict[str, Any]:
     matches = sorted(root.rglob(f"{problem_id}.json"))
     if not matches:
         raise FileNotFoundError(f"Unknown problem: {problem_id}")
-    return json.loads(matches[0].read_text(encoding="utf-8"))
+    return read_problem_json(matches[0])
 
 
 def problem_path(problem_id: str) -> Path:
@@ -31,3 +32,6 @@ def problem_path(problem_id: str) -> Path:
     if not matches:
         return root / f"{problem_id}.json"
     return matches[0]
+
+
+__all__ = ["load_problem", "problem_path", "ProblemLoadError"]

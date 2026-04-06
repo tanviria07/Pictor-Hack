@@ -6,6 +6,7 @@
 export type ProblemStatus =
   | "syntax_error"
   | "runtime_error"
+  | "internal_error"
   | "incomplete"
   | "partial"
   | "wrong"

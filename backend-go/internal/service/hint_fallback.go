@@ -67,6 +67,8 @@ func feedbackLineFromEval(eval dto.StructuredEvaluation) string {
 			msg = "Error: " + *eval.ErrorType + "."
 		}
 		return msg
+	case dto.StatusInternalError:
+		return "Platform or problem data error — your code may still be correct."
 	case dto.StatusIncomplete:
 		return "The entrypoint exists but the implementation is not yet a complete attempt for this task."
 	case dto.StatusWrong:

@@ -21,6 +21,7 @@ Local MVP for **Python interview practice**: you write every line of solution co
 | `partial` | Some visible or hidden tests pass, not all |
 | `wrong` | Visible tests show no correct outputs yet |
 | `correct` | All visible and hidden tests pass |
+| `internal_error` | Platform/problem load or runner transport issue — not a judgment of user code |
 
 ## Prerequisites
 

@@ -51,6 +51,8 @@ def test_run_in_subprocess_success(monkeypatch: pytest.MonkeyPatch) -> None:
     call_kw = mock_run.call_args.kwargs
     assert call_kw["cwd"] == str(ROOT)
     assert call_kw["env"]["PYTHONPATH"] == str(ROOT)
+    assert call_kw["env"].get("PYTHONUTF8") == "1"
+    assert call_kw["env"].get("PYTHONIOENCODING") == "utf-8"
 
 
 def test_run_in_subprocess_nonzero_exit(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -75,5 +77,5 @@ def test_run_in_subprocess_invalid_stdout_json(monkeypatch: pytest.MonkeyPatch) 
 
     req = RunRequest(problem_id="two-sum", language="python", code="x")
     out = _run_in_subprocess(req)
-    assert out.status == "runtime_error"
-    assert out.evaluation.error_type == "RunnerParseError"
+    assert out.status == "internal_error"
+    assert out.evaluation.error_type == "RunnerJsonParseError"

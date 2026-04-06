@@ -1,4 +1,7 @@
+import pytest
+
 from app.evaluator import evaluate_with_problem_id
+from app.problems import ProblemLoadError
 
 
 def test_two_sum_correct():
@@ -106,3 +109,14 @@ def two_sum(nums, target):
 """
     ev = evaluate_with_problem_id(code.strip(), "two-sum")
     assert ev.status == "incomplete"
+
+
+def test_evaluate_with_problem_id_problem_load_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    def boom(_pid: str) -> dict:
+        raise ProblemLoadError("/fake/path.json", "file is not valid UTF-8")
+
+    monkeypatch.setattr("app.evaluator.load_problem", boom)
+    ev = evaluate_with_problem_id("def answer():\n    return 7", "any-id")
+    assert ev.status == "internal_error"
+    assert ev.error_type == "ProblemLoadError"
+    assert "platform" in ev.likely_stage
