@@ -9,7 +9,15 @@ Local MVP for **Python interview practice**: you write every line of solution co
 | `frontend/` | Next.js + TypeScript + Tailwind + Monaco |
 | `backend-go/` | Problems API, SQLite sessions, orchestration, DeepSeek (server-side only) |
 | `runner-python/` | Syntax/safety checks, tests, structured evaluation |
-| `shared/` | Contracts + NeetCode-style problem JSON (`shared/problems/{category}/{id}.json`) |
+| `shared/` | Contracts (`shared/contracts/api.ts`) + problem JSON (`shared/problems/{category}/{id}.json`) |
+| `scripts/` | Utilities (e.g. PreCode 100 generator, problem JSON encoding scan) |
+
+## Curricula
+
+Two tracks are defined in `backend-go/internal/problems/categories.go` and shown in the UI sidebar:
+
+- **PreCode 100** — Ten beginner-friendly sections (Python basics through debugging). JSON is generated from `scripts/generate_precode100.py` into `shared/problems/precode-*/`; mirror those folders into the backend and runner after regenerating.
+- **NeetCode 150** — Classic DSA categories (`arrays-hashing`, `sliding-window`, `dp-1d`, etc.) with a full problem set under `shared/problems/`.
 
 ## Status semantics (evaluator)
 
@@ -21,7 +29,13 @@ Local MVP for **Python interview practice**: you write every line of solution co
 | `partial` | Some visible or hidden tests pass, not all |
 | `wrong` | Visible tests show no correct outputs yet |
 | `correct` | All visible and hidden tests pass |
-| `internal_error` | Platform/problem load or runner transport issue — not a judgment of user code |
+| `internal_error` | Platform/problem load or runner transport issue — **not** a judgment of user code (e.g. bad problem file encoding, subprocess I/O). The UI treats this separately from your solution. |
+
+### Encoding & problem files
+
+- All problem `.json` files **must be valid UTF-8**. Windows-1252 punctuation (e.g. byte `0x97` for an em dash) can break the runner or produce misleading errors.
+- The runner loads problems through `runner-python/app/problem_io.py` (strict UTF-8 + JSON). The subprocess wrapper forces UTF-8 stdio (`PYTHONUTF8`, binary stdout in `run_job.py`) so Windows consoles do not corrupt evaluation output.
+- **Scan the repo:** `python scripts/scan_problem_json_encoding.py` — reports non–UTF-8 or invalid JSON. Use `python scripts/scan_problem_json_encoding.py --fix` to rewrite files that decode as CP1252 but not UTF-8 (after verifying output).
 
 ## Prerequisites
 
@@ -93,19 +107,29 @@ The Python runner uses AST checks, restricted builtins, and subprocess timeouts.
 - `POST /api/session/save` - `{ "problem_id", "code", "hint_history", "practice_status"?: "not_started"|"in_progress"|"solved" }`
 - `GET /api/session/:problem_id`
 
-## Problem curriculum (NeetCode-style)
+Optional (when `REDIS_URL` is set on the API): `POST /api/run/jobs`, `GET /api/run/jobs/{job_id}` for async evaluation via a Redis worker (`runner-python` worker process).
 
-Categories are fixed in `backend-go/internal/problems/categories.go` (IDs like `arrays-hashing`, `sliding-window`, `dp-1d`, etc.). Each problem JSON **must** include a `category` field matching one of those IDs.
+## Categories & UI
 
-The UI shows an expandable sidebar, search, difficulty filter, and per-problem progress (`not_started` / `in_progress` / `solved`) stored in **localStorage** and mirrored in SQLite when sessions save.
+Category IDs and order live in `backend-go/internal/problems/categories.go`. Each problem JSON **must** include a `category` field matching one of those IDs.
+
+The UI shows an expandable sidebar (grouped by track), search, difficulty filter, and per-problem progress (`not_started` / `in_progress` / `solved`) stored in **localStorage** and mirrored in SQLite when sessions save.
 
 ## Adding a new problem
 
-1. Add `shared/problems/{category-id}/{problem-slug}.json` with the same schema as existing seeds (`id`, `title`, `difficulty`, `category`, `description`, `examples`, `constraints`, `function_name`, `parameters`, `expected_return_type`, `visible_tests`, `hidden_tests`, `hint_plan` with levels 1-4, `canonical_solution_summary` for internal/LLM context only and **not** returned by the API).
+1. Add `shared/problems/{category-id}/{problem-slug}.json` with the same schema as existing seeds (`id`, `title`, `difficulty`, `category`, `description`, `examples`, `constraints`, `function_name` or class mode fields, `parameters`, `expected_return_type`, `visible_tests`, `hidden_tests`, `hint_plan` with levels 1-4, `canonical_solution_summary` for internal/LLM context only and **not** returned by the API). Save as **UTF-8**.
 2. Mirror the file into `backend-go/internal/problems/data/` and `runner-python/problems/` (same subfolders).
 3. Rebuild the Go binary so embedded data updates.
 4. For unusual inputs (e.g. linked lists / trees from JSON), add coercion in `runner-python/app/problem_hooks.py` and wire it in `evaluator.py` if needed.
 
+## Regenerating PreCode 100
+
+```bash
+python scripts/generate_precode100.py
+```
+
+Then mirror `shared/problems/` into `backend-go/internal/problems/data/` and `runner-python/problems/` as above.
+
 ## Problem set
 
-The repo currently includes the full **NeetCode 150** set under `shared/problems/`, mirrored into the backend and runner problem directories.
+The repo includes **PreCode 100** (beginner track) and the full **NeetCode 150**-style DSA set under `shared/problems/`, mirrored into the backend embed tree and the runner problem directories.
