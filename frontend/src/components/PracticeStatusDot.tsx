@@ -13,28 +13,25 @@ export function PracticeStatusDot({
   status: PracticeProgress;
   minimal?: boolean;
 }) {
-  const color =
+  const cls =
     status === "solved"
-      ? "bg-emerald-500"
+      ? "pr-dot--solved"
       : status === "in_progress"
-        ? "bg-amber-400"
-        : "bg-zinc-500/60";
+        ? "pr-dot--progress"
+        : "pr-dot--new";
   if (minimal) {
     return (
       <span
-        className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${color}`}
+        className={`pr-dot ${cls}`}
         title={labels[status]}
         aria-label={labels[status]}
       />
     );
   }
   return (
-    <span
-      className="inline-flex items-center gap-1.5"
-      title={labels[status]}
-    >
-      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${color}`} />
-      <span className="text-2xs text-zinc-500">{labels[status]}</span>
+    <span className="pr-inline" title={labels[status]}>
+      <span className={`pr-dot ${cls}`} />
+      <span className="pr-label">{labels[status]}</span>
     </span>
   );
 }

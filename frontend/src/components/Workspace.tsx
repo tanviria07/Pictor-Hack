@@ -1,6 +1,3 @@
-"use client";
-
-import dynamic from "next/dynamic";
 import {
   useCallback,
   useEffect,
@@ -36,33 +33,11 @@ import type {
 } from "@/lib/types";
 import { DifficultyBadge } from "./DifficultyBadge";
 import { ProblemExplorer } from "./ProblemExplorer";
+import { PythonEditor } from "./PythonEditor";
 import { StatusBadge } from "./StatusBadge";
 
-const PythonEditor = dynamic(
-  () => import("./PythonEditor").then((m) => m.PythonEditor),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex h-full min-h-[240px] flex-col bg-[#0d0d12]">
-        <div className="h-9 shrink-0 border-b border-zinc-800/80 bg-[#08080c]" />
-        <div className="flex flex-1 animate-pulse flex-col gap-2 p-4">
-          <div className="h-3 w-3/4 rounded bg-zinc-800/60" />
-          <div className="h-3 w-1/2 rounded bg-zinc-800/40" />
-          <div className="h-3 w-5/6 rounded bg-zinc-800/50" />
-          <div className="mt-4 h-3 w-2/3 rounded bg-zinc-800/35" />
-        </div>
-        <div className="h-8 shrink-0 border-t border-zinc-800/80 bg-[#08080c]" />
-      </div>
-    ),
-  },
-);
-
 function SectionTitle({ children }: { children: ReactNode }) {
-  return (
-    <h3 className="mb-2 text-2xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
-      {children}
-    </h3>
-  );
+  return <h3 className="sec-title">{children}</h3>;
 }
 
 export function Workspace() {
@@ -98,6 +73,7 @@ export function Workspace() {
           if (!cancelled) {
             setProblems([]);
             setCategories([]);
+            setProblemId(null);
             setErr(formatThrownError(e));
           }
           return;
@@ -271,53 +247,46 @@ export function Workspace() {
   }, [detail]);
 
   return (
-    <div className="flex h-screen min-h-0 flex-col overflow-hidden bg-surface-base text-zinc-200">
-      <header className="flex shrink-0 items-center justify-between gap-4 border-b border-border px-4 py-3 sm:px-6">
-        <div className="min-w-0">
-          <div className="flex items-baseline gap-2">
-            <span className="truncate text-sm font-semibold tracking-tight text-zinc-100">
-              Pictor Hack
-            </span>
-            <span className="hidden text-2xs text-zinc-600 sm:inline">
+    <div className="ws">
+      <header className="ws-header">
+        <div style={{ minWidth: 0 }}>
+          <div className="ws-header-row">
+            <span className="ws-header-title">Pictor Hack</span>
+            <span className="ws-header-sub">
               {detail?.track_id === "precode100"
                 ? "PreCode foundations"
                 : "NeetCode-style"}
             </span>
           </div>
-          <p className="mt-0.5 text-2xs text-zinc-500">
+          <p className="ws-header-desc">
             {detail?.track_id === "precode100"
               ? "Foundations-first practice: small steps, clear tests, and hints that teach."
               : "You write the solution; we run tests and give structured feedback."}
           </p>
         </div>
         {detail && (
-          <div className="hidden shrink-0 flex-col items-end gap-1 sm:flex">
-            <div className="flex items-center gap-2">
+          <div className="ws-header-meta">
+            <div className="ws-meta-row">
               {detail.track_title && (
-                <span className="rounded border border-emerald-800/50 bg-emerald-950/40 px-2 py-0.5 text-2xs font-medium text-emerald-200/90">
-                  {detail.track_title}
-                </span>
+                <span className="track-pill">{detail.track_title}</span>
               )}
               <DifficultyBadge
                 difficulty={detail.difficulty}
                 trackId={detail.track_id}
               />
             </div>
-            <span className="text-2xs text-zinc-600">{detail.category_title}</span>
+            <span className="ws-meta-cat">{detail.category_title}</span>
           </div>
         )}
       </header>
 
       {err && (
-        <div
-          className="shrink-0 border-b border-rose-900/40 bg-rose-950/25 px-4 py-2 text-xs text-rose-200/90 sm:px-6"
-          role="alert"
-        >
+        <div className="ws-alert" role="alert">
           {err}
         </div>
       )}
 
-      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 lg:flex-row lg:p-5">
+      <div className="ws-body">
         <ProblemExplorer
           categories={categories}
           problems={problems}
@@ -327,35 +296,28 @@ export function Workspace() {
           loading={catalogLoading}
         />
 
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-hidden xl:flex-row">
-          <aside className="flex w-full shrink-0 flex-col overflow-hidden rounded-xl border border-border bg-surface-raised/50 shadow-sm xl:w-[min(100%,26rem)] xl:max-w-[28rem]">
-            <div className="border-b border-border bg-surface-panel/40 px-5 py-4">
-              <h1 className="text-base font-semibold leading-snug text-zinc-100 transition-opacity">
+        <div className="ws-center">
+          <aside className="pp">
+            <div className="pp-head">
+              <h1 className="pp-title">
                 {loading === "load" && !detail ? "Loading..." : title}
               </h1>
               {detail && (
-                <div className="mt-2 space-y-2">
-                  <div className="flex flex-wrap items-center gap-2">
+                <div style={{ marginTop: "0.5rem" }}>
+                  <div className="pp-meta">
                     {detail.track_title && (
-                      <span className="rounded border border-emerald-800/50 bg-emerald-950/40 px-2 py-0.5 text-2xs font-medium text-emerald-200/90">
-                        {detail.track_title}
-                      </span>
+                      <span className="track-pill">{detail.track_title}</span>
                     )}
                     <DifficultyBadge
                       difficulty={detail.difficulty}
                       trackId={detail.track_id}
                     />
-                    <code className="break-all font-mono text-2xs text-zinc-500">
-                      {signature}
-                    </code>
+                    <code className="pp-sig">{signature}</code>
                   </div>
                   {detail.skill_tags && detail.skill_tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="pp-tags">
                       {detail.skill_tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="rounded-md border border-zinc-700/60 bg-zinc-900/60 px-2 py-0.5 text-2xs text-zinc-400"
-                        >
+                        <span key={tag} className="pp-tag">
                           {tag}
                         </span>
                       ))}
@@ -364,26 +326,23 @@ export function Workspace() {
                 </div>
               )}
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 xl:max-h-none max-xl:max-h-[40vh]">
+            <div className="pp-body">
               {detail && (
-                <div className="space-y-5">
-                  <div className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-300">
-                    {detail.description}
-                  </div>
-                  <div>
+                <>
+                  <p className="pp-block pp-desc">{detail.description}</p>
+                  <div className="pp-block">
                     <SectionTitle>Examples</SectionTitle>
-                    <ul className="space-y-3">
+                    <ul className="pp-examples">
                       {detail.examples.map((example, index) => (
-                        <li
-                          key={index}
-                          className="rounded-lg border border-border bg-surface-panel/80 p-4 font-mono text-xs leading-relaxed text-zinc-300 shadow-sm"
-                        >
-                          <div className="text-zinc-500">Input</div>
-                          <div className="text-zinc-200">{example.input}</div>
-                          <div className="mt-3 text-zinc-500">Output</div>
-                          <div className="text-zinc-200">{example.output}</div>
+                        <li key={index} className="pp-example">
+                          <div className="pp-example-label">Input</div>
+                          <div>{example.input}</div>
+                          <div className="pp-example-out pp-example-label">
+                            Output
+                          </div>
+                          <div>{example.output}</div>
                           {example.explanation && (
-                            <div className="mt-3 border-t border-border pt-3 text-zinc-500">
+                            <div className="pp-example-exp">
                               {example.explanation}
                             </div>
                           )}
@@ -391,30 +350,30 @@ export function Workspace() {
                       ))}
                     </ul>
                   </div>
-                  <div>
+                  <div className="pp-block">
                     <SectionTitle>Constraints</SectionTitle>
-                    <ul className="list-disc space-y-1.5 pl-4 text-xs text-zinc-400">
+                    <ul className="pp-constraints">
                       {detail.constraints.map((constraint, index) => (
                         <li key={index}>{constraint}</li>
                       ))}
                     </ul>
                   </div>
-                </div>
+                </>
               )}
               {loading === "load" && !detail && (
-                <p className="text-sm text-zinc-500">Loading problem...</p>
+                <p className="pp-loading">Loading problem...</p>
               )}
             </div>
           </aside>
 
-          <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface-raised/40 shadow-sm">
-            <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border bg-surface-panel/30 px-4 py-3">
+          <main className="main-col">
+            <div className="main-toolbar">
               <button
                 type="button"
                 data-testid="run-code-button"
                 onClick={() => void onRun()}
                 disabled={loading !== "idle" || !problemId}
-                className="rounded-lg border border-accent bg-accent px-3.5 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+                className="btn-run"
               >
                 {loading === "run" ? "Running..." : "Run Code"}
               </button>
@@ -422,7 +381,7 @@ export function Workspace() {
                 type="button"
                 onClick={() => void onHint()}
                 disabled={loading !== "idle" || !run}
-                className="rounded-lg border border-border bg-zinc-100/5 px-3.5 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-zinc-200/10 disabled:cursor-not-allowed disabled:opacity-40"
+                className="btn-hint"
               >
                 {loading === "hint" ? "Requesting..." : "Get Hint"}
               </button>
@@ -430,31 +389,33 @@ export function Workspace() {
                 type="button"
                 onClick={onReset}
                 disabled={!detail}
-                className="rounded-lg px-3.5 py-2 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-200/10 hover:text-zinc-300 disabled:opacity-40"
+                className="btn-reset"
               >
                 Reset
               </button>
             </div>
 
-            <div className="grid min-h-0 flex-1 overflow-hidden grid-rows-[minmax(320px,1fr)_minmax(200px,36%)]">
-              <div className="group flex min-h-0 flex-col overflow-hidden border-b border-border bg-surface-code shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)]">
-                <div className="flex shrink-0 items-center justify-between border-b border-border/80 bg-[#0a0a0e]/90 px-4 py-2.5 backdrop-blur-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xs font-semibold uppercase tracking-[0.14em] text-zinc-400">
-                      Code
-                    </span>
+            <div className="main-grid">
+              <div className="code-panel">
+                <div className="code-panel-head">
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <span className="code-panel-label">Code</span>
                     <span
-                      className="hidden rounded-md border border-zinc-800/90 bg-zinc-900/50 px-1.5 py-0.5 font-mono text-[0.6rem] text-zinc-500 sm:inline"
-                      title="Monaco Editor with Python syntax and bracket guides"
+                      className="code-panel-badge"
+                      title="Plain text editor (Python)"
                     >
-                      Monaco
+                      Text
                     </span>
                   </div>
-                  <span className="font-mono text-2xs font-medium text-emerald-500/90">
-                    Python 3
-                  </span>
+                  <span className="code-panel-lang">Python 3</span>
                 </div>
-                <div className="min-h-0 flex-1">
+                <div className="code-panel-body">
                   <PythonEditor
                     value={code}
                     onChange={setCode}
@@ -470,68 +431,61 @@ export function Workspace() {
                 </div>
               </div>
 
-              <div className="flex min-h-0 flex-col overflow-hidden bg-surface-raised/25">
-                <div className="shrink-0 border-b border-border px-4 py-2">
-                  <span className="text-2xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
-                    Evaluation
-                  </span>
+              <div className="eval-panel">
+                <div className="eval-panel-head">
+                  <SectionTitle>Evaluation</SectionTitle>
                 </div>
-                <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+                <div className="eval-scroll">
                   {!run && (
-                    <p className="text-xs leading-relaxed text-zinc-500">
+                    <p className="eval-placeholder">
                       Run your code to execute visible tests, hidden checks, and
                       receive interviewer notes. Evaluation is deterministic from
                       the runner, not from the language model.
                     </p>
                   )}
                   {run && (
-                    <div className="space-y-5">
+                    <div>
                       {evaluationBanner ? (
                         <p
-                          className="rounded-lg border border-amber-900/35 bg-amber-950/20 px-3 py-2 text-xs leading-relaxed text-amber-100/90"
+                          className="eval-banner"
                           data-testid="evaluation-banner"
                         >
                           {evaluationBanner}
                         </p>
                       ) : null}
-                      <div className="flex flex-wrap items-center gap-3">
+                      <div className="eval-row">
                         <StatusBadge status={run.status} />
-                        <span className="text-2xs tabular-nums text-zinc-500">
+                        <span className="eval-stats">
                           Visible {run.evaluation.passed_visible_tests}/
                           {run.evaluation.total_visible_tests}
-                          <span className="mx-1.5 text-zinc-700">|</span>
+                          <span className="eval-stats-muted">|</span>
                           Hidden {run.evaluation.passed_hidden_tests}/
                           {run.evaluation.total_hidden_tests}
-                          <span className="ml-1 text-zinc-600">
+                          <span style={{ marginLeft: "0.25rem", color: "#52525b" }}>
                             (inputs withheld)
                           </span>
                         </span>
                       </div>
 
-                      <div>
+                      <div style={{ marginBottom: "1.25rem" }}>
                         <SectionTitle>Visible tests</SectionTitle>
-                        <div className="overflow-hidden rounded border border-border">
-                          <table className="w-full text-left font-mono text-2xs">
+                        <div className="table-wrap">
+                          <table className="eval-table">
                             <thead>
-                              <tr className="border-b border-border bg-surface-panel/60 text-zinc-500">
-                                <th className="px-2 py-1.5 font-medium">Case</th>
-                                <th className="px-2 py-1.5 font-medium">Result</th>
+                              <tr>
+                                <th>Case</th>
+                                <th>Result</th>
                               </tr>
                             </thead>
                             <tbody>
                               {run.visible_test_results.map((testResult) => (
-                                <tr
-                                  key={testResult.index}
-                                  className="border-b border-border/60 last:border-0"
-                                >
-                                  <td className="px-2 py-1.5 text-zinc-400">
+                                <tr key={testResult.index}>
+                                  <td style={{ color: "#a1a1aa" }}>
                                     {testResult.label ?? `#${testResult.index + 1}`}
                                   </td>
                                   <td
                                     className={
-                                      testResult.passed
-                                        ? "px-2 py-1.5 text-emerald-400/95"
-                                        : "px-2 py-1.5 text-rose-400/95"
+                                      testResult.passed ? "eval-pass" : "eval-fail"
                                     }
                                   >
                                     {testResult.passed ? "Pass" : "Fail"}
@@ -545,7 +499,7 @@ export function Workspace() {
 
                       {(run.evaluation.error_type ||
                         run.evaluation.error_message) && (
-                        <div>
+                        <div style={{ marginBottom: "1.25rem" }}>
                           <SectionTitle>
                             {run.status === "internal_error"
                               ? "Platform"
@@ -554,26 +508,14 @@ export function Workspace() {
                           <div
                             className={
                               run.status === "internal_error"
-                                ? "rounded border border-amber-900/45 bg-amber-950/25 p-2.5 font-mono text-2xs text-amber-100/90"
-                                : "rounded border border-orange-900/40 bg-orange-950/20 p-2.5 font-mono text-2xs text-orange-100/90"
+                                ? "err-block err-block--internal"
+                                : "err-block err-block--exec"
                             }
                           >
-                            <div
-                              className={
-                                run.status === "internal_error"
-                                  ? "font-medium text-amber-200/95"
-                                  : "font-medium text-orange-200/95"
-                              }
-                            >
+                            <div className="err-type">
                               {run.evaluation.error_type}
                             </div>
-                            <pre
-                              className={
-                                run.status === "internal_error"
-                                  ? "mt-1 max-h-32 overflow-auto whitespace-pre-wrap text-amber-100/80"
-                                  : "mt-1 max-h-32 overflow-auto whitespace-pre-wrap text-orange-100/75"
-                              }
-                            >
+                            <pre className="err-pre">
                               {run.evaluation.error_message}
                             </pre>
                           </div>
@@ -581,25 +523,23 @@ export function Workspace() {
                       )}
 
                       {run.evaluation.failing_case_summary && (
-                        <div>
+                        <div style={{ marginBottom: "1.25rem" }}>
                           <SectionTitle>Case note</SectionTitle>
-                          <p className="text-xs leading-relaxed text-zinc-400">
+                          <p className="case-note">
                             {run.evaluation.failing_case_summary}
                           </p>
                         </div>
                       )}
 
-                      <div>
+                      <div style={{ marginBottom: "1.25rem" }}>
                         <SectionTitle>Interviewer notes</SectionTitle>
-                        <p className="text-xs leading-relaxed text-zinc-300">
-                          {run.interviewer_feedback}
-                        </p>
+                        <p className="feedback">{run.interviewer_feedback}</p>
                       </div>
 
                       {run.evaluation.feedback_targets.length > 0 && (
-                        <div>
+                        <div style={{ marginBottom: "1.25rem" }}>
                           <SectionTitle>Focus areas</SectionTitle>
-                          <ul className="list-disc space-y-1 pl-4 text-xs text-zinc-400">
+                          <ul className="focus-list">
                             {run.evaluation.feedback_targets.map(
                               (feedbackTarget, index) => (
                                 <li key={index}>{feedbackTarget}</li>
@@ -609,26 +549,19 @@ export function Workspace() {
                         </div>
                       )}
 
-                      <div className="border-t border-border pt-4">
+                      <div className="hint-block">
                         <SectionTitle>Hint history</SectionTitle>
                         {hintHistory.length === 0 ? (
-                          <p className="text-xs text-zinc-500">
+                          <p className="hint-empty">
                             After a run, request hints. Each step builds on prior
                             hints (levels 1-4).
                           </p>
                         ) : (
-                          <ol className="space-y-3">
+                          <ol className="hint-ol">
                             {hintHistory.map((hint, index) => (
-                              <li
-                                key={index}
-                                className="border-l-2 border-zinc-700 pl-3 font-mono text-2xs leading-relaxed text-zinc-400"
-                              >
-                                <span className="text-zinc-600">
-                                  {index + 1}.
-                                </span>{" "}
-                                <span className="whitespace-pre-wrap text-zinc-300">
-                                  {hint}
-                                </span>
+                              <li key={index} className="hint-li">
+                                <span className="hint-num">{index + 1}. </span>
+                                <span className="hint-text">{hint}</span>
                               </li>
                             ))}
                           </ol>

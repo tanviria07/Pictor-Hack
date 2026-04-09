@@ -40,7 +40,7 @@ function humanizeFromCode(
     case "runner_unavailable":
       return "The code runner is not reachable. Start runner-python on port 8001 (or the Docker worker stack) and ensure the Go API can reach it.";
     case "queue_unavailable":
-      return "Async runs are not available. Set REDIS_URL on the API and start the worker, or use sync runs without NEXT_PUBLIC_ASYNC_RUN.";
+      return "Async runs are not available. Set REDIS_URL on the API and start the worker, or use sync runs without ASYNC_RUN=1.";
     case "service_unavailable":
       return "A required service is temporarily unavailable. Retry in a moment or check Docker/Redis.";
     case "database_error":
@@ -87,7 +87,7 @@ export function formatApiErrorMessage(raw: string, status?: number): string {
     t.includes("<HTML") ||
     t.includes("<body")
   ) {
-    return "Cannot reach the API. Start the Go backend on :8080 (or set NEXT_PUBLIC_API_BASE if the API is elsewhere).";
+    return "Cannot reach the API. Start the Go backend on :8080 (or set API_BASE if the API is elsewhere).";
   }
   const lower = t.toLowerCase();
   if (
@@ -96,7 +96,7 @@ export function formatApiErrorMessage(raw: string, status?: number): string {
     lower.includes("service unavailable") ||
     lower.includes("econnrefused")
   ) {
-    return "API unavailable or error. Start the Go server (default :8080) and ensure BACKEND_URL in Next matches.";
+    return "API unavailable or error. Start the Go server (default :8080) and ensure the dev proxy in .proxyrc.json targets your API.";
   }
   if (lower.includes("syntax") && lower.includes("error")) {
     return "Python reported a syntax error. Fix parsing issues in the editor, then run again.";

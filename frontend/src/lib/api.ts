@@ -15,20 +15,23 @@ function withTimeout(signal: AbortSignal | null | undefined, ms: number): AbortS
 }
 
 const base = () => {
-  const env = process.env.NEXT_PUBLIC_API_BASE?.replace(/\/$/, "");
+  const raw = process.env.API_BASE;
+  const env = typeof raw === "string" ? raw.replace(/\/$/, "") : "";
   if (env) return env;
   return "";
 };
 
 async function j<T>(path: string, init?: RequestInit): Promise<T> {
   const url = `${base()}${path.startsWith("/") ? path : `/${path}`}`;
+  const hasBody = init?.body != null && init.body !== "";
+  const headers = new Headers(init?.headers);
+  if (hasBody && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
   const r = await fetch(url, {
     ...init,
     signal: withTimeout(init?.signal, 25_000),
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers || {}),
-    },
+    headers,
   });
   if (!r.ok) {
     const t = await r.text();
@@ -113,7 +116,7 @@ export async function runCode(body: {
   language: "python";
   code: string;
 }): Promise<RunResponse> {
-  const useAsync = process.env.NEXT_PUBLIC_ASYNC_RUN === "1";
+  const useAsync = process.env.ASYNC_RUN === "1";
   if (useAsync) {
     try {
       return await runCodeViaQueue(body);
@@ -148,7 +151,7 @@ export async function loadSession(problemId: string) {
     const r = await fetch(url, { signal: withTimeout(undefined, 25_000) });
     if (r.status === 404) return null;
     if (!r.ok) {
-      if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV !== "production") {
         console.warn("[api] session GET failed", r.status, problemId);
       }
       return null;

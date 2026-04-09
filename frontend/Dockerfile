@@ -1,4 +1,4 @@
-# Next.js production — standalone Node server.
+# Parcel static build + nginx (API proxy to Go backend in Docker Compose).
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -9,22 +9,14 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-ARG BACKEND_URL=http://backend:8080
-ENV BACKEND_URL=${BACKEND_URL}
-ARG NEXT_PUBLIC_ASYNC_RUN=1
-ENV NEXT_PUBLIC_ASYNC_RUN=${NEXT_PUBLIC_ASYNC_RUN}
+ARG ASYNC_RUN=1
+ENV ASYNC_RUN=${ASYNC_RUN}
+ENV NODE_ENV=production
 
 RUN npm run build
 
-FROM node:20-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV=production
-ENV PORT=3000
-ENV HOSTNAME=0.0.0.0
-
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
-
+FROM nginx:alpine AS runner
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 3000
-CMD ["node", "server.js"]
+CMD ["nginx", "-g", "daemon off;"]

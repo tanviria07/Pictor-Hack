@@ -6,7 +6,7 @@ Local MVP for **Python interview practice**: you write every line of solution co
 
 | Piece | Role |
 |--------|------|
-| `frontend/` | Next.js + TypeScript + Tailwind + Monaco |
+| `frontend/` | React + TypeScript + plain CSS (Parcel dev/build; see below) |
 | `backend-go/` | Problems API, SQLite sessions, orchestration, DeepSeek (server-side only) |
 | `runner-python/` | Syntax/safety checks, tests, structured evaluation |
 | `shared/` | Contracts (`shared/contracts/api.ts`) + problem JSON (`shared/problems/{category}/{id}.json`) |
@@ -85,7 +85,14 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) (or `http://127.0.0.1:3000`). With the **Go API** on `:8080`, the app calls **`/api` on the same origin** and Next.js proxies to the backend (see `frontend/next.config.mjs`), so you usually **do not** need `NEXT_PUBLIC_API_BASE`. Set `BACKEND_URL` if the API listens somewhere other than `http://127.0.0.1:8080`. Use `NEXT_PUBLIC_API_BASE` only when the browser must talk to a **different host** (split deployments).
+Open [http://localhost:3000](http://localhost:3000) (or `http://127.0.0.1:3000`). With the **Go API** on `:8080`, Parcel’s dev server proxies **`/api`** to the backend (see `frontend/.proxyrc.json`), so you usually **do not** need `API_BASE`. Edit `.proxyrc.json` if the API is not at `http://127.0.0.1:8080`. Use `API_BASE` only when the browser must call the API on a **different origin** (split deployments).
+
+**Frontend details**
+
+- **Bundler:** [Parcel](https://parceljs.org/) compiles TypeScript/JSX and serves the dev server (`npm run dev`). Production output is static files under `frontend/dist/` from `npm run build`.
+- **Env (optional):** Copy `frontend/.env.example` → `frontend/.env`. `API_BASE` points the browser at a full API URL when not using same-origin `/api`. `ASYNC_RUN=1` makes the client prefer the async run queue when your API exposes it (baked in at **build** time for Docker).
+- **Docker UI:** `frontend/Dockerfile` runs **nginx** with `frontend/nginx.conf`, proxying `/api` to the `backend` service in `docker-compose.yml`.
+- **E2E:** From `frontend/`, `npm run test:e2e` runs Playwright against the workspace (starts dev server if needed).
 
 ## DeepSeek
 

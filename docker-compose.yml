@@ -1,4 +1,4 @@
-# Full stack: Redis queue + Python worker for async code runs, Go API, Next.js UI.
+# Full stack: Redis queue + Python worker for async code runs, Go API, React UI (nginx).
 # Copy .env.example -> .env and adjust. Then: docker compose up --build
 
 services:
@@ -70,8 +70,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        BACKEND_URL: http://backend:8080
-        NEXT_PUBLIC_ASYNC_RUN: "1"
+        ASYNC_RUN: "1"
     restart: unless-stopped
     ports:
       - "${FRONTEND_HOST_PORT:-3000}:3000"

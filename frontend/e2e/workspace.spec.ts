@@ -108,7 +108,7 @@ async function mockApis(page: import("@playwright/test").Page) {
 }
 
 test.describe("Workspace (mocked API)", () => {
-  test("loads problem, edits code in Monaco, runs, persists session", async ({
+  test("loads problem, edits code, runs, persists session", async ({
     page,
   }) => {
     const { getSaveCount } = await mockApis(page);
@@ -119,12 +119,9 @@ test.describe("Workspace (mocked API)", () => {
     await page.getByTestId("problem-item-two-sum").click();
     await expect(page.getByRole("heading", { name: "Two Sum" })).toBeVisible();
 
-    const editor = page.locator(".monaco-editor").first();
+    const editor = page.getByTestId("python-editor");
     await editor.click();
-    await page.keyboard.press("Control+A");
-    await page.keyboard.insertText(
-      "def twoSum(nums, target):\n    return [0, 1]\n",
-    );
+    await editor.fill("def twoSum(nums, target):\n    return [0, 1]\n");
 
     await page.getByTestId("run-code-button").click();
     await expect(page.getByText("Looks good.")).toBeVisible({ timeout: 15_000 });
