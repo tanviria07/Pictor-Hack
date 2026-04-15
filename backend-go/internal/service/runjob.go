@@ -60,11 +60,11 @@ func NewRunJobService(cfg config.Config, rdb *redis.Client, runs *RunService) *R
 	}
 }
 
-func (s *RunJobService) jobKey(id string) string { return s.jobP + id }
-func (s *RunJobService) reqKey(id string) string { return s.reqP + id }
-func (s *RunJobService) rawKey(id string) string { return s.rawP + id }
+func (s *RunJobService) jobKey(id string) string   { return s.jobP + id }
+func (s *RunJobService) reqKey(id string) string   { return s.reqP + id }
+func (s *RunJobService) rawKey(id string) string   { return s.rawP + id }
 func (s *RunJobService) finalKey(id string) string { return s.finalP + id }
-func (s *RunJobService) lockKey(id string) string { return s.lockP + id }
+func (s *RunJobService) lockKey(id string) string  { return s.lockP + id }
 
 // Submit validates input, stores metadata, and pushes to the worker queue.
 func (s *RunJobService) Submit(ctx context.Context, req dto.RunRequest) (*dto.RunJobSubmitResponse, error) {

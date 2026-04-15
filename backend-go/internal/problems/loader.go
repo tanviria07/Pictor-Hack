@@ -30,27 +30,27 @@ var (
 )
 
 type rawProblem struct {
-	ID                         string            `json:"id"`
-	Slug                       string            `json:"slug,omitempty"`
-	Title                      string            `json:"title"`
-	Difficulty                 string            `json:"difficulty"`
-	Category                   string            `json:"category"`
-	Description                string            `json:"description"`
-	Examples                   []dto.Example     `json:"examples"`
-	Constraints                []string          `json:"constraints"`
-	FunctionName               string            `json:"function_name"`
-	ExecutionMode              string            `json:"execution_mode"`
-	ClassName                  string            `json:"class_name"`
-	StarterCode                string            `json:"starter_code"`
-	Parameters                 []dto.Parameter   `json:"parameters"`
-	ExpectedReturnType         string            `json:"expected_return_type"`
-	VisibleTests               []any             `json:"visible_tests"`
-	HiddenTests                []any             `json:"hidden_tests"`
-	HintPlan                   map[string]string `json:"hint_plan"`
-	CanonicalSolutionSummary   string            `json:"canonical_solution_summary"`
-	DisallowedFullSolution     bool              `json:"disallowed_full_solution_exposure"`
-	SkillTags                  []string          `json:"skill_tags,omitempty"`
-	Tags                       []string          `json:"tags,omitempty"`
+	ID                       string            `json:"id"`
+	Slug                     string            `json:"slug,omitempty"`
+	Title                    string            `json:"title"`
+	Difficulty               string            `json:"difficulty"`
+	Category                 string            `json:"category"`
+	Description              string            `json:"description"`
+	Examples                 []dto.Example     `json:"examples"`
+	Constraints              []string          `json:"constraints"`
+	FunctionName             string            `json:"function_name"`
+	ExecutionMode            string            `json:"execution_mode"`
+	ClassName                string            `json:"class_name"`
+	StarterCode              string            `json:"starter_code"`
+	Parameters               []dto.Parameter   `json:"parameters"`
+	ExpectedReturnType       string            `json:"expected_return_type"`
+	VisibleTests             []any             `json:"visible_tests"`
+	HiddenTests              []any             `json:"hidden_tests"`
+	HintPlan                 map[string]string `json:"hint_plan"`
+	CanonicalSolutionSummary string            `json:"canonical_solution_summary"`
+	DisallowedFullSolution   bool              `json:"disallowed_full_solution_exposure"`
+	SkillTags                []string          `json:"skill_tags,omitempty"`
+	Tags                     []string          `json:"tags,omitempty"`
 }
 
 func Init() error {

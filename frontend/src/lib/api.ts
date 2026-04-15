@@ -151,9 +151,6 @@ export async function loadSession(problemId: string) {
     const r = await fetch(url, { signal: withTimeout(undefined, 25_000) });
     if (r.status === 404) return null;
     if (!r.ok) {
-      if (process.env.NODE_ENV !== "production") {
-        console.warn("[api] session GET failed", r.status, problemId);
-      }
       return null;
     }
     return r.json() as Promise<{

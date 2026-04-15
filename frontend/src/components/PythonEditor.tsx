@@ -117,15 +117,13 @@ export function PythonEditor({
             <>
               <span className="pe-dot">·</span>
               <kbd className="pe-kbd">{isMac ? "⌘" : "Ctrl"}</kbd>
-              <span style={{ color: "var(--text-muted)" }}>+</span>
+              <span className="text-muted">+</span>
               <kbd className="pe-kbd">Enter</kbd>
-              <span style={{ marginLeft: "0.25rem", color: "#52525b" }}>
-                run
-              </span>
+              <span className="ml-xs text-muted">run</span>
             </>
           ) : null}
         </span>
-        <span style={{ color: "var(--text-muted)" }}>Python</span>
+        <span className="text-muted">Python</span>
       </div>
     </div>
   );

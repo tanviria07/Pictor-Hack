@@ -10,15 +10,15 @@ import (
 
 // Common API error codes (machine-readable).
 const (
-	ErrBadRequest           = "bad_request"
-	ErrNotFound             = "not_found"
-	ErrRunnerUnavailable    = "runner_unavailable"
-	ErrInternal             = "internal_error"
-	ErrUnsupportedLanguage  = "unsupported_language"
-	ErrQueueUnavailable     = "queue_unavailable"
-	ErrDatabaseError        = "database_error"
-	ErrHintUnavailable = "hint_unavailable"
-	ErrRateLimited     = "rate_limited"
+	ErrBadRequest          = "bad_request"
+	ErrNotFound            = "not_found"
+	ErrRunnerUnavailable   = "runner_unavailable"
+	ErrInternal            = "internal_error"
+	ErrUnsupportedLanguage = "unsupported_language"
+	ErrQueueUnavailable    = "queue_unavailable"
+	ErrDatabaseError       = "database_error"
+	ErrHintUnavailable     = "hint_unavailable"
+	ErrRateLimited         = "rate_limited"
 )
 
 // Error writes a structured JSON error: { "code", "message", "details"? }.

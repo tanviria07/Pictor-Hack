@@ -48,10 +48,10 @@ type responseFormat struct {
 }
 
 type chatRequest struct {
-	Model          string            `json:"model"`
-	Messages       []chatMessage     `json:"messages"`
-	ResponseFormat *responseFormat   `json:"response_format,omitempty"`
-	Temperature    *float64          `json:"temperature,omitempty"`
+	Model          string          `json:"model"`
+	Messages       []chatMessage   `json:"messages"`
+	ResponseFormat *responseFormat `json:"response_format,omitempty"`
+	Temperature    *float64        `json:"temperature,omitempty"`
 }
 
 type chatResponse struct {

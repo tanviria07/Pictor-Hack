@@ -87,6 +87,31 @@ textarea:focus-visible {
   border: 0;
 }
 
+/* Small layout utilities (avoid inline style noise in JSX) */
+.u-min-w-0 {
+  min-width: 0;
+}
+.u-mt-sm {
+  margin-top: 0.5rem;
+}
+.u-mb-section {
+  margin-bottom: 1.25rem;
+}
+.flex-row-gap-sm {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.text-muted {
+  color: var(--text-muted);
+}
+.text-secondary {
+  color: var(--text-secondary);
+}
+.ml-xs {
+  margin-left: 0.25rem;
+}
+
 /* --- Workspace layout --- */
 .ws {
   display: flex;

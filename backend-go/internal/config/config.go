@@ -19,17 +19,17 @@ type Config struct {
 	DeepSeekURL   string
 	DeepSeekModel string
 
-	RedisURL           string
-	RunQueueKey        string
-	RunJobKeyPrefix    string
-	RunReqKeyPrefix    string
-	RunRawKeyPrefix    string
-	RunFinalKeyPrefix  string
+	RedisURL              string
+	RunQueueKey           string
+	RunJobKeyPrefix       string
+	RunReqKeyPrefix       string
+	RunRawKeyPrefix       string
+	RunFinalKeyPrefix     string
 	RunFinalizeLockPrefix string
 	RunJobTTL             time.Duration
 
-	MaxCodeBytes         int
-	RateLimitPerMinute   int
+	MaxCodeBytes       int
+	RateLimitPerMinute int
 }
 
 // Load reads environment variables with sensible defaults.

@@ -225,9 +225,9 @@ func TestSaveAndGetSession(t *testing.T) {
 	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
 
 	save := map[string]any{
-		"problem_id": "two-sum",
-		"code":       "print(1)",
-		"hint_history": []string{},
+		"problem_id":      "two-sum",
+		"code":            "print(1)",
+		"hint_history":    []string{},
 		"practice_status": "in_progress",
 	}
 	sb, _ := json.Marshal(save)

@@ -18,21 +18,21 @@ const (
 
 // StructuredEvaluation is produced exclusively by the Python runner.
 type StructuredEvaluation struct {
-	Status               ProblemStatus `json:"status"`
-	SyntaxOK             bool          `json:"syntax_ok"`
-	FunctionFound        bool          `json:"function_found"`
-	SignatureOK          bool          `json:"signature_ok"`
-	PassedVisibleTests   int           `json:"passed_visible_tests"`
-	TotalVisibleTests    int           `json:"total_visible_tests"`
-	PassedHiddenTests    int           `json:"passed_hidden_tests"`
-	TotalHiddenTests     int           `json:"total_hidden_tests"`
-	ErrorType            *string       `json:"error_type"`
-	ErrorMessage         *string       `json:"error_message"`
-	FailingCaseSummary   *string       `json:"failing_case_summary"`
-	LikelyStage          string        `json:"likely_stage"`
-	FeedbackTargets      []string      `json:"feedback_targets"`
+	Status             ProblemStatus `json:"status"`
+	SyntaxOK           bool          `json:"syntax_ok"`
+	FunctionFound      bool          `json:"function_found"`
+	SignatureOK        bool          `json:"signature_ok"`
+	PassedVisibleTests int           `json:"passed_visible_tests"`
+	TotalVisibleTests  int           `json:"total_visible_tests"`
+	PassedHiddenTests  int           `json:"passed_hidden_tests"`
+	TotalHiddenTests   int           `json:"total_hidden_tests"`
+	ErrorType          *string       `json:"error_type"`
+	ErrorMessage       *string       `json:"error_message"`
+	FailingCaseSummary *string       `json:"failing_case_summary"`
+	LikelyStage        string        `json:"likely_stage"`
+	FeedbackTargets    []string      `json:"feedback_targets"`
 	// Also embedded in evaluation JSON by the runner (duplicates top-level visible_test_results).
-	VisibleTestResults   []VisibleTestResult `json:"visible_test_results,omitempty"`
+	VisibleTestResults []VisibleTestResult `json:"visible_test_results,omitempty"`
 }
 
 // VisibleTestResult is produced by the runner.
@@ -52,10 +52,10 @@ type RunRequest struct {
 // RunResponse is returned to the frontend. Evaluation is unmodified from the runner;
 // InterviewerFeedback may be rephrased by DeepSeek (wording only).
 type RunResponse struct {
-	Status               ProblemStatus        `json:"status"`
-	Evaluation           StructuredEvaluation `json:"evaluation"`
-	VisibleTestResults   []VisibleTestResult  `json:"visible_test_results"`
-	InterviewerFeedback  string               `json:"interviewer_feedback"`
+	Status              ProblemStatus        `json:"status"`
+	Evaluation          StructuredEvaluation `json:"evaluation"`
+	VisibleTestResults  []VisibleTestResult  `json:"visible_test_results"`
+	InterviewerFeedback string               `json:"interviewer_feedback"`
 }
 
 // RunnerEvaluateRequest is the JSON body sent to runner-python (same shape as run).
@@ -67,10 +67,10 @@ type RunnerEvaluateRequest struct {
 
 // HintRequest is POST /api/hint. Evaluation must be the last run result from the runner.
 type HintRequest struct {
-	ProblemID            string               `json:"problem_id"`
-	Code                 string               `json:"code"`
-	Evaluation           StructuredEvaluation `json:"evaluation"`
-	HintLevelRequested   *int                 `json:"hint_level_requested,omitempty"`
+	ProblemID          string               `json:"problem_id"`
+	Code               string               `json:"code"`
+	Evaluation         StructuredEvaluation `json:"evaluation"`
+	HintLevelRequested *int                 `json:"hint_level_requested,omitempty"`
 }
 
 // HintResponse is POST /api/hint response (LLM or fallback).
@@ -93,26 +93,26 @@ const (
 
 // SessionSaveRequest persists editor + hint history (local SQLite).
 type SessionSaveRequest struct {
-	ProblemID       string         `json:"problem_id"`
-	Code            string         `json:"code"`
-	HintHistory     []string       `json:"hint_history"`
-	PracticeStatus  PracticeStatus `json:"practice_status,omitempty"`
+	ProblemID      string         `json:"problem_id"`
+	Code           string         `json:"code"`
+	HintHistory    []string       `json:"hint_history"`
+	PracticeStatus PracticeStatus `json:"practice_status,omitempty"`
 }
 
 // SessionState is stored and returned for a problem_id.
 type SessionState struct {
-	ProblemID       string         `json:"problem_id"`
-	Code            string         `json:"code"`
-	HintHistory     []string       `json:"hint_history"`
-	PracticeStatus  PracticeStatus `json:"practice_status"`
-	UpdatedAt       string         `json:"updated_at"`
+	ProblemID      string         `json:"problem_id"`
+	Code           string         `json:"code"`
+	HintHistory    []string       `json:"hint_history"`
+	PracticeStatus PracticeStatus `json:"practice_status"`
+	UpdatedAt      string         `json:"updated_at"`
 }
 
 // Example is embedded problem content.
 type Example struct {
-	Input         string  `json:"input"`
-	Output        string  `json:"output"`
-	Explanation   *string `json:"explanation,omitempty"`
+	Input       string  `json:"input"`
+	Output      string  `json:"output"`
+	Explanation *string `json:"explanation,omitempty"`
 }
 
 // Parameter describes the solution function signature.
@@ -180,8 +180,8 @@ type RunJobSubmitResponse struct {
 
 // RunJobPollResponse is returned from GET /api/run/jobs/:job_id while polling.
 type RunJobPollResponse struct {
-	JobID  string        `json:"job_id"`
-	Status string        `json:"status"`
-	Error  *string       `json:"error,omitempty"`
-	Result *RunResponse  `json:"result,omitempty"`
+	JobID  string       `json:"job_id"`
+	Status string       `json:"status"`
+	Error  *string      `json:"error,omitempty"`
+	Result *RunResponse `json:"result,omitempty"`
 }

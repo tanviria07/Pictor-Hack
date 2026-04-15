@@ -232,7 +232,7 @@ export function ProblemExplorer({
                           <span className="ex-cat-title">{category.title}</span>
                           <span className="ex-cat-count">
                             {items.length}
-                            <span style={{ color: "var(--text-muted)" }}>/</span>
+                            <span className="text-muted">/</span>
                             {category.problem_count}
                           </span>
                         </button>

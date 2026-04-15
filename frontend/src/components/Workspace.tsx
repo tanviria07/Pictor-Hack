@@ -249,7 +249,7 @@ export function Workspace() {
   return (
     <div className="ws">
       <header className="ws-header">
-        <div style={{ minWidth: 0 }}>
+        <div className="u-min-w-0">
           <div className="ws-header-row">
             <span className="ws-header-title">Pictor Hack</span>
             <span className="ws-header-sub">
@@ -303,7 +303,7 @@ export function Workspace() {
                 {loading === "load" && !detail ? "Loading..." : title}
               </h1>
               {detail && (
-                <div style={{ marginTop: "0.5rem" }}>
+                <div className="u-mt-sm">
                   <div className="pp-meta">
                     {detail.track_title && (
                       <span className="track-pill">{detail.track_title}</span>
@@ -398,13 +398,7 @@ export function Workspace() {
             <div className="main-grid">
               <div className="code-panel">
                 <div className="code-panel-head">
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.5rem",
-                    }}
-                  >
+                  <div className="flex-row-gap-sm">
                     <span className="code-panel-label">Code</span>
                     <span
                       className="code-panel-badge"
@@ -461,13 +455,13 @@ export function Workspace() {
                           <span className="eval-stats-muted">|</span>
                           Hidden {run.evaluation.passed_hidden_tests}/
                           {run.evaluation.total_hidden_tests}
-                          <span style={{ marginLeft: "0.25rem", color: "var(--text-muted)" }}>
+                          <span className="ml-xs text-muted">
                             (inputs withheld)
                           </span>
                         </span>
                       </div>
 
-                      <div style={{ marginBottom: "1.25rem" }}>
+                      <div className="u-mb-section">
                         <SectionTitle>Visible tests</SectionTitle>
                         <div className="table-wrap">
                           <table className="eval-table">
@@ -480,7 +474,7 @@ export function Workspace() {
                             <tbody>
                               {run.visible_test_results.map((testResult) => (
                                 <tr key={testResult.index}>
-                                  <td style={{ color: "var(--text-secondary)" }}>
+                                  <td className="text-secondary">
                                     {testResult.label ?? `#${testResult.index + 1}`}
                                   </td>
                                   <td
@@ -499,7 +493,7 @@ export function Workspace() {
 
                       {(run.evaluation.error_type ||
                         run.evaluation.error_message) && (
-                        <div style={{ marginBottom: "1.25rem" }}>
+                        <div className="u-mb-section">
                           <SectionTitle>
                             {run.status === "internal_error"
                               ? "Platform"
@@ -523,7 +517,7 @@ export function Workspace() {
                       )}
 
                       {run.evaluation.failing_case_summary && (
-                        <div style={{ marginBottom: "1.25rem" }}>
+                        <div className="u-mb-section">
                           <SectionTitle>Case note</SectionTitle>
                           <p className="case-note">
                             {run.evaluation.failing_case_summary}
@@ -531,13 +525,13 @@ export function Workspace() {
                         </div>
                       )}
 
-                      <div style={{ marginBottom: "1.25rem" }}>
+                      <div className="u-mb-section">
                         <SectionTitle>Interviewer notes</SectionTitle>
                         <p className="feedback">{run.interviewer_feedback}</p>
                       </div>
 
                       {run.evaluation.feedback_targets.length > 0 && (
-                        <div style={{ marginBottom: "1.25rem" }}>
+                        <div className="u-mb-section">
                           <SectionTitle>Focus areas</SectionTitle>
                           <ul className="focus-list">
                             {run.evaluation.feedback_targets.map(

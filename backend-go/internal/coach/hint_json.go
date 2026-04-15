@@ -55,16 +55,16 @@ func BuildHintUserMessage(
 		hist = "(none yet)"
 	}
 	payload := map[string]any{
-		"problem_title":       ctx.Title,
-		"problem_difficulty":  ctx.Difficulty,
-		"problem_summary":     ctx.Summary,
-		"expected_signature":  ctx.Signature,
-		"allowed_hint_level":  allowedLevel,
-		"hint_history":        hist,
-		"evaluator_output":    eval,
-		"code_prefix":         codePrefix,
-		"track_id":            ctx.TrackID,
-		"skill_tags":          ctx.SkillTags,
+		"problem_title":      ctx.Title,
+		"problem_difficulty": ctx.Difficulty,
+		"problem_summary":    ctx.Summary,
+		"expected_signature": ctx.Signature,
+		"allowed_hint_level": allowedLevel,
+		"hint_history":       hist,
+		"evaluator_output":   eval,
+		"code_prefix":        codePrefix,
+		"track_id":           ctx.TrackID,
+		"skill_tags":         ctx.SkillTags,
 		"instruction": "ALLOWED_HINT_LEVEL is " + strconv.Itoa(allowedLevel) +
 			". Output JSON only with keys feedback, hint, next_focus.",
 	}
