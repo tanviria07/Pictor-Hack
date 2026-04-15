@@ -73,3 +73,4 @@ backend-go/data/
 frontend/test-results/
 frontend/playwright-report/
 playwright/.cache/
+.aider*

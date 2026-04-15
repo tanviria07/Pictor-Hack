@@ -461,7 +461,7 @@ export function Workspace() {
                           <span className="eval-stats-muted">|</span>
                           Hidden {run.evaluation.passed_hidden_tests}/
                           {run.evaluation.total_hidden_tests}
-                          <span style={{ marginLeft: "0.25rem", color: "#52525b" }}>
+                          <span style={{ marginLeft: "0.25rem", color: "var(--text-muted)" }}>
                             (inputs withheld)
                           </span>
                         </span>
@@ -480,7 +480,7 @@ export function Workspace() {
                             <tbody>
                               {run.visible_test_results.map((testResult) => (
                                 <tr key={testResult.index}>
-                                  <td style={{ color: "#a1a1aa" }}>
+                                  <td style={{ color: "var(--text-secondary)" }}>
                                     {testResult.label ?? `#${testResult.index + 1}`}
                                   </td>
                                   <td
