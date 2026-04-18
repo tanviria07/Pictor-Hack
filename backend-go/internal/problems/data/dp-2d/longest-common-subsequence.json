@@ -72,5 +72,30 @@
     "level_4": "DP[i][j] = DP[i - 1][j - 1] + 1 , if text1[i] == text2[j]\nDP[i][j] = max(DP[i - 1][j], DP[i][j - 1]) , otherwise"
   },
   "canonical_solution_summary": "DP[i][j] = DP[i - 1][j - 1] + 1 , if text1[i] == text2[j]\nDP[i][j] = max(DP[i - 1][j], DP[i][j - 1]) , otherwise",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def longest_common_subsequence(text1, text2):",
+    "    m, n = len(text1), len(text2)",
+    "    dp = [[0] * (n + 1) for _ in range(m + 1)]",
+    "    for i in range(1, m + 1):",
+    "        for j in range(1, n + 1):",
+    "            if text1[i - 1] == text2[j - 1]:",
+    "                dp[i][j] = dp[i - 1][j - 1] + 1",
+    "            else:",
+    "                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])",
+    "    return dp[m][n]"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameters.",
+    "Compute the lengths of both input strings to use for the DP table dimensions.",
+    "Initialize a 2D list (DP table) with zeros, where rows correspond to text1 and columns to text2, adding one extra for base cases.",
+    "Loop through each character index of text1, starting from 1 to include all characters.",
+    "Inside the outer loop, loop through each character index of text2 similarly.",
+    "Check if the current characters from both strings (adjusted for zero-indexing) are equal.",
+    "If they match, set the DP value to the diagonal previous value plus one, indicating a longer subsequence.",
+    "If they don't match, handle the case where characters are different.",
+    "Set the DP value to the maximum of the value above or to the left, representing skipping a character in one string.",
+    "After filling the table, return the value in the bottom-right corner, which holds the length of the LCS."
+  ],
+  "final_explanation": "This solution uses dynamic programming to build a table where each cell dp[i][j] stores the length of the longest common subsequence up to the i-th character of text1 and j-th character of text2. By comparing characters and using previous results, it efficiently computes the answer without enumerating all subsequences, achieving O(m*n) time and space complexity."
 }

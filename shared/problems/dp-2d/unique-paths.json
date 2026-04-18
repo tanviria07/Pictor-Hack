@@ -58,5 +58,30 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def unique_paths(m, n):",
+    "    dp = [[0] * n for _ in range(m)]",
+    "    for i in range(m):",
+    "        dp[i][0] = 1",
+    "    for j in range(n):",
+    "        dp[0][j] = 1",
+    "    for i in range(1, m):",
+    "        for j in range(1, n):",
+    "            dp[i][j] = dp[i-1][j] + dp[i][j-1]",
+    "    return dp[m-1][n-1]"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with parameters m and n as given.",
+    "Initialize a 2D list (matrix) with m rows and n columns, all set to zero, to store the number of paths to each cell.",
+    "Loop through each row index i from 0 to m-1 to handle the first column.",
+    "Set the number of paths to each cell in the first column to 1, since there's only one way to go straight down.",
+    "Loop through each column index j from 0 to n-1 to handle the first row.",
+    "Set the number of paths to each cell in the first row to 1, since there's only one way to go straight right.",
+    "Now, loop through rows starting from index 1 (since the first row and column are already filled).",
+    "For each row, loop through columns starting from index 1.",
+    "For each inner cell, compute the number of paths as the sum of paths from the cell above and the cell to the left.",
+    "Finally, return the value in the bottom-right corner of the matrix, which holds the total unique paths."
+  ],
+  "final_explanation": "This solution uses dynamic programming to build up the number of paths to each cell. The key idea is that the number of ways to reach any cell is the sum of ways to reach the cell directly above and the cell directly to the left, with the first row and column initialized to 1 because there's only one straight path along the edges. By filling the matrix iteratively, we efficiently compute the answer for the bottom-right corner."
 }

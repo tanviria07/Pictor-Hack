@@ -2,6 +2,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -35,11 +36,99 @@ import type {
 } from "@/lib/types";
 import { DifficultyBadge } from "./DifficultyBadge";
 import { ProblemExplorer } from "./ProblemExplorer";
-import { PythonEditor } from "./PythonEditor";
+import { PythonEditor, type PythonEditorHandle } from "./PythonEditor";
 import { StatusBadge } from "./StatusBadge";
 
 function SectionTitle({ children }: { children: ReactNode }) {
   return <h3 className="sec-title">{children}</h3>;
+}
+
+/**
+ * Split a hint string into alternating plain-text and inline-code segments.
+ * DeepSeek- and rule-based hints consistently quote code in single backticks
+ * (e.g. "Define the function with `def answer():`"), so we treat anything
+ * between matching backticks as an insertable snippet.
+ */
+function tokenizeHint(text: string): Array<{ kind: "text" | "code"; value: string }> {
+  const out: Array<{ kind: "text" | "code"; value: string }> = [];
+  if (!text) return out;
+  const parts = text.split(/`([^`]+)`/g);
+  parts.forEach((part, i) => {
+    if (!part) return;
+    out.push({ kind: i % 2 === 1 ? "code" : "text", value: part });
+  });
+  return out;
+}
+
+/**
+ * Renders a hint with two affordances:
+ *  - Any `code` span is a clickable chip that inserts that snippet into the
+ *    editor at the current cursor position.
+ *  - A "Copy" button in the top-right copies the full hint text.
+ * Keeps the visual shape of a single hint bubble.
+ */
+function HintContent({
+  text,
+  onInsert,
+  className = "stepwise-hint",
+  testId,
+}: {
+  text: string;
+  onInsert?: (snippet: string) => void;
+  className?: string;
+  testId?: string;
+}) {
+  const [copied, setCopied] = useState(false);
+  const tokens = useMemo(() => tokenizeHint(text), [text]);
+
+  const onCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      /* clipboard denied; silent no-op */
+    }
+  }, [text]);
+
+  return (
+    <div className={className} data-testid={testId}>
+      <div className="stepwise-hint-body">
+        {tokens.length === 0 ? (
+          <span>{text}</span>
+        ) : (
+          tokens.map((tok, i) =>
+            tok.kind === "code" && onInsert ? (
+              <button
+                key={i}
+                type="button"
+                className="stepwise-hint-chip"
+                title="Click to insert at cursor"
+                onClick={() => onInsert(tok.value)}
+              >
+                {tok.value}
+              </button>
+            ) : tok.kind === "code" ? (
+              <code key={i} className="stepwise-hint-code">
+                {tok.value}
+              </code>
+            ) : (
+              <span key={i}>{tok.value}</span>
+            ),
+          )
+        )}
+      </div>
+      <button
+        type="button"
+        className="stepwise-hint-copy"
+        onClick={onCopy}
+        aria-label="Copy hint"
+        title="Copy hint to clipboard"
+      >
+        {copied ? "Copied" : "Copy"}
+      </button>
+    </div>
+  );
 }
 
 type TrackFilter = "all" | "precode100" | "dsa";
@@ -60,6 +149,10 @@ export function Workspace() {
   const [stepwise, setStepwise] = useState<StepwiseValidateResponse | null>(
     null,
   );
+  const editorRef = useRef<PythonEditorHandle>(null);
+  const insertSnippet = useCallback((snippet: string) => {
+    editorRef.current?.insertAtCursor(snippet);
+  }, []);
   const [hintHistory, setHintHistory] = useState<string[]>([]);
   const [progressById, setProgressById] = useState<
     Record<string, PracticeProgress>
@@ -549,6 +642,7 @@ export function Workspace() {
                 </div>
                 <div className="code-panel-body">
                   <PythonEditor
+                    ref={editorRef}
                     value={code}
                     onChange={setCode}
                     disabled={loading === "run" || loading === "hint"}
@@ -587,16 +681,9 @@ export function Workspace() {
                           : "progress";
                       const bannerText = stepwise.is_full_solution
                         ? "Full solution correct!"
-                        : isFail && stepwise.first_failed_index === 0
-                          ? "Incorrect. Start from the beginning."
-                          : isFail
-                            ? "Incorrect."
-                            : stepwise.correct_count === 0
-                              ? "Write the first sentence of the solution."
-                              : "Correct! Now write the next sentence.";
-                      const currentSentence = stepwise.is_full_solution
-                        ? stepwise.total
-                        : Math.min(stepwise.correct_count + 1, stepwise.total);
+                        : isFail
+                          ? "Incorrect. Start over."
+                          : "Correct! Keep going.";
                       return (
                         <div className="stepwise">
                           <p
@@ -608,8 +695,8 @@ export function Workspace() {
 
                           <div className="stepwise-progress">
                             <div className="stepwise-progress-label">
-                              Sentence <strong>{currentSentence}</strong> of{" "}
-                              <strong>{stepwise.total}</strong>
+                              <strong>{stepwise.correct_count}</strong> /{" "}
+                              <strong>{stepwise.total}</strong> sentences
                             </div>
                             <div
                               className="stepwise-bar"
@@ -634,12 +721,11 @@ export function Workspace() {
                           </div>
 
                           {!stepwise.is_full_solution && stepwise.next_hint && (
-                            <p
-                              className="stepwise-hint"
-                              data-testid="stepwise-hint"
-                            >
-                              {stepwise.next_hint}
-                            </p>
+                            <HintContent
+                              text={stepwise.next_hint}
+                              onInsert={insertSnippet}
+                              testId="stepwise-hint"
+                            />
                           )}
 
                           {stepwise.is_full_solution && (
@@ -660,30 +746,34 @@ export function Workspace() {
                             </div>
                           )}
 
-                          <div className="hint-block">
-                            <SectionTitle>Hint history</SectionTitle>
-                            {hintHistory.length === 0 ? (
-                              <p className="hint-empty">
-                                Each Run Code here checks the next sentence and
-                                saves its feedback below.
-                              </p>
-                            ) : (
-                              <ol className="hint-ol">
-                                {hintHistory.map((hint, index) => (
-                                  <li key={index} className="hint-li">
-                                    <span className="hint-num">
-                                      {index + 1}.{" "}
-                                    </span>
-                                    <span className="hint-text">{hint}</span>
-                                  </li>
-                                ))}
-                              </ol>
-                            )}
-                          </div>
                         </div>
                       );
                     })()}
-                  {run && (
+                  {stepwise && (
+                    <div className="hint-block">
+                      <SectionTitle>Hint history</SectionTitle>
+                      {hintHistory.length === 0 ? (
+                        <p className="hint-empty">
+                          Each Run Code here checks the next sentence and saves
+                          its feedback below.
+                        </p>
+                      ) : (
+                        <ol className="hint-ol">
+                          {hintHistory.map((hint, index) => (
+                            <li key={index} className="hint-li">
+                              <span className="hint-num">{index + 1}. </span>
+                              <HintContent
+                                text={hint}
+                                onInsert={insertSnippet}
+                                className="stepwise-hint stepwise-hint--history"
+                              />
+                            </li>
+                          ))}
+                        </ol>
+                      )}
+                    </div>
+                  )}
+                  {run && !stepwise && (
                     <div>
                       {evaluationBanner ? (
                         <p

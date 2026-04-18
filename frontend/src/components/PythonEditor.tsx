@@ -1,6 +1,8 @@
 import {
+  forwardRef,
   useCallback,
   useEffect,
+  useImperativeHandle,
   useLayoutEffect,
   useRef,
   useState,
@@ -17,17 +19,27 @@ function lineColFromPos(text: string, pos: number): { line: number; col: number 
   return { line, col };
 }
 
-export function PythonEditor({
-  value,
-  onChange,
-  disabled,
-  onRun,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  disabled?: boolean;
-  onRun?: () => void;
-}) {
+/**
+ * Imperative handle exposed to parent components (e.g. the Workspace's
+ * stepwise panel) so that UI outside the editor can programmatically
+ * insert text at the current cursor position without owning the
+ * textarea DOM node.
+ */
+export interface PythonEditorHandle {
+  /** Insert `text` at the caret (or replace the selection). */
+  insertAtCursor: (text: string) => void;
+  focus: () => void;
+}
+
+export const PythonEditor = forwardRef<
+  PythonEditorHandle,
+  {
+    value: string;
+    onChange: (v: string) => void;
+    disabled?: boolean;
+    onRun?: () => void;
+  }
+>(function PythonEditor({ value, onChange, disabled, onRun }, ref) {
   const ta = useRef<HTMLTextAreaElement>(null);
   const pendingCaret = useRef<number | null>(null);
   const [line, setLine] = useState(1);
@@ -65,6 +77,25 @@ export function PythonEditor({
       syncCaret();
     }
   }, [value, syncCaret]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      insertAtCursor: (text: string) => {
+        const el = ta.current;
+        if (!el || disabled) return;
+        const start = el.selectionStart ?? el.value.length;
+        const end = el.selectionEnd ?? el.value.length;
+        const next = el.value.slice(0, start) + text + el.value.slice(end);
+        pendingCaret.current = start + text.length;
+        onChange(next);
+        // Keep focus in the editor so consecutive inserts land naturally.
+        queueMicrotask(() => el.focus());
+      },
+      focus: () => ta.current?.focus(),
+    }),
+    [disabled, onChange],
+  );
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (disabled) return;
@@ -127,4 +158,4 @@ export function PythonEditor({
       </div>
     </div>
   );
-}
+});

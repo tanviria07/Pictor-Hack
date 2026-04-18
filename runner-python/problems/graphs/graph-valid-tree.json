@@ -96,5 +96,44 @@
     "level_4": "According to the definition of tree on Wikipedia: “a tree is an undirected graph in which any two vertices are connected by exactly one path. In other words, any connected graph without simple cycles is a tree.”"
   },
   "canonical_solution_summary": "According to the definition of tree on Wikipedia: “a tree is an undirected graph in which any two vertices are connected by exactly one path. In other words, any connected graph without simple cycles is a tree.”",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def valid_tree(n, edges):",
+    "    if len(edges) != n - 1:",
+    "        return False",
+    "    adj = [[] for _ in range(n)]",
+    "    for u, v in edges:",
+    "        adj[u].append(v)",
+    "        adj[v].append(u)",
+    "    visited = [False] * n",
+    "    stack = [0]",
+    "    visited[0] = True",
+    "    while stack:",
+    "        node = stack.pop()",
+    "        for neighbor in adj[node]:",
+    "            if not visited[neighbor]:",
+    "                visited[neighbor] = True",
+    "                stack.append(neighbor)",
+    "    return all(visited)"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with parameters n and edges as given.",
+    "Check if the number of edges is exactly n-1, which is necessary for a tree (no cycles or disconnected components).",
+    "If the edge count is wrong, return False immediately.",
+    "Initialize an adjacency list as a list of empty lists, one for each node from 0 to n-1.",
+    "Iterate through each edge in the edges list, unpacking it into two nodes u and v.",
+    "Add v to the adjacency list of u to represent the undirected edge.",
+    "Similarly, add u to the adjacency list of v to complete the undirected connection.",
+    "Create a visited list of booleans, initially all False, to track which nodes have been visited.",
+    "Start a DFS traversal using a stack, beginning with node 0 (or any node).",
+    "Mark node 0 as visited since we're starting there.",
+    "Continue the DFS while there are nodes left in the stack to process.",
+    "Pop a node from the stack to explore its neighbors.",
+    "Loop through each neighbor of the current node from its adjacency list.",
+    "Check if this neighbor hasn't been visited yet.",
+    "If unvisited, mark it as visited to avoid revisiting.",
+    "Add the neighbor to the stack to explore its neighbors later.",
+    "After the DFS, check if all nodes were visited; if yes, the graph is connected and a valid tree."
+  ],
+  "final_explanation": "The solution first verifies the edge count condition (n-1 edges) to rule out cycles or disconnected graphs efficiently. Then, it builds an adjacency list to represent the undirected graph and performs a DFS from node 0 to check connectivity. If all nodes are visited, the graph is connected and, combined with the edge count, confirms it's a valid tree."
 }

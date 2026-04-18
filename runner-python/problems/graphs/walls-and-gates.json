@@ -122,5 +122,46 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def walls_and_gates(rooms):",
+    "    if not rooms:",
+    "        return",
+    "    rows = len(rooms)",
+    "    cols = len(rooms[0])",
+    "    queue = collections.deque()",
+    "    for r in range(rows):",
+    "        for c in range(cols):",
+    "            if rooms[r][c] == 0:",
+    "                queue.append((r, c))",
+    "    directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]",
+    "    while queue:",
+    "        r, c = queue.popleft()",
+    "        for dr, dc in directions:",
+    "            nr, nc = r + dr, c + dc",
+    "            if 0 <= nr < rows and 0 <= nc < cols and rooms[nr][nc] == 2147483647:",
+    "                rooms[nr][nc] = rooms[r][c] + 1",
+    "                queue.append((nr, nc))"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameter name.",
+    "Check if the input grid is empty to avoid errors later.",
+    "Get the number of rows in the grid for boundary checks.",
+    "Get the number of columns in the grid similarly.",
+    "Initialize a queue to manage BFS traversal; you'll need to import collections.",
+    "Loop through each row index to examine all cells.",
+    "Loop through each column index within the current row.",
+    "Identify treasure chest cells (value 0) to start BFS from.",
+    "Add the coordinates of each treasure chest to the queue.",
+    "Define possible movement directions: down, up, right, left.",
+    "Continue processing until the queue is empty.",
+    "Remove the next cell from the queue to explore its neighbors.",
+    "Iterate over each direction to check adjacent cells.",
+    "Calculate the coordinates of the neighbor cell.",
+    "Check if the neighbor is within bounds and is an unvisited land cell (INF).",
+    "Update the neighbor's distance based on the current cell's distance.",
+    "Add the neighbor to the queue for further exploration.",
+    ""
+  ],
+  "final_explanation": "This solution uses BFS starting from all treasure chests simultaneously to efficiently compute the shortest distances to each land cell. By initializing the queue with all zeros and propagating distances outward, it ensures each cell is updated with the minimum distance without revisiting. This approach runs in O(m*n) time and modifies the grid in-place as required."
 }

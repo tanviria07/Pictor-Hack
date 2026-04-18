@@ -106,5 +106,36 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def clone_graph(node):",
+    "    if not node:",
+    "        return None",
+    "    visited = {}",
+    "    def dfs(original):",
+    "        if original in visited:",
+    "            return visited[original]",
+    "        clone = Node(original.val)",
+    "        visited[original] = clone",
+    "        for neighbor in original.neighbors:",
+    "            clone.neighbors.append(dfs(neighbor))",
+    "        return clone",
+    "    return dfs(node)"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameter.",
+    "Check if the input node is None to handle empty graph cases.",
+    "If the node is None, return None as specified for empty graphs.",
+    "Initialize a dictionary to keep track of visited nodes to avoid cycles.",
+    "Define a helper function for depth-first search to traverse and clone the graph.",
+    "In the helper, check if the current node has already been cloned to prevent infinite loops.",
+    "If already cloned, return the existing clone from the visited dictionary.",
+    "Create a new Node with the same value as the original node.",
+    "Store this clone in the visited dictionary with the original node as the key.",
+    "Iterate through each neighbor of the original node to clone connections.",
+    "For each neighbor, recursively call the helper and append the returned clone to the clone's neighbors list.",
+    "After processing all neighbors, return the clone from the helper function.",
+    "Finally, call the helper with the input node and return the result as the cloned graph."
+  ],
+  "final_explanation": "The solution uses depth-first search (DFS) to traverse the graph, creating clones of each node exactly once. A dictionary maps original nodes to their clones to handle cycles and avoid duplication. For each node, we clone its value and recursively clone its neighbors, building the connections in the cloned graph."
 }

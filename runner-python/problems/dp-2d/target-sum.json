@@ -69,5 +69,36 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def find_target_sum_ays(nums, target):",
+    "    total_sum = sum(nums)",
+    "    if (total_sum + target) % 2 != 0:",
+    "        return 0",
+    "    target_sum = (total_sum + target) // 2",
+    "    if target_sum < 0:",
+    "        return 0",
+    "    dp = [0] * (target_sum + 1)",
+    "    dp[0] = 1",
+    "    for num in nums:",
+    "        for j in range(target_sum, num - 1, -1):",
+    "            dp[j] += dp[j - num]",
+    "    return dp[target_sum]"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameters.",
+    "Calculate the total sum of all numbers in the list to use later.",
+    "Check if the adjusted target sum is achievable by ensuring it's an integer; if not, return 0.",
+    "If the condition fails, there are no valid expressions, so return 0 immediately.",
+    "Compute the new target sum based on the total sum and the original target.",
+    "Ensure the new target sum is non-negative; if negative, return 0.",
+    "Initialize a dynamic programming array to store counts for sums up to the new target.",
+    "Set the base case: there is exactly one way to achieve a sum of 0 (using no numbers).",
+    "Iterate through each number in the list to consider including it in sums.",
+    "For each possible sum from the new target down to the current number, update the count.",
+    "Add the number of ways to achieve the current sum by including the current number.",
+    "After processing all numbers, return the count for the new target sum.",
+    ""
+  ],
+  "final_explanation": "This solution transforms the problem into finding subsets that sum to a specific value by converting '+' and '-' assignments into a partition of the total sum. It uses dynamic programming to count ways to achieve each possible sum efficiently, avoiding exponential recursion by iterating through numbers and updating counts in reverse order to prevent double-counting."
 }
