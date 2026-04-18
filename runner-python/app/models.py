@@ -53,6 +53,43 @@ class RunResponse(BaseModel):
     interviewer_feedback: str = ""
 
 
+class StepwiseValidateRequest(BaseModel):
+    problem_id: str
+    code: str = ""
+
+
+class StepwiseValidateResponse(BaseModel):
+    available: bool
+    correct_count: int
+    total: int
+    is_full_solution: bool
+    first_failed_index: Optional[int] = None
+    next_hint: str = ""
+    final_explanation: str = ""
+    expected_sentence: str = ""
+    user_sentence: str = ""
+    message: str = ""
+
+
+class StepwiseGenerateRequest(BaseModel):
+    problem_id: str
+    overwrite: bool = False
+    dry_run: bool = False
+    force_fallback: bool = False
+
+
+class StepwiseGenerateResponse(BaseModel):
+    problem_id: str
+    source: Literal["deepseek", "heuristic", "skipped"]
+    skipped: bool = False
+    skip_reason: Optional[str] = None
+    sentences_count: int = 0
+    solution_sentences: list[str] = Field(default_factory=list)
+    hints_per_sentence: list[str] = Field(default_factory=list)
+    final_explanation: str = ""
+    written_paths: list[str] = Field(default_factory=list)
+
+
 class ProblemMeta(BaseModel):
     id: str
     function_name: str

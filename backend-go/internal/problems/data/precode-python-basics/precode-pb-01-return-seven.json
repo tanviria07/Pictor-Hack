@@ -4,7 +4,7 @@
   "title": "Return Seven",
   "difficulty": "easy",
   "category": "precode-python-basics",
-  "description": "Define a function named `answer` with no parameters. It should **return** the integer `7`. In Python, `print` shows output to the user; `return` hands a value back to the caller\u2014here we only need `return`.",
+  "description": "Define a function named `answer` with no parameters. It should **return** the integer `7`. In Python, `print` shows output to the user; `return` hands a value back to the caller—here we only need `return`.",
   "examples": [
     {
       "input": "answer()",
@@ -48,5 +48,15 @@
   "tags": [
     "precode",
     "basics"
-  ]
+  ],
+  "solution_sentences": [
+    "def answer():",
+    "    return 7"
+  ],
+  "hints_per_sentence": [
+    "Define a function named `answer` with no parameters using `def answer():`.",
+    "Inside the function, use `return 7` (not `print`)."
+  ],
+  "final_explanation": "`answer` is a zero-argument function that returns the integer 7. We use `return` (not `print`) because the tests check the value handed back to the caller, not what is printed.",
+  "curated": true
 }

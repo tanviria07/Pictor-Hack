@@ -13,6 +13,7 @@ import {
   loadSession,
   runCode,
   saveSession,
+  validateStepwise,
 } from "@/lib/api";
 import { deriveCategoriesFromProblems } from "@/lib/catalog";
 import { formatThrownError } from "@/lib/errors";
@@ -30,6 +31,7 @@ import type {
   ProblemDetail,
   ProblemSummary,
   RunResponse,
+  StepwiseValidateResponse,
 } from "@/lib/types";
 import { DifficultyBadge } from "./DifficultyBadge";
 import { ProblemExplorer } from "./ProblemExplorer";
@@ -40,14 +42,20 @@ function SectionTitle({ children }: { children: ReactNode }) {
   return <h3 className="sec-title">{children}</h3>;
 }
 
+type TrackFilter = "all" | "precode100" | "dsa";
+
 export function Workspace() {
   const [categories, setCategories] = useState<CategorySummary[]>([]);
   const [problems, setProblems] = useState<ProblemSummary[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [problemId, setProblemId] = useState<string | null>(null);
+  const [trackFilter, setTrackFilter] = useState<TrackFilter>("all");
   const [detail, setDetail] = useState<ProblemDetail | null>(null);
   const [code, setCode] = useState("");
   const [run, setRun] = useState<RunResponse | null>(null);
+  const [stepwise, setStepwise] = useState<StepwiseValidateResponse | null>(
+    null,
+  );
   const [hintHistory, setHintHistory] = useState<string[]>([]);
   const [progressById, setProgressById] = useState<
     Record<string, PracticeProgress>
@@ -60,6 +68,17 @@ export function Workspace() {
   useEffect(() => {
     setProgressById(loadLocalProgress());
   }, []);
+
+  useEffect(() => {
+    if (trackFilter === "all" || problems.length === 0) return;
+    const inTrack = (p: ProblemSummary) =>
+      (p.track_id || "dsa") === trackFilter;
+    const current = problems.find((p) => p.id === problemId);
+    if (!current || !inTrack(current)) {
+      const first = problems.find(inTrack);
+      if (first) setProblemId(first.id);
+    }
+  }, [trackFilter, problems, problemId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -114,6 +133,7 @@ export function Workspace() {
         const problemDetail = await getProblem(problemId);
         setDetail(problemDetail);
         setRun(null);
+        setStepwise(null);
         setErr(null);
 
         const starter = buildStarter(problemDetail);
@@ -175,12 +195,37 @@ export function Workspace() {
     setLoading("run");
     setErr(null);
     try {
+      if (detail.stepwise_available) {
+        const response = await validateStepwise({
+          problem_id: problemId,
+          code,
+        });
+        setStepwise(response);
+        setRun(null);
+        const hintEntry = response.is_full_solution
+          ? `Full solution correct. ${response.final_explanation}`
+          : response.next_hint
+            ? `[${response.correct_count}/${response.total}] ${response.message} ${response.next_hint}`
+            : response.message;
+        const nextHints = [...hintHistory, hintEntry];
+        setHintHistory(nextHints);
+        const nextStatus: PracticeProgress = response.is_full_solution
+          ? "solved"
+          : response.correct_count > 0
+            ? "in_progress"
+            : hintHistory.length > 0
+              ? "in_progress"
+              : "not_started";
+        await persist(code, nextHints, nextStatus);
+        return;
+      }
       const response = await runCode({
         problem_id: problemId,
         language: "python",
         code,
       });
       setRun(response);
+      setStepwise(null);
       const derivedStatus = deriveProgress(
         response,
         code,
@@ -226,6 +271,7 @@ export function Workspace() {
     const starter = buildStarter(detail);
     setCode(starter);
     setRun(null);
+    setStepwise(null);
     setHintHistory([]);
     void persist(starter, [], "not_started");
   }, [detail, persist]);
@@ -234,6 +280,32 @@ export function Workspace() {
     () => (run ? friendlyEvaluationBanner(run) : null),
     [run],
   );
+
+  const trackCounts = useMemo(() => {
+    let precode = 0;
+    let dsa = 0;
+    let precodeSolved = 0;
+    let dsaSolved = 0;
+    for (const problem of problems) {
+      const track = problem.track_id || "dsa";
+      const solved = progressById[problem.id] === "solved";
+      if (track === "precode100") {
+        precode++;
+        if (solved) precodeSolved++;
+      } else {
+        dsa++;
+        if (solved) dsaSolved++;
+      }
+    }
+    return {
+      all: problems.length,
+      allSolved: precodeSolved + dsaSolved,
+      precode,
+      precodeSolved,
+      dsa,
+      dsaSolved,
+    };
+  }, [problems, progressById]);
 
   const title = useMemo(() => detail?.title ?? "Practice", [detail]);
   const signature = useMemo(() => {
@@ -249,35 +321,85 @@ export function Workspace() {
   return (
     <div className="ws">
       <header className="ws-header">
-        <div className="u-min-w-0">
-          <div className="ws-header-row">
-            <span className="ws-header-title">Pictor Hack</span>
-            <span className="ws-header-sub">
-              {detail?.track_id === "precode100"
-                ? "PreCode foundations"
-                : "NeetCode-style"}
-            </span>
-          </div>
-          <p className="ws-header-desc">
-            {detail?.track_id === "precode100"
-              ? "Foundations-first practice: small steps, clear tests, and hints that teach."
-              : "You write the solution; we run tests and give structured feedback."}
-          </p>
-        </div>
-        {detail && (
-          <div className="ws-header-meta">
-            <div className="ws-meta-row">
-              {detail.track_title && (
-                <span className="track-pill">{detail.track_title}</span>
-              )}
-              <DifficultyBadge
-                difficulty={detail.difficulty}
-                trackId={detail.track_id}
-              />
+        <div className="ws-header-top">
+          <div className="u-min-w-0">
+            <div className="ws-header-row">
+              <span className="ws-header-title">Pictor Hack</span>
+              <span className="ws-header-sub">
+                {trackFilter === "precode100"
+                  ? "PreCode foundations"
+                  : trackFilter === "dsa"
+                    ? "NeetCode-style"
+                    : "Full curriculum"}
+              </span>
             </div>
-            <span className="ws-meta-cat">{detail.category_title}</span>
+            <p className="ws-header-desc">
+              {trackFilter === "precode100"
+                ? "Foundations-first practice: small steps, clear tests, and hints that teach."
+                : trackFilter === "dsa"
+                  ? "Classic DSA interview set. You write the solution; we run tests and give structured feedback."
+                  : "Pick a track below, or browse everything."}
+            </p>
           </div>
-        )}
+          {detail && (
+            <div className="ws-header-meta">
+              <div className="ws-meta-row">
+                {detail.track_title && (
+                  <span className="track-pill">{detail.track_title}</span>
+                )}
+                <DifficultyBadge
+                  difficulty={detail.difficulty}
+                  trackId={detail.track_id}
+                />
+              </div>
+              <span className="ws-meta-cat">{detail.category_title}</span>
+            </div>
+          )}
+        </div>
+        <div
+          className="track-tabs"
+          role="tablist"
+          aria-label="Problem track"
+        >
+          <button
+            type="button"
+            role="tab"
+            aria-selected={trackFilter === "precode100"}
+            className={`track-tab${trackFilter === "precode100" ? " track-tab--active" : ""}`}
+            onClick={() => setTrackFilter("precode100")}
+          >
+            <span className="track-tab-title">PreCode 100</span>
+            <span className="track-tab-sub">
+              Foundations &middot; {trackCounts.precodeSolved}/
+              {trackCounts.precode} solved
+            </span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={trackFilter === "dsa"}
+            className={`track-tab${trackFilter === "dsa" ? " track-tab--active" : ""}`}
+            onClick={() => setTrackFilter("dsa")}
+          >
+            <span className="track-tab-title">NeetCode 150</span>
+            <span className="track-tab-sub">
+              DSA interviews &middot; {trackCounts.dsaSolved}/{trackCounts.dsa}{" "}
+              solved
+            </span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={trackFilter === "all"}
+            className={`track-tab track-tab--all${trackFilter === "all" ? " track-tab--active" : ""}`}
+            onClick={() => setTrackFilter("all")}
+          >
+            <span className="track-tab-title">All</span>
+            <span className="track-tab-sub">
+              Browse both &middot; {trackCounts.allSolved}/{trackCounts.all}
+            </span>
+          </button>
+        </div>
       </header>
 
       {err && (
@@ -294,6 +416,7 @@ export function Workspace() {
           selectedId={problemId}
           onSelectProblem={setProblemId}
           loading={catalogLoading}
+          trackFilter={trackFilter}
         />
 
         <div className="ws-center">
@@ -380,8 +503,15 @@ export function Workspace() {
               <button
                 type="button"
                 onClick={() => void onHint()}
-                disabled={loading !== "idle" || !run}
+                disabled={
+                  loading !== "idle" || !run || !!detail?.stepwise_available
+                }
                 className="btn-hint"
+                title={
+                  detail?.stepwise_available
+                    ? "This problem uses stepwise validation — hints come from Run Code."
+                    : undefined
+                }
               >
                 {loading === "hint" ? "Requesting..." : "Get Hint"}
               </button>
@@ -430,12 +560,132 @@ export function Workspace() {
                   <SectionTitle>Evaluation</SectionTitle>
                 </div>
                 <div className="eval-scroll">
-                  {!run && (
+                  {!run && !stepwise && (
                     <p className="eval-placeholder">
-                      Run your code to execute visible tests, hidden checks, and
-                      receive interviewer notes. Evaluation is deterministic from
-                      the runner, not from the language model.
+                      {detail?.stepwise_available
+                        ? "Click Run Code to check your first sentence. You'll get feedback and a hint for the next line."
+                        : "Run your code to execute visible tests, hidden checks, and receive interviewer notes. Evaluation is deterministic from the runner, not from the language model."}
                     </p>
+                  )}
+                  {stepwise && (
+                    <div className="stepwise">
+                      <p
+                        className={`stepwise-banner stepwise-banner--${
+                          stepwise.is_full_solution
+                            ? "done"
+                            : stepwise.first_failed_index !== null &&
+                                stepwise.first_failed_index !== undefined
+                              ? "fail"
+                              : "progress"
+                        }`}
+                        data-testid="stepwise-banner"
+                      >
+                        {stepwise.is_full_solution
+                          ? "Full solution correct!"
+                          : stepwise.first_failed_index !== null &&
+                              stepwise.first_failed_index !== undefined
+                            ? stepwise.first_failed_index === 0
+                              ? "Incorrect. Let's start from the beginning."
+                              : `Sentence ${
+                                  (stepwise.first_failed_index ?? 0) + 1
+                                } is incorrect.`
+                            : stepwise.correct_count === 0
+                              ? "Write the first sentence of the solution."
+                              : `Correct! Now write sentence ${
+                                  stepwise.correct_count + 1
+                                } of ${stepwise.total}.`}
+                      </p>
+
+                      <div className="stepwise-progress">
+                        <div className="stepwise-progress-label">
+                          Progress&nbsp;
+                          <strong>
+                            {stepwise.correct_count}/{stepwise.total}
+                          </strong>
+                        </div>
+                        <div
+                          className="stepwise-bar"
+                          role="progressbar"
+                          aria-valuemin={0}
+                          aria-valuemax={stepwise.total}
+                          aria-valuenow={stepwise.correct_count}
+                        >
+                          <div
+                            className="stepwise-bar-fill"
+                            style={{
+                              width: `${
+                                stepwise.total > 0
+                                  ? (stepwise.correct_count / stepwise.total) *
+                                    100
+                                  : 0
+                              }%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {!stepwise.is_full_solution && stepwise.next_hint && (
+                        <div className="u-mb-section">
+                          <SectionTitle>Next hint</SectionTitle>
+                          <p className="stepwise-hint">{stepwise.next_hint}</p>
+                        </div>
+                      )}
+
+                      {!stepwise.is_full_solution &&
+                        stepwise.expected_sentence &&
+                        stepwise.user_sentence && (
+                          <div className="u-mb-section">
+                            <SectionTitle>Why it didn&apos;t match</SectionTitle>
+                            <div className="stepwise-diff">
+                              <div className="stepwise-diff-row">
+                                <span className="stepwise-diff-label">
+                                  Expected
+                                </span>
+                                <code className="stepwise-diff-expected">
+                                  {stepwise.expected_sentence}
+                                </code>
+                              </div>
+                              <div className="stepwise-diff-row">
+                                <span className="stepwise-diff-label">
+                                  You wrote
+                                </span>
+                                <code className="stepwise-diff-actual">
+                                  {stepwise.user_sentence}
+                                </code>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                      {stepwise.is_full_solution &&
+                        stepwise.final_explanation && (
+                          <div className="u-mb-section">
+                            <SectionTitle>Solution explanation</SectionTitle>
+                            <p className="stepwise-explanation">
+                              {stepwise.final_explanation}
+                            </p>
+                          </div>
+                        )}
+
+                      <div className="hint-block">
+                        <SectionTitle>Hint history</SectionTitle>
+                        {hintHistory.length === 0 ? (
+                          <p className="hint-empty">
+                            Each Run Code here checks the next sentence and
+                            saves its feedback below.
+                          </p>
+                        ) : (
+                          <ol className="hint-ol">
+                            {hintHistory.map((hint, index) => (
+                              <li key={index} className="hint-li">
+                                <span className="hint-num">{index + 1}. </span>
+                                <span className="hint-text">{hint}</span>
+                              </li>
+                            ))}
+                          </ol>
+                        )}
+                      </div>
+                    </div>
                   )}
                   {run && (
                     <div>

@@ -68,5 +68,15 @@
   "tags": [
     "precode",
     "basics"
-  ]
+  ],
+  "solution_sentences": [
+    "def abs_diff(a, b):",
+    "    return abs(a - b)"
+  ],
+  "hints_per_sentence": [
+    "Define the function: `def abs_diff(a, b):`.",
+    "Subtract and wrap in `abs(...)`: `return abs(a - b)`."
+  ],
+  "final_explanation": "`abs_diff` computes the distance between `a` and `b` regardless of order. `abs()` returns the non-negative magnitude of its input.",
+  "curated": true
 }

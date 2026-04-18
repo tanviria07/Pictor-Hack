@@ -108,5 +108,38 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def combination_sum(candidates, target):",
+    "    result = []",
+    "    def backtrack(start, current_combination, remaining_target):",
+    "        if remaining_target == 0:",
+    "            result.append(current_combination.copy())",
+    "            return",
+    "        if remaining_target < 0:",
+    "            return",
+    "        for i in range(start, len(candidates)):",
+    "            current_combination.append(candidates[i])",
+    "            backtrack(i, current_combination, remaining_target - candidates[i])",
+    "            current_combination.pop()",
+    "    backtrack(0, [], target)",
+    "    return result"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameters.",
+    "Initialize an empty list to store all valid combinations we find.",
+    "Define a helper function inside the main one to explore combinations recursively; it needs to know where to start in the candidates list, the current combination being built, and how much of the target is left.",
+    "Check if we have reached the target exactly; if so, we have a valid combination.",
+    "Add a copy of the current combination to the result list to avoid later modifications.",
+    "Return from this recursive branch since we've found a solution here.",
+    "If the remaining target becomes negative, this path is invalid, so stop exploring it.",
+    "Return to end this invalid branch.",
+    "Loop through candidates starting from the given index to avoid duplicate combinations and allow reusing numbers.",
+    "Add the current candidate to the combination to try including it.",
+    "Recursively call the helper with the same start index (to allow reuse), updated combination, and reduced target.",
+    "Remove the last added candidate to backtrack and try the next option in the loop.",
+    "Start the backtracking process from the beginning with an empty combination and the full target.",
+    "Return the list of all found combinations."
+  ],
+  "final_explanation": "This solution uses backtracking to explore all possible combinations of candidates that sum to the target. By recursively adding candidates and adjusting the remaining target, it builds combinations and backtracks when the sum exceeds the target or a valid combination is found. The start index ensures we avoid duplicate combinations by only considering candidates from the current position onward, allowing unlimited reuse of numbers."
 }

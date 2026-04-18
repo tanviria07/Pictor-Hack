@@ -101,5 +101,44 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def combination_sum2(candidates, target):",
+    "    candidates.sort()",
+    "    result = []",
+    "    def backtrack(start, current_combination, remaining_target):",
+    "        if remaining_target == 0:",
+    "            result.append(current_combination.copy())",
+    "            return",
+    "        for i in range(start, len(candidates)):",
+    "            if i > start and candidates[i] == candidates[i - 1]:",
+    "                continue",
+    "            if candidates[i] > remaining_target:",
+    "                break",
+    "            current_combination.append(candidates[i])",
+    "            backtrack(i + 1, current_combination, remaining_target - candidates[i])",
+    "            current_combination.pop()",
+    "    backtrack(0, [], target)",
+    "    return result"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameters.",
+    "Sort the candidates list to help avoid duplicates and enable early stopping.",
+    "Initialize an empty list to store all valid combinations.",
+    "Define a helper function for backtracking, taking the starting index, current combination, and remaining target.",
+    "Check if the remaining target is zero, meaning we've found a valid combination.",
+    "If so, add a copy of the current combination to the result to avoid reference issues.",
+    "Return from this branch since we've reached the target.",
+    "Loop through candidates starting from the given index to explore possibilities.",
+    "Skip duplicate candidates to prevent duplicate combinations in the result.",
+    "If the current candidate exceeds the remaining target, break the loop as further candidates are larger.",
+    "Add the current candidate to the combination.",
+    "Recursively call backtrack with updated parameters: move to the next index and reduce the target.",
+    "Remove the last candidate to backtrack and try other options.",
+    "Start the backtracking process from the beginning with an empty combination and full target.",
+    "Return the result list containing all unique combinations.",
+    "",
+    ""
+  ],
+  "final_explanation": "This solution uses backtracking to explore all possible combinations while avoiding duplicates. Sorting the candidates allows skipping duplicates and early termination when candidates exceed the remaining target. The recursive helper function builds combinations incrementally, ensuring each candidate is used at most once and unique results are collected."
 }

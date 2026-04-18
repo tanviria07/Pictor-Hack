@@ -87,6 +87,22 @@ export interface ProblemDetail extends ProblemSummary {
   visible_test_count: number;
   hidden_test_count: number;
   section_description?: string;
+  stepwise_available?: boolean;
+  stepwise_total?: number;
+}
+
+/** Stepwise (sentence-by-sentence) validation response. */
+export interface StepwiseValidateResponse {
+  available: boolean;
+  correct_count: number;
+  total: number;
+  is_full_solution: boolean;
+  first_failed_index?: number | null;
+  next_hint: string;
+  final_explanation: string;
+  expected_sentence: string;
+  user_sentence: string;
+  message: string;
 }
 
 export interface HintResponse {

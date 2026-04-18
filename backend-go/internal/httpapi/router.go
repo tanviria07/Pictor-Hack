@@ -31,6 +31,8 @@ func NewRouter(h *handler.Handler, corsOrigins []string, rateLimitPerMinute int)
 			r.Get("/run/jobs/{job_id}", h.GetRunJob)
 		}
 		r.Post("/run", h.Run)
+		r.Post("/validate", h.Validate)
+		r.Post("/generate-stepwise", h.GenerateStepwise)
 		r.Post("/hint", h.Hint)
 		r.Post("/session/save", h.SaveSession)
 		r.Get("/session/{problem_id}", h.GetSession)

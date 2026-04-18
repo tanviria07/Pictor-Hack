@@ -126,9 +126,8 @@ textarea:focus-visible {
 .ws-header {
   flex-shrink: 0;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.75rem;
   padding: 0.875rem 1rem;
   border-bottom: 1px solid var(--border-hairline);
   background: linear-gradient(
@@ -143,6 +142,13 @@ textarea:focus-visible {
     padding-inline: 1.5rem;
     padding-block: 1rem;
   }
+}
+
+.ws-header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .ws-header-title {
@@ -1162,6 +1168,90 @@ textarea:focus-visible {
   color: rgba(130, 230, 160, 0.95);
 }
 
+.track-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.5rem;
+  width: 100%;
+}
+@media (max-width: 639px) {
+  .track-tabs {
+    grid-template-columns: 1fr 1fr;
+  }
+  .track-tab--all {
+    grid-column: 1 / -1;
+  }
+}
+
+.track-tab {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.125rem;
+  min-width: 0;
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-hairline);
+  background: rgba(28, 28, 30, 0.6);
+  color: var(--text-secondary);
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background var(--t-fast) var(--ease-snappy),
+    border-color var(--t-fast) var(--ease-snappy),
+    color var(--t-fast) var(--ease-snappy),
+    transform var(--t-fast) var(--ease-snappy);
+}
+
+.track-tab:hover {
+  background: rgba(44, 44, 46, 0.9);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: var(--text-primary);
+}
+
+.track-tab:active {
+  transform: scale(0.99);
+}
+
+.track-tab--active {
+  background: rgba(10, 132, 255, 0.15);
+  border-color: rgba(10, 132, 255, 0.55);
+  color: var(--text-primary);
+  box-shadow:
+    0 0 0 1px rgba(10, 132, 255, 0.35) inset,
+    0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.track-tab--active:hover {
+  background: rgba(10, 132, 255, 0.22);
+}
+
+.track-tab--all {
+  background: transparent;
+}
+
+.track-tab-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: inherit;
+}
+
+.track-tab-sub {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.track-tab--active .track-tab-sub {
+  color: var(--text-secondary);
+}
+
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -1237,6 +1327,140 @@ textarea:focus-visible {
 }
 
 /* Scrollbars: minimal, system-adjacent (does not block layout / paint on the main thread). */
+.stepwise {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.stepwise-banner {
+  display: block;
+  margin: 0;
+  padding: 0.75rem 0.875rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-hairline);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.stepwise-banner--done {
+  border-color: rgba(48, 209, 88, 0.55);
+  background: rgba(48, 209, 88, 0.15);
+  color: rgba(178, 240, 200, 0.98);
+}
+
+.stepwise-banner--fail {
+  border-color: rgba(255, 69, 58, 0.55);
+  background: rgba(255, 69, 58, 0.12);
+  color: rgba(255, 200, 196, 0.98);
+}
+
+.stepwise-banner--progress {
+  border-color: rgba(10, 132, 255, 0.55);
+  background: rgba(10, 132, 255, 0.12);
+  color: rgba(191, 219, 254, 0.98);
+}
+
+.stepwise-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.stepwise-progress-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.stepwise-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.stepwise-bar-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(10, 132, 255, 0.9),
+    rgba(48, 209, 88, 0.95)
+  );
+  transition: width 0.3s var(--ease-out);
+}
+
+.stepwise-hint {
+  margin: 0;
+  padding: 0.75rem 0.875rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(10, 132, 255, 0.35);
+  background: rgba(10, 132, 255, 0.08);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.stepwise-diff {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-hairline);
+  background: var(--surface-panel-inner);
+}
+
+.stepwise-diff-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stepwise-diff-label {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.stepwise-diff-expected,
+.stepwise-diff-actual {
+  display: block;
+  padding: 0.5rem 0.625rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.stepwise-diff-expected {
+  border: 1px solid rgba(48, 209, 88, 0.4);
+  background: rgba(48, 209, 88, 0.08);
+  color: rgba(178, 240, 200, 0.98);
+}
+
+.stepwise-diff-actual {
+  border: 1px solid rgba(255, 69, 58, 0.4);
+  background: rgba(255, 69, 58, 0.08);
+  color: rgba(255, 200, 196, 0.98);
+}
+
+.stepwise-explanation {
+  margin: 0;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(48, 209, 88, 0.35);
+  background: rgba(48, 209, 88, 0.08);
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--text-primary);
+}
+
 .ex-scroll,
 .pp-body,
 .eval-scroll {

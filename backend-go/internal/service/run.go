@@ -24,6 +24,17 @@ func NewRunService(r *runner.Client, d *deepseek.Client) *RunService {
 	return &RunService{runner: r, deepseek: d}
 }
 
+// Validate forwards stepwise validation to the runner.
+func (s *RunService) Validate(ctx context.Context, req dto.StepwiseValidateRequest) (*dto.StepwiseValidateResponse, error) {
+	return s.runner.Validate(ctx, req)
+}
+
+// GenerateStepwise forwards a stepwise scaffold generation request to the
+// Python runner, which owns both the DeepSeek call and the filesystem write.
+func (s *RunService) GenerateStepwise(ctx context.Context, req dto.StepwiseGenerateRequest) (*dto.StepwiseGenerateResponse, error) {
+	return s.runner.GenerateStepwise(ctx, req)
+}
+
 // Execute forwards to the runner and returns its response. DeepSeek never changes
 // evaluation, status, or test counts â€” only the optional natural-language feedback string.
 func (s *RunService) Execute(ctx context.Context, req dto.RunRequest) (*dto.RunResponse, error) {

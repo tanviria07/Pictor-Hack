@@ -7,6 +7,7 @@ import type {
   RunJobPollResponse,
   RunResponse,
   SessionPayload,
+  StepwiseValidateResponse,
 } from "./types";
 
 function withTimeout(signal: AbortSignal | null | undefined, ms: number): AbortSignal {
@@ -129,6 +130,13 @@ export async function runCode(body: {
     }
   }
   return j("/api/run", { method: "POST", body: JSON.stringify(body) });
+}
+
+export async function validateStepwise(body: {
+  problem_id: string;
+  code: string;
+}): Promise<StepwiseValidateResponse> {
+  return j("/api/validate", { method: "POST", body: JSON.stringify(body) });
 }
 
 export async function getHint(body: {

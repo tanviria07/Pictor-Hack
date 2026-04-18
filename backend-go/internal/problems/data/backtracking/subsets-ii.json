@@ -84,5 +84,36 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def subsets_with_dup(nums):",
+    "    nums.sort()",
+    "    res = []",
+    "    def backtrack(start, path):",
+    "        res.append(path[:])",
+    "        for i in range(start, len(nums)):",
+    "            if i > start and nums[i] == nums[i-1]:",
+    "                continue",
+    "            path.append(nums[i])",
+    "            backtrack(i + 1, path)",
+    "            path.pop()",
+    "    backtrack(0, [])",
+    "    return res"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameter.",
+    "Sort the input list to group duplicates together, making it easier to avoid duplicate subsets.",
+    "Initialize an empty list to store all the subsets we will generate.",
+    "Define a helper function inside the main one that will recursively build subsets; it should take the current starting index and the current subset path as parameters.",
+    "Inside the helper, add a copy of the current path to the result list to include this subset.",
+    "Loop from the current start index to the end of the list to consider adding each element.",
+    "Check if the current element is a duplicate of the previous one and not the first in this recursive call; if so, skip it to avoid duplicate subsets.",
+    "Add the current element to the path to include it in the subset.",
+    "Recursively call the helper with the next index to continue building subsets from the remaining elements.",
+    "Remove the last element from the path to backtrack and try the next possibility in the loop.",
+    "Call the helper function initially with the starting index 0 and an empty path.",
+    "Return the final list of all subsets.",
+    ""
+  ],
+  "final_explanation": "The solution uses backtracking to generate all subsets while avoiding duplicates. By sorting the array first, duplicates become adjacent, allowing us to skip over duplicate elements during recursion to prevent generating identical subsets. This approach efficiently builds subsets incrementally and ensures each unique subset is added exactly once to the result."
 }

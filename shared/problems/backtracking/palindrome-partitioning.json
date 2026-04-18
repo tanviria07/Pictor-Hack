@@ -66,5 +66,38 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def partition(s):",
+    "    result = []",
+    "    def backtrack(start, path):",
+    "        if start == len(s):",
+    "            result.append(path[:])",
+    "            return",
+    "        for end in range(start + 1, len(s) + 1):",
+    "            substring = s[start:end]",
+    "            if substring == substring[::-1]:",
+    "                path.append(substring)",
+    "                backtrack(end, path)",
+    "                path.pop()",
+    "    backtrack(0, [])",
+    "    return result"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameter.",
+    "Initialize an empty list to store all valid partitions.",
+    "Define a helper function that will explore partitions recursively, taking the current index and current partition as parameters.",
+    "Check if we've reached the end of the string; if so, we have a complete partition.",
+    "Add a copy of the current partition to the result list to avoid later modifications.",
+    "Return from this branch since we've finished exploring it.",
+    "Loop over possible end indices for the next substring, starting from just after the current index up to the string length.",
+    "Extract the substring from the current start index to the current end index.",
+    "Check if this substring is a palindrome by comparing it to its reverse.",
+    "If it's a palindrome, add it to the current partition path.",
+    "Recursively call the helper to continue partitioning the rest of the string from the new end index.",
+    "After exploring that branch, remove the last substring to backtrack and try other possibilities.",
+    "Start the backtracking process from the beginning of the string with an empty partition.",
+    "Return the list of all valid partitions."
+  ],
+  "final_explanation": "This solution uses backtracking to explore all possible ways to split the string into palindromic substrings. It recursively builds partitions by checking each possible substring from a starting point, adding it if it's a palindrome, and then continuing with the remainder of the string. By backtracking, it efficiently generates all valid combinations without storing unnecessary intermediate states."
 }

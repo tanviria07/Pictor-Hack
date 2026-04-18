@@ -158,5 +158,34 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def find_cheapest_price(n, flights, src, dst, k):",
+    "    prices = [float('inf')] * n",
+    "    prices[src] = 0",
+    "    for _ in range(k + 1):",
+    "        temp_prices = prices.copy()",
+    "        for from_city, to_city, price in flights:",
+    "            if prices[from_city] != float('inf'):",
+    "                new_price = prices[from_city] + price",
+    "                if new_price < temp_prices[to_city]:",
+    "                    temp_prices[to_city] = new_price",
+    "        prices = temp_prices",
+    "    return prices[dst] if prices[dst] != float('inf') else -1"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameters.",
+    "Initialize a list to track the minimum cost to reach each city, setting all to a very high value initially.",
+    "Set the cost to reach the source city to zero since we start there.",
+    "Loop for the maximum number of stops allowed plus one, as each iteration corresponds to taking one more flight.",
+    "Create a temporary copy of the current prices to update costs without affecting the current iteration's decisions.",
+    "Iterate through each flight to consider all possible moves from one city to another.",
+    "Check if the departure city is reachable with a finite cost before proceeding.",
+    "Calculate the potential new cost to reach the destination city via this flight.",
+    "If this new cost is cheaper than the current best for the destination, update the temporary record.",
+    "After processing all flights, update the main prices list with the temporary one for the next iteration.",
+    "Return the cost to the destination if it's reachable; otherwise, return -1.",
+    ""
+  ],
+  "final_explanation": "This solution uses a Bellman-Ford-like approach to find the cheapest price with at most k stops. It iteratively relaxes edges up to k+1 times, updating the minimum cost to each city while ensuring we don't exceed the stop limit. By using a temporary array to store updates, it prevents using newly updated costs within the same iteration, which could incorrectly count extra stops."
 }

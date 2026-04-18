@@ -93,5 +93,24 @@
     "level_4": "The second train of thought is, without changing the array, can we use additional space somehow? Like maybe a hash map to speed up the search?"
   },
   "canonical_solution_summary": "The second train of thought is, without changing the array, can we use additional space somehow? Like maybe a hash map to speed up the search?",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def two_sum(nums, target):",
+    "    seen = {}",
+    "    for i, num in enumerate(nums):",
+    "        complement = target - num",
+    "        if complement in seen:",
+    "            return [seen[complement], i]",
+    "        seen[num] = i"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameters: a list of integers `nums` and an integer `target`.",
+    "Initialize an empty dictionary to store numbers you've seen so far and their indices.",
+    "Loop through the list using `enumerate` to get both the index `i` and the value `num` for each element.",
+    "Calculate the number that, when added to `num`, equals the `target`; call this the complement.",
+    "Check if this complement is already in the dictionary of seen numbers.",
+    "If it is, return a list containing the index of the complement (from the dictionary) and the current index `i`.",
+    "Otherwise, add the current number and its index to the dictionary for future checks."
+  ],
+  "final_explanation": "This solution uses a hash map (dictionary) to store each number and its index as we iterate through the list. For each number, we compute its complement (target minus the number) and check if it's already in the map. If found, we return the indices; otherwise, we add the current number to the map. This approach runs in O(n) time and O(n) space, efficiently solving the problem in one pass."
 }

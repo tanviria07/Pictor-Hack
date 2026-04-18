@@ -67,5 +67,19 @@
   "tags": [
     "precode",
     "basics"
-  ]
+  ],
+  "solution_sentences": [
+    "def parity(n):",
+    "    if n % 2 == 0:",
+    "        return \"even\"",
+    "    return \"odd\""
+  ],
+  "hints_per_sentence": [
+    "Start with the function signature: `def parity(n):`.",
+    "Check divisibility by 2 using the modulo operator: `if n % 2 == 0:`.",
+    "When divisible, return the string `\"even\"`.",
+    "Otherwise, return `\"odd\"` (no `else` needed since the previous branch returned)."
+  ],
+  "final_explanation": "`parity(n)` uses the modulo operator `%` to test whether `n` is divisible by 2. The early `return` in the `if` branch means we reach the final `return \"odd\"` only for odd numbers.",
+  "curated": true
 }

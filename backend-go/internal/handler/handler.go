@@ -114,6 +114,73 @@ func (h *Handler) Run(w http.ResponseWriter, r *http.Request) {
 	httpx.JSON(w, http.StatusOK, out)
 }
 
+// Validate runs stepwise (sentence-by-sentence) validation through the runner.
+// The Python runner is authoritative for correctness; this handler only forwards.
+func (h *Handler) Validate(w http.ResponseWriter, r *http.Request) {
+	var req dto.StepwiseValidateRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	req.ProblemID = strings.TrimSpace(req.ProblemID)
+	if req.ProblemID == "" {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "problem_id required")
+		return
+	}
+	if len(req.Code) > h.maxCodeBytes() {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "code too large")
+		return
+	}
+	if _, err := problems.GetPublic(req.ProblemID); err != nil {
+		if errors.Is(err, problems.ErrNotFound) {
+			httpx.Error(w, http.StatusNotFound, httpx.ErrNotFound, "unknown problem_id")
+			return
+		}
+		log.Println("validate problem lookup:", err)
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "failed to load problem")
+		return
+	}
+	out, err := h.Runs.Validate(r.Context(), req)
+	if err != nil {
+		log.Println("validate:", err)
+		httpx.MapError(w, err)
+		return
+	}
+	httpx.JSON(w, http.StatusOK, out)
+}
+
+// GenerateStepwise asks the Python runner to synthesize scaffold data for a
+// problem via DeepSeek. This is an admin-flavoured endpoint; the runner is
+// authoritative for both the API call and the filesystem write.
+func (h *Handler) GenerateStepwise(w http.ResponseWriter, r *http.Request) {
+	var req dto.StepwiseGenerateRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	req.ProblemID = strings.TrimSpace(req.ProblemID)
+	if req.ProblemID == "" {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "problem_id required")
+		return
+	}
+	if _, err := problems.GetPublic(req.ProblemID); err != nil {
+		if errors.Is(err, problems.ErrNotFound) {
+			httpx.Error(w, http.StatusNotFound, httpx.ErrNotFound, "unknown problem_id")
+			return
+		}
+		log.Println("generate-stepwise problem lookup:", err)
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "failed to load problem")
+		return
+	}
+	out, err := h.Runs.GenerateStepwise(r.Context(), req)
+	if err != nil {
+		log.Println("generate-stepwise:", err)
+		httpx.MapError(w, err)
+		return
+	}
+	httpx.JSON(w, http.StatusOK, out)
+}
+
 // SubmitRunJob enqueues async evaluation (Redis + worker). Returns 503 if async runs are disabled.
 func (h *Handler) SubmitRunJob(w http.ResponseWriter, r *http.Request) {
 	if h.RunJobs == nil {

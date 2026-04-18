@@ -170,6 +170,53 @@ type ProblemDetail struct {
 	SectionDescription string      `json:"section_description,omitempty"`
 	SkillTags          []string    `json:"skill_tags,omitempty"`
 	Tags               []string    `json:"tags,omitempty"`
+	StepwiseAvailable  bool        `json:"stepwise_available,omitempty"`
+	StepwiseTotal      int         `json:"stepwise_total,omitempty"`
+}
+
+// StepwiseValidateRequest is POST /api/validate. The runner splits the code
+// into sentences and compares them left-to-right against solution_sentences.
+type StepwiseValidateRequest struct {
+	ProblemID string `json:"problem_id"`
+	Code      string `json:"code"`
+}
+
+// StepwiseValidateResponse mirrors the runner's /validate response.
+// Correctness decisions are owned by the runner; this API does not rejudge.
+type StepwiseValidateResponse struct {
+	Available        bool   `json:"available"`
+	CorrectCount     int    `json:"correct_count"`
+	Total            int    `json:"total"`
+	IsFullSolution   bool   `json:"is_full_solution"`
+	FirstFailedIndex *int   `json:"first_failed_index,omitempty"`
+	NextHint         string `json:"next_hint"`
+	FinalExplanation string `json:"final_explanation"`
+	ExpectedSentence string `json:"expected_sentence"`
+	UserSentence     string `json:"user_sentence"`
+	Message          string `json:"message"`
+}
+
+// StepwiseGenerateRequest is POST /api/generate-stepwise. Admin/tooling flow
+// that asks the Python runner to synthesize (and persist) scaffold data via
+// DeepSeek. The runner performs all writes; this API is transport-only.
+type StepwiseGenerateRequest struct {
+	ProblemID     string `json:"problem_id"`
+	Overwrite     bool   `json:"overwrite,omitempty"`
+	DryRun        bool   `json:"dry_run,omitempty"`
+	ForceFallback bool   `json:"force_fallback,omitempty"`
+}
+
+// StepwiseGenerateResponse mirrors the runner's /generate-stepwise response.
+type StepwiseGenerateResponse struct {
+	ProblemID         string   `json:"problem_id"`
+	Source            string   `json:"source"`
+	Skipped           bool     `json:"skipped"`
+	SkipReason        string   `json:"skip_reason,omitempty"`
+	SentencesCount    int      `json:"sentences_count"`
+	SolutionSentences []string `json:"solution_sentences"`
+	HintsPerSentence  []string `json:"hints_per_sentence"`
+	FinalExplanation  string   `json:"final_explanation"`
+	WrittenPaths      []string `json:"written_paths"`
 }
 
 // RunJobSubmitResponse is returned from POST /api/run/jobs (async queue).

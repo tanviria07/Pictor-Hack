@@ -68,5 +68,15 @@
   "tags": [
     "precode",
     "basics"
-  ]
+  ],
+  "solution_sentences": [
+    "def sum_two(a, b):",
+    "    return a + b"
+  ],
+  "hints_per_sentence": [
+    "Define the function signature: `def sum_two(a, b):`.",
+    "Add `a` and `b` with the `+` operator and `return` the result."
+  ],
+  "final_explanation": "`sum_two(a, b)` simply returns `a + b`. The `+` operator on two integers produces their arithmetic sum, including for negatives.",
+  "curated": true
 }

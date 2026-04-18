@@ -94,6 +94,7 @@ export function ProblemExplorer({
   selectedId,
   onSelectProblem,
   loading,
+  trackFilter = "all",
 }: {
   categories: CategorySummary[];
   problems: ProblemSummary[];
@@ -101,16 +102,22 @@ export function ProblemExplorer({
   selectedId: string | null;
   onSelectProblem: (id: string) => void;
   loading: boolean;
+  trackFilter?: "all" | "precode100" | "dsa";
 }) {
   const [search, setSearch] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const displayCategories = useMemo((): CategorySummary[] => {
-    if (categories.length > 0) return categories;
-    if (problems.length === 0) return [];
-    return deriveCategoriesFromProblems(problems);
-  }, [categories, problems]);
+    const base =
+      categories.length > 0
+        ? categories
+        : problems.length === 0
+          ? []
+          : deriveCategoriesFromProblems(problems);
+    if (trackFilter === "all") return base;
+    return base.filter((c) => (c.track_id || "dsa") === trackFilter);
+  }, [categories, problems, trackFilter]);
 
   const trackGroups = useMemo(
     () => groupCategoriesByTrack(displayCategories),

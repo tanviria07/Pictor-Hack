@@ -92,5 +92,30 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def subsets(nums):",
+    "    result = []",
+    "    def backtrack(start, current):",
+    "        result.append(current.copy())",
+    "        for i in range(start, len(nums)):",
+    "            current.append(nums[i])",
+    "            backtrack(i + 1, current)",
+    "            current.pop()",
+    "    backtrack(0, [])",
+    "    return result"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameter.",
+    "Initialize an empty list to store all subsets we will generate.",
+    "Define a helper function inside the main one; it will take a starting index and the current subset being built.",
+    "Add a copy of the current subset to the result list to avoid later modifications affecting it.",
+    "Loop from the start index to the end of the input list to consider each element for inclusion.",
+    "Include the current element from nums into the current subset.",
+    "Recursively call the helper with the next index to build subsets that include this element.",
+    "Remove the last element from the current subset to backtrack and try other possibilities.",
+    "Call the helper function initially with start index 0 and an empty subset.",
+    "Return the final list of all subsets."
+  ],
+  "final_explanation": "This solution uses backtracking to generate all subsets by exploring each element's inclusion or exclusion. It builds subsets incrementally, adding each subset to the result as it's formed, and backtracks to try different combinations. This ensures all unique subsets are collected without duplicates due to the unique elements and the order of exploration."
 }

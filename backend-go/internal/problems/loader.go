@@ -51,6 +51,9 @@ type rawProblem struct {
 	DisallowedFullSolution   bool              `json:"disallowed_full_solution_exposure"`
 	SkillTags                []string          `json:"skill_tags,omitempty"`
 	Tags                     []string          `json:"tags,omitempty"`
+	SolutionSentences        []string          `json:"solution_sentences,omitempty"`
+	HintsPerSentence         []string          `json:"hints_per_sentence,omitempty"`
+	FinalExplanation         string            `json:"final_explanation,omitempty"`
 }
 
 func Init() error {
@@ -292,6 +295,8 @@ func GetPublic(id string) (*dto.ProblemDetail, error) {
 		SectionDescription: SectionDescriptionForCategory(p.Category),
 		SkillTags:          append([]string(nil), p.SkillTags...),
 		Tags:               append([]string(nil), p.Tags...),
+		StepwiseAvailable:  len(p.SolutionSentences) > 0,
+		StepwiseTotal:      len(p.SolutionSentences),
 	}, nil
 }
 

@@ -77,5 +77,15 @@
   "tags": [
     "precode",
     "basics"
-  ]
+  ],
+  "solution_sentences": [
+    "def swap_pair(x, y):",
+    "    return (y, x)"
+  ],
+  "hints_per_sentence": [
+    "Start with the function signature exactly as shown: `def swap_pair(x, y):`.",
+    "Inside `swap_pair`, the body is a single statement: `return (y, x)`."
+  ],
+  "final_explanation": "`swap_pair` is implemented with one statement: `return (y, x)`. The signature declares the parameters and the body returns the value the tests expect.",
+  "curated": true
 }

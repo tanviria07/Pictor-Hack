@@ -86,5 +86,38 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def longest_consecutive(nums):",
+    "    if not nums:",
+    "        return 0",
+    "    num_set = set(nums)",
+    "    longest = 0",
+    "    for num in num_set:",
+    "        if num - 1 not in num_set:",
+    "            current_num = num",
+    "            current_streak = 1",
+    "            while current_num + 1 in num_set:",
+    "                current_num += 1",
+    "                current_streak += 1",
+    "            longest = max(longest, current_streak)",
+    "    return longest"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameter.",
+    "Check if the input list is empty to handle edge cases early.",
+    "If it's empty, return 0 since there's no sequence.",
+    "Convert the list to a set for O(1) lookups and to remove duplicates.",
+    "Initialize a variable to track the maximum sequence length found.",
+    "Iterate through each unique number in the set.",
+    "For each number, check if it's the start of a sequence by seeing if the previous number is not in the set.",
+    "If it's a start, set the current number to this starting point.",
+    "Initialize a streak counter for this sequence to 1.",
+    "While the next consecutive number exists in the set, continue extending the sequence.",
+    "Increment the current number to move to the next in the sequence.",
+    "Increase the streak counter for each consecutive number found.",
+    "Update the longest streak if the current one is longer.",
+    "After the loop, return the longest streak found."
+  ],
+  "final_explanation": "The solution uses a set to achieve O(n) time by allowing constant-time checks for consecutive numbers. It identifies the start of each sequence (where the previous number is missing) and expands from there to count the streak, updating the maximum length. This avoids sorting and efficiently processes each number only once."
 }

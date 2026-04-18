@@ -75,5 +75,34 @@
     "level_4": "Can you minimize additional space usage by reusing memory or modifying the input array to store intermediate results?"
   },
   "canonical_solution_summary": "Can you minimize additional space usage by reusing memory or modifying the input array to store intermediate results?",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def product_except_self(nums):",
+    "    n = len(nums)",
+    "    answer = [1] * n",
+    "    left_product = 1",
+    "    for i in range(n):",
+    "        answer[i] = left_product",
+    "        left_product *= nums[i]",
+    "    right_product = 1",
+    "    for i in range(n - 1, -1, -1):",
+    "        answer[i] *= right_product",
+    "        right_product *= nums[i]",
+    "    return answer"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameter.",
+    "Calculate the length of the input list to use in loops.",
+    "Initialize the result list with placeholders, setting each element to 1.",
+    "Set up a variable to accumulate the product of elements from the left.",
+    "Loop through each index from start to end.",
+    "Assign the current accumulated left product to the corresponding position in the result.",
+    "Update the left product by multiplying with the current element from the input.",
+    "Set up a variable to accumulate the product of elements from the right.",
+    "Loop through each index from end to start.",
+    "Multiply the current result by the accumulated right product.",
+    "Update the right product by multiplying with the current element from the input.",
+    "Return the final result list."
+  ],
+  "final_explanation": "The solution uses two passes over the array: first, compute the product of all elements to the left of each index and store it in the result; second, compute the product of all elements to the right and multiply it with the stored left product. This avoids division and runs in O(n) time with O(1) extra space (excluding the output list)."
 }

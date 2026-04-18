@@ -108,5 +108,38 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def find_itinerary(tickets):",
+    "    graph = collections.defaultdict(list)",
+    "    for src, dst in tickets:",
+    "        graph[src].append(dst)",
+    "    for src in graph:",
+    "        graph[src].sort(reverse=True)",
+    "    itinerary = []",
+    "    def dfs(node):",
+    "        while graph[node]:",
+    "            next_node = graph[node].pop()",
+    "            dfs(next_node)",
+    "        itinerary.append(node)",
+    "    dfs(\"JFK\")",
+    "    return itinerary[::-1]"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameter.",
+    "Initialize a dictionary to represent the graph, using a default list for missing keys.",
+    "Loop through each ticket to process the departure and arrival airports.",
+    "Add the arrival airport to the list of destinations for the departure airport.",
+    "Iterate over each departure airport in the graph to prepare for traversal.",
+    "Sort the destinations in reverse order to ensure lexical order when popping.",
+    "Create an empty list to store the itinerary in reverse order.",
+    "Define a helper function for depth-first search, taking the current airport as input.",
+    "While there are remaining destinations from the current airport, continue exploring.",
+    "Pop the next destination from the list to use it and remove it from available flights.",
+    "Recursively call the helper function with the next airport to continue the path.",
+    "After exploring all destinations from this airport, add it to the itinerary list.",
+    "Start the DFS from the fixed starting airport \"JFK\".",
+    "Reverse the itinerary list to get the correct order and return it."
+  ],
+  "final_explanation": "This solution models the flights as a directed graph where each airport points to a list of destinations. By sorting destinations in reverse order and using a depth-first search that processes flights in lexical order, we ensure the itinerary uses all tickets and returns the lexicographically smallest path. The itinerary is built in reverse during the DFS and then reversed at the end to produce the correct sequence starting from JFK."
 }

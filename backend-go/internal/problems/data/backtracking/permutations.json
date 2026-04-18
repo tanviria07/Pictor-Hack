@@ -116,5 +116,34 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def permute(nums):",
+    "    result = []",
+    "    def backtrack(path, remaining):",
+    "        if not remaining:",
+    "            result.append(path[:])",
+    "            return",
+    "        for i in range(len(remaining)):",
+    "            path.append(remaining[i])",
+    "            backtrack(path, remaining[:i] + remaining[i+1:])",
+    "            path.pop()",
+    "    backtrack([], nums)",
+    "    return result"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameter.",
+    "Initialize an empty list to store all permutations.",
+    "Define a helper function inside `permute` that will recursively build permutations; it takes the current permutation and the remaining numbers.",
+    "Check if there are no numbers left to add, meaning a full permutation is ready.",
+    "If so, add a copy of the current permutation to the result to avoid later modifications.",
+    "Return from this recursive call to explore other possibilities.",
+    "Loop through each index in the remaining numbers to try adding each one next.",
+    "Add the current number from remaining to the path.",
+    "Recursively call the helper with the updated path and the remaining numbers excluding the one just added.",
+    "After the recursive call, remove the last number from the path to backtrack and try other options.",
+    "Start the recursion with an empty path and all numbers available.",
+    "Finally, return the collected result list."
+  ],
+  "final_explanation": "This solution uses backtracking to generate all permutations by recursively building each permutation and exploring all choices. It maintains a current path and a list of remaining numbers, adding each number to the path and recursing on the rest, then backtracking to try alternatives. This ensures all distinct permutations are collected efficiently."
 }

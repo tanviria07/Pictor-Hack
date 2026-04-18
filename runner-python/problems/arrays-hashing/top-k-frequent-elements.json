@@ -99,5 +99,28 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def top_kfrequent(nums, k):",
+    "    freq = {}",
+    "    for num in nums:",
+    "        freq[num] = freq.get(num, 0) + 1",
+    "    sorted_items = sorted(freq.items(), key=lambda x: x[1], reverse=True)",
+    "    result = []",
+    "    for i in range(k):",
+    "        result.append(sorted_items[i][0])",
+    "    return result"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with parameters nums and k.",
+    "Initialize an empty dictionary to store the frequency of each number.",
+    "Loop through each element in the nums list.",
+    "For each number, update its count in the dictionary, starting from 0 if it's not present.",
+    "Sort the dictionary items by their frequency in descending order.",
+    "Create an empty list to hold the top k frequent elements.",
+    "Iterate k times to pick the first k elements from the sorted list.",
+    "In each iteration, add the number (key) from the sorted item to the result list.",
+    "Return the result list as the final output."
+  ],
+  "final_explanation": "The solution counts the frequency of each number using a dictionary, then sorts the items by frequency in descending order. Finally, it extracts the first k numbers from this sorted list to return the top k frequent elements."
 }

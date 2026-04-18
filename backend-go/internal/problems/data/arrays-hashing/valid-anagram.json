@@ -58,5 +58,32 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def is_anagram(s, t):",
+    "    if len(s) != len(t):",
+    "        return False",
+    "    count_s = {}",
+    "    count_t = {}",
+    "    for i in range(len(s)):",
+    "        char_s = s[i]",
+    "        char_t = t[i]",
+    "        count_s[char_s] = count_s.get(char_s, 0) + 1",
+    "        count_t[char_t] = count_t.get(char_t, 0) + 1",
+    "    return count_s == count_t"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with parameters s and t as given.",
+    "Check if the lengths of the two strings are different; if so, they can't be anagrams.",
+    "Return False immediately if the lengths don't match.",
+    "Initialize an empty dictionary to count characters in string s.",
+    "Initialize another empty dictionary to count characters in string t.",
+    "Set up a loop to iterate through each index of the strings, using the length of s.",
+    "Get the character at the current index from string s.",
+    "Get the character at the same index from string t.",
+    "Increment the count for this character in the s dictionary, using get to handle missing keys.",
+    "Increment the count for this character in the t dictionary similarly.",
+    "After the loop, compare the two dictionaries; if they're equal, the strings are anagrams."
+  ],
+  "final_explanation": "This solution checks if two strings are anagrams by first ensuring they have the same length, then counting the frequency of each character in both strings using dictionaries. After building the counts, it compares the dictionaries; if they match, every character appears the same number of times in both strings, confirming they are anagrams."
 }

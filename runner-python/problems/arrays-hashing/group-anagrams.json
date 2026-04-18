@@ -96,5 +96,26 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def group_anagrams(strs):",
+    "    anagrams = {}",
+    "    for s in strs:",
+    "        key = ''.join(sorted(s))",
+    "        if key not in anagrams:",
+    "            anagrams[key] = []",
+    "        anagrams[key].append(s)",
+    "    return list(anagrams.values())"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the parameter 'strs' as given in the starter code.",
+    "Initialize an empty dictionary to store groups of anagrams, where each key will represent a unique sorted version of strings.",
+    "Loop through each string in the input list to process them one by one.",
+    "For each string, create a key by sorting its characters and joining them back into a string; this ensures anagrams produce the same key.",
+    "Check if this sorted key is not already in the dictionary to see if it's a new group.",
+    "If it's a new key, create an empty list in the dictionary for that key to hold the anagrams.",
+    "Add the current string to the list associated with its sorted key in the dictionary.",
+    "Finally, return all the values from the dictionary as a list of lists, which groups the anagrams together."
+  ],
+  "final_explanation": "The solution groups anagrams by using a dictionary where the key is the sorted version of each string, since anagrams become identical when sorted. As we iterate through the list, we add each string to the list corresponding to its sorted key, ensuring all anagrams are collected together. Finally, we return the dictionary's values as a list of lists, which gives the grouped anagrams in any order."
 }
