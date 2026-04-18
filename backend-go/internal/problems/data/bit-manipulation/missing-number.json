@@ -84,5 +84,20 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def missing_number(nums):",
+    "    n = len(nums)",
+    "    expected_sum = n * (n + 1) // 2",
+    "    actual_sum = sum(nums)",
+    "    return expected_sum - actual_sum"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameter.",
+    "Determine the total count of numbers, which is the length of the list.",
+    "Calculate the sum of all numbers from 0 to n using the formula for the sum of an arithmetic series.",
+    "Compute the sum of the numbers present in the input list.",
+    "Subtract the actual sum from the expected sum to find the missing number."
+  ],
+  "final_explanation": "The solution uses the property that the sum of numbers from 0 to n is fixed. By comparing this expected sum with the actual sum of the given list, the difference reveals the missing number, as all other numbers are distinct and accounted for."
 }

@@ -53,6 +53,10 @@ export function Workspace() {
   const [detail, setDetail] = useState<ProblemDetail | null>(null);
   const [code, setCode] = useState("");
   const [run, setRun] = useState<RunResponse | null>(null);
+  // Snapshot of the code buffer at the time stepwise validation returned.
+  // Kept separate from `code` so editing after a Full Solution banner does
+  // not mutate the solution shown in the success panel.
+  const [stepwiseCode, setStepwiseCode] = useState<string>("");
   const [stepwise, setStepwise] = useState<StepwiseValidateResponse | null>(
     null,
   );
@@ -134,6 +138,7 @@ export function Workspace() {
         setDetail(problemDetail);
         setRun(null);
         setStepwise(null);
+        setStepwiseCode("");
         setErr(null);
 
         const starter = buildStarter(problemDetail);
@@ -201,6 +206,7 @@ export function Workspace() {
           code,
         });
         setStepwise(response);
+        setStepwiseCode(code);
         setRun(null);
         const hintEntry = response.is_full_solution
           ? `Full solution correct. ${response.final_explanation}`
@@ -226,6 +232,7 @@ export function Workspace() {
       });
       setRun(response);
       setStepwise(null);
+      setStepwiseCode("");
       const derivedStatus = deriveProgress(
         response,
         code,
@@ -272,6 +279,7 @@ export function Workspace() {
     setCode(starter);
     setRun(null);
     setStepwise(null);
+    setStepwiseCode("");
     setHintHistory([]);
     void persist(starter, [], "not_started");
   }, [detail, persist]);
@@ -567,126 +575,114 @@ export function Workspace() {
                         : "Run your code to execute visible tests, hidden checks, and receive interviewer notes. Evaluation is deterministic from the runner, not from the language model."}
                     </p>
                   )}
-                  {stepwise && (
-                    <div className="stepwise">
-                      <p
-                        className={`stepwise-banner stepwise-banner--${
-                          stepwise.is_full_solution
-                            ? "done"
-                            : stepwise.first_failed_index !== null &&
-                                stepwise.first_failed_index !== undefined
-                              ? "fail"
-                              : "progress"
-                        }`}
-                        data-testid="stepwise-banner"
-                      >
-                        {stepwise.is_full_solution
-                          ? "Full solution correct!"
-                          : stepwise.first_failed_index !== null &&
-                              stepwise.first_failed_index !== undefined
-                            ? stepwise.first_failed_index === 0
-                              ? "Incorrect. Let's start from the beginning."
-                              : `Sentence ${
-                                  (stepwise.first_failed_index ?? 0) + 1
-                                } is incorrect.`
+                  {stepwise &&
+                    (() => {
+                      const isFail =
+                        stepwise.first_failed_index !== null &&
+                        stepwise.first_failed_index !== undefined;
+                      const bannerKind = stepwise.is_full_solution
+                        ? "done"
+                        : isFail
+                          ? "fail"
+                          : "progress";
+                      const bannerText = stepwise.is_full_solution
+                        ? "Full solution correct!"
+                        : isFail && stepwise.first_failed_index === 0
+                          ? "Incorrect. Start from the beginning."
+                          : isFail
+                            ? "Incorrect."
                             : stepwise.correct_count === 0
                               ? "Write the first sentence of the solution."
-                              : `Correct! Now write sentence ${
-                                  stepwise.correct_count + 1
-                                } of ${stepwise.total}.`}
-                      </p>
+                              : "Correct! Now write the next sentence.";
+                      const currentSentence = stepwise.is_full_solution
+                        ? stepwise.total
+                        : Math.min(stepwise.correct_count + 1, stepwise.total);
+                      return (
+                        <div className="stepwise">
+                          <p
+                            className={`stepwise-banner stepwise-banner--${bannerKind}`}
+                            data-testid="stepwise-banner"
+                          >
+                            {bannerText}
+                          </p>
 
-                      <div className="stepwise-progress">
-                        <div className="stepwise-progress-label">
-                          Progress&nbsp;
-                          <strong>
-                            {stepwise.correct_count}/{stepwise.total}
-                          </strong>
-                        </div>
-                        <div
-                          className="stepwise-bar"
-                          role="progressbar"
-                          aria-valuemin={0}
-                          aria-valuemax={stepwise.total}
-                          aria-valuenow={stepwise.correct_count}
-                        >
-                          <div
-                            className="stepwise-bar-fill"
-                            style={{
-                              width: `${
-                                stepwise.total > 0
-                                  ? (stepwise.correct_count / stepwise.total) *
-                                    100
-                                  : 0
-                              }%`,
-                            }}
-                          />
-                        </div>
-                      </div>
-
-                      {!stepwise.is_full_solution && stepwise.next_hint && (
-                        <div className="u-mb-section">
-                          <SectionTitle>Next hint</SectionTitle>
-                          <p className="stepwise-hint">{stepwise.next_hint}</p>
-                        </div>
-                      )}
-
-                      {!stepwise.is_full_solution &&
-                        stepwise.expected_sentence &&
-                        stepwise.user_sentence && (
-                          <div className="u-mb-section">
-                            <SectionTitle>Why it didn&apos;t match</SectionTitle>
-                            <div className="stepwise-diff">
-                              <div className="stepwise-diff-row">
-                                <span className="stepwise-diff-label">
-                                  Expected
-                                </span>
-                                <code className="stepwise-diff-expected">
-                                  {stepwise.expected_sentence}
-                                </code>
-                              </div>
-                              <div className="stepwise-diff-row">
-                                <span className="stepwise-diff-label">
-                                  You wrote
-                                </span>
-                                <code className="stepwise-diff-actual">
-                                  {stepwise.user_sentence}
-                                </code>
-                              </div>
+                          <div className="stepwise-progress">
+                            <div className="stepwise-progress-label">
+                              Sentence <strong>{currentSentence}</strong> of{" "}
+                              <strong>{stepwise.total}</strong>
+                            </div>
+                            <div
+                              className="stepwise-bar"
+                              role="progressbar"
+                              aria-valuemin={0}
+                              aria-valuemax={stepwise.total}
+                              aria-valuenow={stepwise.correct_count}
+                            >
+                              <div
+                                className="stepwise-bar-fill"
+                                style={{
+                                  width: `${
+                                    stepwise.total > 0
+                                      ? (stepwise.correct_count /
+                                          stepwise.total) *
+                                        100
+                                      : 0
+                                  }%`,
+                                }}
+                              />
                             </div>
                           </div>
-                        )}
 
-                      {stepwise.is_full_solution &&
-                        stepwise.final_explanation && (
-                          <div className="u-mb-section">
-                            <SectionTitle>Solution explanation</SectionTitle>
-                            <p className="stepwise-explanation">
-                              {stepwise.final_explanation}
+                          {!stepwise.is_full_solution && stepwise.next_hint && (
+                            <p
+                              className="stepwise-hint"
+                              data-testid="stepwise-hint"
+                            >
+                              {stepwise.next_hint}
                             </p>
-                          </div>
-                        )}
+                          )}
 
-                      <div className="hint-block">
-                        <SectionTitle>Hint history</SectionTitle>
-                        {hintHistory.length === 0 ? (
-                          <p className="hint-empty">
-                            Each Run Code here checks the next sentence and
-                            saves its feedback below.
-                          </p>
-                        ) : (
-                          <ol className="hint-ol">
-                            {hintHistory.map((hint, index) => (
-                              <li key={index} className="hint-li">
-                                <span className="hint-num">{index + 1}. </span>
-                                <span className="hint-text">{hint}</span>
-                              </li>
-                            ))}
-                          </ol>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                          {stepwise.is_full_solution && (
+                            <div className="stepwise-success">
+                              {stepwise.final_explanation && (
+                                <p className="stepwise-explanation">
+                                  {stepwise.final_explanation}
+                                </p>
+                              )}
+                              {stepwiseCode.trim() && (
+                                <pre
+                                  className="stepwise-solution"
+                                  aria-label="Your correct solution"
+                                >
+                                  <code>{stepwiseCode}</code>
+                                </pre>
+                              )}
+                            </div>
+                          )}
+
+                          <div className="hint-block">
+                            <SectionTitle>Hint history</SectionTitle>
+                            {hintHistory.length === 0 ? (
+                              <p className="hint-empty">
+                                Each Run Code here checks the next sentence and
+                                saves its feedback below.
+                              </p>
+                            ) : (
+                              <ol className="hint-ol">
+                                {hintHistory.map((hint, index) => (
+                                  <li key={index} className="hint-li">
+                                    <span className="hint-num">
+                                      {index + 1}.{" "}
+                                    </span>
+                                    <span className="hint-text">{hint}</span>
+                                  </li>
+                                ))}
+                              </ol>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()}
                   {run && (
                     <div>
                       {evaluationBanner ? (

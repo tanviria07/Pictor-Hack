@@ -64,5 +64,34 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def can_partition(nums):",
+    "    total = sum(nums)",
+    "    if total % 2 != 0:",
+    "        return False",
+    "    target = total // 2",
+    "    dp = [False] * (target + 1)",
+    "    dp[0] = True",
+    "    for num in nums:",
+    "        for i in range(target, num - 1, -1):",
+    "            if dp[i - num]:",
+    "                dp[i] = True",
+    "    return dp[target]"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameter.",
+    "Calculate the total sum of all numbers in the list.",
+    "Check if the total sum is odd; if so, equal partition is impossible.",
+    "Return False immediately if the total sum is odd.",
+    "Set the target sum for each subset as half of the total sum.",
+    "Initialize a dynamic programming array to track achievable sums up to the target.",
+    "Mark that a sum of 0 is always achievable with no elements.",
+    "Iterate through each number in the input list.",
+    "For each number, iterate backwards from the target down to the number's value to avoid reusing elements.",
+    "If the sum (i - num) is achievable, then the current sum i can also be achieved.",
+    "Update the dp array to mark sum i as achievable.",
+    "Finally, return whether the target sum is achievable based on the dp array."
+  ],
+  "final_explanation": "The solution uses dynamic programming to check if a subset sums to half the total. First, if the total sum is odd, return False. Then, create a boolean array where each index represents whether that sum can be formed with the numbers seen so far. Iterate through each number and update the array backwards to avoid counting the same number multiple times. The result is whether the target sum (half of total) is achievable."
 }

@@ -54,5 +54,22 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def reverse_bits(n):",
+    "    result = 0",
+    "    for i in range(32):",
+    "        bit = (n >> i) & 1",
+    "        result = result | (bit << (31 - i))",
+    "    return result"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given name and parameter.",
+    "Initialize a variable to store the reversed bits result, starting at zero.",
+    "Loop 32 times because we are dealing with a 32-bit integer.",
+    "Extract the i-th bit from the input integer by shifting and masking.",
+    "Place that extracted bit into the correct reversed position in the result.",
+    "After the loop, return the final reversed integer."
+  ],
+  "final_explanation": "The solution works by iterating through each bit of the input integer from least significant to most significant. For each bit, it extracts it using bitwise operations and then places it into the reversed position in a new integer. After processing all 32 bits, the new integer holds the reversed bits, which is returned as the result."
 }

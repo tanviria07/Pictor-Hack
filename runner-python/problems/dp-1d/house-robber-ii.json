@@ -77,5 +77,36 @@
     "level_4": "Since House[1] and House[n] are adjacent, they cannot be robbed together. Therefore, the problem becomes to rob either House[1]-House[n-1] or House[2]-House[n], depending on which choice offers more money. Now the problem has degenerated to the House Robber, which is already been solved."
   },
   "canonical_solution_summary": "Since House[1] and House[n] are adjacent, they cannot be robbed together. Therefore, the problem becomes to rob either House[1]-House[n-1] or House[2]-House[n], depending on which choice offers more money. Now the problem has degenerated to the House Robber, which is already been solved.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def rob(nums):",
+    "    if not nums:",
+    "        return 0",
+    "    if len(nums) == 1:",
+    "        return nums[0]",
+    "    def rob_linear(houses):",
+    "        prev1, prev2 = 0, 0",
+    "        for money in houses:",
+    "            temp = prev1",
+    "            prev1 = max(prev2 + money, prev1)",
+    "            prev2 = temp",
+    "        return prev1",
+    "    return max(rob_linear(nums[:-1]), rob_linear(nums[1:]))"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the parameter `nums` as given in the starter code.",
+    "Check if the input list is empty to handle edge cases early.",
+    "If it's empty, return 0 since no houses can be robbed.",
+    "Next, check if there's only one house in the list.",
+    "If so, return the money from that single house as the maximum.",
+    "Define a helper function inside `rob` to solve the linear version of the problem (without the circle).",
+    "Initialize two variables to keep track of the maximum money robbed up to the previous two houses.",
+    "Loop through each house's money in the list passed to the helper.",
+    "Store the current value of the first variable temporarily to update later.",
+    "Update the first variable to the maximum of robbing the current house plus the second variable or skipping it.",
+    "Update the second variable to the old value of the first variable to move forward in the sequence.",
+    "Return the final maximum money from the helper function after processing all houses.",
+    "In the main function, call the helper twice: once excluding the last house and once excluding the first house, then return the maximum of these two results."
+  ],
+  "final_explanation": "The key insight is that because the houses are in a circle, the first and last houses cannot both be robbed. This reduces the problem to two linear cases: rob houses from the first to the second-to-last, or from the second to the last. Use a dynamic programming approach similar to the original House Robber problem for each linear case, and take the maximum result."
 }

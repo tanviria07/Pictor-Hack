@@ -61,5 +61,34 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def reverse(x):",
+    "    sign = 1 if x >= 0 else -1",
+    "    x = abs(x)",
+    "    rev = 0",
+    "    while x > 0:",
+    "        digit = x % 10",
+    "        rev = rev * 10 + digit",
+    "        x //= 10",
+    "    rev *= sign",
+    "    if rev < -2**31 or rev > 2**31 - 1:",
+    "        return 0",
+    "    return rev"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the parameter x as given in the starter code.",
+    "Determine the sign of x to handle negative numbers later; set a variable to 1 for non-negative and -1 for negative.",
+    "Convert x to its absolute value so you can work with positive numbers for digit extraction.",
+    "Initialize a variable to store the reversed integer, starting at 0.",
+    "Set up a loop that continues as long as x is greater than 0 to process each digit.",
+    "Extract the last digit of x using the modulo operator.",
+    "Build the reversed number by multiplying the current reversed value by 10 and adding the extracted digit.",
+    "Update x by removing the last digit using integer division.",
+    "Apply the original sign to the reversed number to restore negativity if needed.",
+    "Check if the reversed number is within the 32-bit signed integer range; if not, return 0.",
+    "If the number is within range, return the reversed integer.",
+    ""
+  ],
+  "final_explanation": "The solution handles negative numbers by storing the sign separately and working with the absolute value. It reverses digits by iteratively extracting the last digit and building the new number, then restores the sign and checks for overflow. This ensures compliance with the 32-bit integer constraint without using 64-bit storage."
 }

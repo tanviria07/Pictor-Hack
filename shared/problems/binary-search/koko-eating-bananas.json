@@ -87,5 +87,34 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def min_eating_speed(piles, h):",
+    "    left, right = 1, max(piles)",
+    "    while left < right:",
+    "        mid = (left + right) // 2",
+    "        total_hours = 0",
+    "        for pile in piles:",
+    "            total_hours += (pile + mid - 1) // mid",
+    "        if total_hours <= h:",
+    "            right = mid",
+    "        else:",
+    "            left = mid + 1",
+    "    return left"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with parameters piles and h as given.",
+    "Initialize the search range: the minimum possible speed is 1, and the maximum is the largest pile (since eating faster than that doesn't help).",
+    "Set up a binary search loop that continues until the left and right bounds meet.",
+    "Calculate the middle speed to test within the current range.",
+    "Initialize a variable to accumulate the total hours needed for this speed.",
+    "Iterate through each pile to compute how many hours it takes to eat it.",
+    "For each pile, compute the hours by dividing the pile size by the speed, rounding up (use integer math to avoid floats).",
+    "Check if the total hours for this speed is within the allowed limit h.",
+    "If it is within limit, adjust the right bound to mid to search for potentially smaller speeds.",
+    "Otherwise, the speed is too slow, so move the left bound just above mid.",
+    "After the loop, left (or right) is the minimum speed, so return it.",
+    ""
+  ],
+  "final_explanation": "This solution uses binary search to efficiently find the minimum eating speed. We test speeds from 1 to the maximum pile size, calculating the total hours needed for each speed by summing the ceiling division of each pile by the speed. By narrowing the search range based on whether the total hours exceed h, we converge to the smallest speed that allows Koko to finish in time."
 }

@@ -64,5 +64,20 @@
     "level_4": "Or does the odd/even status of the number help you in calculating the number of 1s?"
   },
   "canonical_solution_summary": "Or does the odd/even status of the number help you in calculating the number of 1s?",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def count_bits(n):",
+    "    ans = [0] * (n + 1)",
+    "    for i in range(1, n + 1):",
+    "        ans[i] = ans[i >> 1] + (i & 1)",
+    "    return ans"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the parameter n as given in the starter code.",
+    "Initialize a list of zeros with length n + 1 to store the results for each index from 0 to n.",
+    "Loop through each integer i from 1 to n, since ans[0] is already set to 0.",
+    "For each i, compute the number of 1s using the previously computed value for i shifted right by 1 bit, plus the least significant bit of i.",
+    "Return the completed list ans as the final answer."
+  ],
+  "final_explanation": "This solution uses dynamic programming to efficiently compute the number of 1s for each number from 0 to n. By observing that shifting a number right by one bit (i >> 1) gives a smaller number whose count is already known, and adding the least significant bit (i & 1) accounts for whether i is odd or even. This avoids recalculating from scratch for each i, resulting in linear time complexity."
 }

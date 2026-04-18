@@ -76,5 +76,34 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def search(nums, target):",
+    "    left = 0",
+    "    right = len(nums) - 1",
+    "    while left <= right:",
+    "        mid = (left + right) // 2",
+    "        if nums[mid] == target:",
+    "            return mid",
+    "        elif nums[mid] < target:",
+    "            left = mid + 1",
+    "        else:",
+    "            right = mid - 1",
+    "    return -1"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameters.",
+    "Initialize a variable to track the left boundary of the search range, starting at the first index.",
+    "Set the right boundary to the last index of the list.",
+    "Use a loop that continues as long as the left boundary is not greater than the right, ensuring the search range is valid.",
+    "Calculate the middle index by averaging the left and right boundaries, using integer division to avoid fractions.",
+    "Check if the element at the middle index equals the target.",
+    "If it matches, return the middle index immediately as the result.",
+    "If the middle element is less than the target, the target must be in the right half, so adjust the left boundary accordingly.",
+    "Otherwise, the target is in the left half, so adjust the right boundary.",
+    "If the loop finishes without finding the target, return -1 to indicate it's not in the list.",
+    "",
+    ""
+  ],
+  "final_explanation": "This solution uses binary search to efficiently locate the target in a sorted list by repeatedly halving the search interval. It compares the middle element to the target and adjusts the boundaries based on the comparison, ensuring O(log n) time complexity. If the target is found, its index is returned; otherwise, -1 is returned after exhausting the search space."
 }

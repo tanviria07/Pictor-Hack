@@ -81,5 +81,24 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def change(amount, coins):",
+    "    dp = [0] * (amount + 1)",
+    "    dp[0] = 1",
+    "    for coin in coins:",
+    "        for i in range(coin, amount + 1):",
+    "            dp[i] += dp[i - coin]",
+    "    return dp[amount]"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameters.",
+    "Initialize a list to store the number of combinations for each amount from 0 up to the target amount.",
+    "Set the base case: there is exactly one way to make amount 0 (by using no coins).",
+    "Iterate through each coin denomination to consider each coin type one at a time.",
+    "For the current coin, loop through amounts from its value up to the target amount to update combinations.",
+    "Update the number of combinations for the current amount by adding combinations from the amount minus the current coin.",
+    "Return the number of combinations for the target amount from the list."
+  ],
+  "final_explanation": "This solution uses dynamic programming to count combinations without overcounting by processing coins in a specific order. It builds a dp array where each index represents the number of ways to make that amount using the coins considered so far. By iterating coins first and then amounts, it ensures each combination is counted once, leveraging the fact that coins can be used infinitely."
 }

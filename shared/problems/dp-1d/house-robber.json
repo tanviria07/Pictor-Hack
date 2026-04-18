@@ -65,5 +65,32 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def rob(nums):",
+    "    if not nums:",
+    "        return 0",
+    "    if len(nums) == 1:",
+    "        return nums[0]",
+    "    dp = [0] * len(nums)",
+    "    dp[0] = nums[0]",
+    "    dp[1] = max(nums[0], nums[1])",
+    "    for i in range(2, len(nums)):",
+    "        dp[i] = max(dp[i - 1], dp[i - 2] + nums[i])",
+    "    return dp[-1]"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameter.",
+    "Check if the input list is empty to handle edge cases.",
+    "If it's empty, return 0 since there are no houses to rob.",
+    "Check if there's only one house in the list.",
+    "If so, return the money from that single house.",
+    "Initialize a list to store the maximum money up to each house.",
+    "Set the first element to the money from the first house.",
+    "For the second house, decide whether to rob it or the first house.",
+    "Loop through the remaining houses starting from the third one.",
+    "At each house, choose the better option: skip it or rob it and add to two houses back.",
+    "Return the last computed value, which is the maximum for all houses."
+  ],
+  "final_explanation": "This solution uses dynamic programming to build up the maximum money that can be robbed up to each house without alerting the police. At each step, you decide whether to rob the current house (adding its money to the maximum from two houses before) or skip it (taking the maximum from the previous house). This ensures no adjacent houses are robbed, and the final result is the maximum achievable amount."
 }

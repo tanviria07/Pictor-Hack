@@ -79,5 +79,34 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def is_interleave(s1, s2, s3):",
+    "    if len(s1) + len(s2) != len(s3):",
+    "        return False",
+    "    dp = [[False] * (len(s2) + 1) for _ in range(len(s1) + 1)]",
+    "    dp[0][0] = True",
+    "    for i in range(len(s1) + 1):",
+    "        for j in range(len(s2) + 1):",
+    "            if i > 0:",
+    "                dp[i][j] = dp[i][j] or (dp[i-1][j] and s1[i-1] == s3[i+j-1])",
+    "            if j > 0:",
+    "                dp[i][j] = dp[i][j] or (dp[i][j-1] and s2[j-1] == s3[i+j-1])",
+    "    return dp[len(s1)][len(s2)]"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameters.",
+    "Check if the total length of s1 and s2 matches s3; if not, it's impossible.",
+    "Return False immediately if the length condition fails.",
+    "Initialize a 2D list (dp table) with dimensions based on lengths of s1 and s2, all set to False.",
+    "Set the base case: an empty s1 and s2 can form an empty s3, so dp[0][0] is True.",
+    "Loop over all possible prefix lengths of s1 (including zero).",
+    "Inside that, loop over all possible prefix lengths of s2 (including zero).",
+    "If we have taken at least one character from s1, check if the previous state (without it) was valid and the current characters match.",
+    "If we have taken at least one character from s2, similarly check the previous state and character match.",
+    "After filling the table, the result is at the bottom-right corner, indicating if full s1 and s2 can form s3.",
+    "",
+    ""
+  ],
+  "final_explanation": "This solution uses dynamic programming to check if s3 can be formed by interleaving s1 and s2. It builds a table where dp[i][j] represents whether the first i characters of s1 and first j characters of s2 can interleave to form the first i+j characters of s3. By iterating through all combinations and checking character matches, it efficiently determines the answer without exploring all possible splits explicitly."
 }

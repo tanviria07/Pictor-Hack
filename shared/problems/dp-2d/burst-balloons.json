@@ -62,5 +62,34 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def max_coins(nums):",
+    "    n = len(nums)",
+    "    nums = [1] + nums + [1]",
+    "    dp = [[0] * (n + 2) for _ in range(n + 2)]",
+    "    for length in range(1, n + 1):",
+    "        for left in range(1, n - length + 2):",
+    "            right = left + length - 1",
+    "            for k in range(left, right + 1):",
+    "                coins = nums[left - 1] * nums[k] * nums[right + 1]",
+    "                coins += dp[left][k - 1] + dp[k + 1][right]",
+    "                dp[left][right] = max(dp[left][right], coins)",
+    "    return dp[1][n]"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameter.",
+    "Calculate the number of balloons in the original list.",
+    "Add dummy balloons with value 1 at both ends to handle boundaries easily.",
+    "Initialize a 2D DP table where dp[i][j] stores max coins from bursting balloons between i and j inclusive.",
+    "Iterate over all possible lengths of subarrays, starting from length 1 up to the total number of balloons.",
+    "For each length, consider all possible starting positions (left index) within the padded array.",
+    "Compute the right index based on the left index and current length.",
+    "For each possible last balloon to burst (k) in the current subarray, evaluate the coins gained.",
+    "Calculate coins from bursting balloon k, using the values of its neighbors (which are fixed due to DP order).",
+    "Add the coins from the left and right subproblems (already computed in DP table).",
+    "Update the DP table with the maximum coins for the current subarray.",
+    "After filling the DP table, return the result for the entire original array (excluding dummies)."
+  ],
+  "final_explanation": "This solution uses dynamic programming to consider bursting balloons in reverse order: instead of choosing which balloon to burst first, we decide which balloon bursts last in each subarray. By adding dummy balloons with value 1 at both ends, we simplify boundary checks. The DP table stores the maximum coins for subarrays, and we compute it by iterating over all possible subarrays and last burst positions, ensuring optimal substructure and overlapping subproblems are efficiently handled."
 }

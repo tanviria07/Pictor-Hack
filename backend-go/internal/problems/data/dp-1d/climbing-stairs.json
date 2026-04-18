@@ -53,5 +53,28 @@
     "level_4": "To reach nth step, what could have been your previous steps? (Think about the step sizes)"
   },
   "canonical_solution_summary": "To reach nth step, what could have been your previous steps? (Think about the step sizes)",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def climb_stairs(n):",
+    "    if n <= 2:",
+    "        return n",
+    "    dp = [0] * (n + 1)",
+    "    dp[1] = 1",
+    "    dp[2] = 2",
+    "    for i in range(3, n + 1):",
+    "        dp[i] = dp[i - 1] + dp[i - 2]",
+    "    return dp[n]"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with parameter n as given in the starter code.",
+    "Check for small cases where n is 1 or 2, since these have simple direct answers.",
+    "For n=1 or n=2, the number of ways is just n itself, so return that value.",
+    "For larger n, we'll use dynamic programming: create a list to store ways for each step up to n.",
+    "Initialize the number of ways to reach step 1, which is only 1 way (climb 1 step).",
+    "Initialize the number of ways to reach step 2, which is 2 ways (1+1 or 2).",
+    "Loop from step 3 up to n to compute ways for each step based on previous steps.",
+    "The ways to reach step i is the sum of ways to reach step i-1 and step i-2, since you can come from those.",
+    "After filling the list, return the value for step n, which gives the total distinct ways."
+  ],
+  "final_explanation": "This problem is essentially a Fibonacci sequence where each step's ways depend on the previous two steps. By using dynamic programming to store intermediate results, we avoid redundant calculations and efficiently compute the answer for any n. The base cases handle small staircases directly, ensuring correctness for all inputs."
 }

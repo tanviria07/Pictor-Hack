@@ -79,5 +79,24 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def coin_change(coins, amount):",
+    "    dp = [float('inf')] * (amount + 1)",
+    "    dp[0] = 0",
+    "    for coin in coins:",
+    "        for i in range(coin, amount + 1):",
+    "            dp[i] = min(dp[i], dp[i - coin] + 1)",
+    "    return dp[amount] if dp[amount] != float('inf') else -1"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameters.",
+    "Initialize a list to store the minimum coins needed for each amount up to the target, setting all to a large value initially.",
+    "Set the base case: zero coins are needed to make amount 0.",
+    "Iterate through each coin denomination available.",
+    "For each coin, loop through amounts from its value up to the target amount.",
+    "Update the minimum coins for the current amount by considering using this coin.",
+    "Return the result for the target amount, handling the case where it's impossible."
+  ],
+  "final_explanation": "This solution uses dynamic programming to build up the minimum coins needed for each amount from 0 to the target. By iterating through each coin and updating the dp array, it efficiently finds the optimal combination. If the target amount remains at infinity, it returns -1 indicating no solution."
 }

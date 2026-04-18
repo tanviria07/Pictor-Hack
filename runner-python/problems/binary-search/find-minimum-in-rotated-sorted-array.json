@@ -87,5 +87,28 @@
     "level_4": "- All the elements to the left of inflection point > first element of the array.\n\n- All the elements to the right of inflection point"
   },
   "canonical_solution_summary": "- All the elements to the left of inflection point > first element of the array.\n\n- All the elements to the right of inflection point",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def find_min(nums):",
+    "    left, right = 0, len(nums) - 1",
+    "    while left < right:",
+    "        mid = (left + right) // 2",
+    "        if nums[mid] > nums[right]:",
+    "            left = mid + 1",
+    "        else:",
+    "            right = mid",
+    "    return nums[left]"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the parameter 'nums' as given in the starter code.",
+    "Initialize two pointers: one at the start and one at the end of the array to set up the binary search boundaries.",
+    "Set up a loop that continues as long as the left pointer is less than the right pointer, narrowing down the search.",
+    "Calculate the middle index by averaging the left and right pointers, using integer division to avoid floats.",
+    "Check if the middle element is greater than the element at the right pointer; this indicates the minimum is on the right side.",
+    "If the condition is true, move the left pointer to just after the middle to search the right half.",
+    "If the condition is false, the minimum is in the left half or at the middle, so adjust the right pointer accordingly.",
+    "Once the loop ends, the left pointer points to the minimum element; return that element from the array.",
+    ""
+  ],
+  "final_explanation": "This solution uses binary search to find the minimum in O(log n) time by comparing the middle element with the rightmost element. If the middle is greater, the minimum must be to the right; otherwise, it's to the left or at the middle. The pointers converge until they meet at the minimum element."
 }

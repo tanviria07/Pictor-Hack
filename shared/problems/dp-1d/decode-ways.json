@@ -65,5 +65,38 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def num_decodings(s):",
+    "    if not s or s[0] == '0':",
+    "        return 0",
+    "    n = len(s)",
+    "    dp = [0] * (n + 1)",
+    "    dp[0] = 1",
+    "    dp[1] = 1",
+    "    for i in range(2, n + 1):",
+    "        if s[i - 1] != '0':",
+    "            dp[i] += dp[i - 1]",
+    "        two_digit = int(s[i - 2:i])",
+    "        if 10 <= two_digit <= 26:",
+    "            dp[i] += dp[i - 2]",
+    "    return dp[n]"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given name and parameter.",
+    "Check if the string is empty or starts with '0', as these cases have no valid decodings.",
+    "Return 0 immediately for those invalid starting conditions.",
+    "Store the length of the string to use in loops and array sizes.",
+    "Initialize a dynamic programming array with zeros, sized to handle substrings up to length n.",
+    "Set the base case for an empty substring: there's exactly 1 way to decode nothing.",
+    "Set the base case for the first character: since we already checked it's not '0', there's 1 way.",
+    "Loop from the second character to the end, processing each position as a potential end of a substring.",
+    "If the current character is not '0', it can stand alone as a single-digit code.",
+    "Add the number of ways from the previous position to the current position's count.",
+    "Extract the two-digit number formed by the current and previous characters.",
+    "Check if this two-digit number is between 10 and 26, inclusive, making it a valid double-digit code.",
+    "If valid, add the number of ways from two positions back to the current count.",
+    "After the loop, return the total ways stored for the full string length."
+  ],
+  "final_explanation": "This solution uses dynamic programming to count decodings by building up from smaller substrings. At each position, we consider if the last digit can be a single code (if not '0') and if the last two digits form a valid double-digit code (10-26), adding ways from previous states. The base cases handle empty strings and initial zeros, ensuring invalid sequences return 0."
 }

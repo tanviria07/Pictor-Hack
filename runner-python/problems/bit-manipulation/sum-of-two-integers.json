@@ -57,5 +57,22 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def get_sum(a, b):",
+    "    while b != 0:",
+    "        carry = a & b",
+    "        a = a ^ b",
+    "        b = carry << 1",
+    "    return a"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with parameters a and b as given in the starter code.",
+    "Set up a loop that continues as long as b is not zero, since we'll handle the sum using bitwise operations.",
+    "Compute the carry by performing a bitwise AND between a and b; this finds bits where both are 1.",
+    "Update a to be the bitwise XOR of a and b, which adds bits without considering carries.",
+    "Shift the carry left by one bit to align it for the next addition, and assign it to b for the next iteration.",
+    "Once b becomes zero, return a, which now holds the sum of the original integers."
+  ],
+  "final_explanation": "This solution uses bitwise operations to simulate addition without using + or -. It repeatedly calculates the sum without carry (XOR) and the carry (AND shifted left), adding them in a loop until no carry remains. This mimics how binary addition works at the hardware level, ensuring the result is computed efficiently."
 }

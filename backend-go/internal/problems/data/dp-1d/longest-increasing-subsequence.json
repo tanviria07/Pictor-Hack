@@ -87,5 +87,28 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def length_of_lis(nums):",
+    "    if not nums:",
+    "        return 0",
+    "    dp = [1] * len(nums)",
+    "    for i in range(len(nums)):",
+    "        for j in range(i):",
+    "            if nums[i] > nums[j]:",
+    "                dp[i] = max(dp[i], dp[j] + 1)",
+    "    return max(dp)"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameter.",
+    "Check if the input list is empty to handle edge cases.",
+    "If the list is empty, return 0 since there's no subsequence.",
+    "Initialize a DP array where each element starts at 1, representing the LIS ending at that index.",
+    "Loop through each index in the array to consider each element as the end of a subsequence.",
+    "For each element, compare it with all previous elements to find increasing sequences.",
+    "Check if the current element is greater than a previous one to potentially extend a subsequence.",
+    "Update the DP value for the current index if a longer increasing subsequence is found.",
+    "After processing all elements, return the maximum value in the DP array as the answer."
+  ],
+  "final_explanation": "This solution uses dynamic programming to track the longest increasing subsequence ending at each index. By comparing each element with all previous ones, we build up the DP array where dp[i] stores the LIS length ending at nums[i]. The final answer is the maximum value in dp, representing the overall longest subsequence in the array."
 }

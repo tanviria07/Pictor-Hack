@@ -60,5 +60,38 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def min_distance(word1, word2):",
+    "    m, n = len(word1), len(word2)",
+    "    dp = [[0] * (n + 1) for _ in range(m + 1)]",
+    "    for i in range(m + 1):",
+    "        dp[i][0] = i",
+    "    for j in range(n + 1):",
+    "        dp[0][j] = j",
+    "    for i in range(1, m + 1):",
+    "        for j in range(1, n + 1):",
+    "            if word1[i - 1] == word2[j - 1]:",
+    "                dp[i][j] = dp[i - 1][j - 1]",
+    "            else:",
+    "                dp[i][j] = 1 + min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])",
+    "    return dp[m][n]"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameters.",
+    "Compute the lengths of both strings to use for dynamic programming dimensions.",
+    "Initialize a 2D list (matrix) with zeros, where rows correspond to word1 and columns to word2, plus one extra for empty strings.",
+    "Loop through each index representing the prefix length of word1, including the empty case.",
+    "Set the base case: converting a prefix of word1 to an empty word2 requires deleting all characters.",
+    "Loop through each index representing the prefix length of word2, including the empty case.",
+    "Set the base case: converting an empty word1 to a prefix of word2 requires inserting all characters.",
+    "Iterate over each prefix of word1 starting from the first character.",
+    "For each prefix of word1, iterate over each prefix of word2 starting from the first character.",
+    "Check if the current characters from both strings match (adjust indices since dp includes empty strings).",
+    "If characters match, the cost is the same as for the previous prefixes without these characters.",
+    "If characters differ, consider the minimum cost among insertion, deletion, or replacement, and add one for the operation.",
+    "After filling the table, return the value at the bottom-right corner, which represents the full strings.",
+    ""
+  ],
+  "final_explanation": "This solution uses dynamic programming to build a table where dp[i][j] stores the minimum edit distance between the first i characters of word1 and first j characters of word2. Base cases handle empty strings, and recurrence compares characters: if they match, no extra cost; otherwise, take the minimum cost of insert, delete, or replace plus one. The final answer is at dp[m][n], efficiently computed in O(m*n) time."
 }

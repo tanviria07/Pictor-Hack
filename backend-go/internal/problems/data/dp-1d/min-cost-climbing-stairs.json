@@ -69,5 +69,22 @@
     "level_4": "Now, looping from n - 1 to 0, the dp[i] = cost[i] + min(dp[i + 1], dp[i + 2]). The answer will be the minimum of dp[0] and dp[1]"
   },
   "canonical_solution_summary": "Now, looping from n - 1 to 0, the dp[i] = cost[i] + min(dp[i + 1], dp[i + 2]). The answer will be the minimum of dp[0] and dp[1]",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def min_cost_climbing_stairs(cost):",
+    "    n = len(cost)",
+    "    dp = [0] * (n + 2)",
+    "    for i in range(n - 1, -1, -1):",
+    "        dp[i] = cost[i] + min(dp[i + 1], dp[i + 2])",
+    "    return min(dp[0], dp[1])"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameter.",
+    "Find the length of the cost array to know how many steps there are.",
+    "Initialize a DP array with extra space to handle indices beyond the last step safely.",
+    "Loop backwards from the last step to the first to compute costs from the end.",
+    "For each step, compute the minimum cost to reach the top from that step.",
+    "Return the minimum cost starting from either step 0 or step 1."
+  ],
+  "final_explanation": "This solution uses dynamic programming to compute the minimum cost from each step to the top, working backwards. By storing results in a DP array and considering the cost of the current step plus the minimum of the next one or two steps, it efficiently finds the optimal path. Finally, the answer is the cheaper of starting at index 0 or 1."
 }
