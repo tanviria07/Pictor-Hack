@@ -19,7 +19,6 @@ import {
 } from "@/lib/api";
 import { deriveCategoriesFromProblems } from "@/lib/catalog";
 import { formatThrownError } from "@/lib/errors";
-import { friendlyEvaluationBanner } from "@/lib/runFeedback";
 import {
   deriveProgress,
   loadLocalProgress,
@@ -38,101 +37,13 @@ import type {
   InlineHintResponse,
 } from "@/lib/types";
 import { DifficultyBadge } from "./DifficultyBadge";
+import { EvaluationPanel } from "./EvaluationPanel";
 import { ProblemExplorer } from "./ProblemExplorer";
 import { PythonEditor, type PythonEditorHandle } from "./PythonEditor";
-import { StatusBadge } from "./StatusBadge";
 import { VoiceCoach } from "./VoiceCoach";
 
 function SectionTitle({ children }: { children: ReactNode }) {
   return <h3 className="sec-title">{children}</h3>;
-}
-
-/**
- * Split a hint string into alternating plain-text and inline-code segments.
- * DeepSeek- and rule-based hints consistently quote code in single backticks
- * (e.g. "Define the function with `def answer():`"), so we treat anything
- * between matching backticks as an insertable snippet.
- */
-function tokenizeHint(text: string): Array<{ kind: "text" | "code"; value: string }> {
-  const out: Array<{ kind: "text" | "code"; value: string }> = [];
-  if (!text) return out;
-  const parts = text.split(/`([^`]+)`/g);
-  parts.forEach((part, i) => {
-    if (!part) return;
-    out.push({ kind: i % 2 === 1 ? "code" : "text", value: part });
-  });
-  return out;
-}
-
-/**
- * Renders a hint with two affordances:
- *  - Any `code` span is a clickable chip that inserts that snippet into the
- *    editor at the current cursor position.
- *  - A "Copy" button in the top-right copies the full hint text.
- * Keeps the visual shape of a single hint bubble.
- */
-function HintContent({
-  text,
-  onInsert,
-  className = "stepwise-hint",
-  testId,
-}: {
-  text: string;
-  onInsert?: (snippet: string) => void;
-  className?: string;
-  testId?: string;
-}) {
-  const [copied, setCopied] = useState(false);
-  const tokens = useMemo(() => tokenizeHint(text), [text]);
-
-  const onCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1500);
-    } catch {
-      /* clipboard denied; silent no-op */
-    }
-  }, [text]);
-
-  return (
-    <div className={className} data-testid={testId}>
-      <div className="stepwise-hint-body">
-        {tokens.length === 0 ? (
-          <span>{text}</span>
-        ) : (
-          tokens.map((tok, i) =>
-            tok.kind === "code" && onInsert ? (
-              <button
-                key={i}
-                type="button"
-                className="stepwise-hint-chip"
-                title="Click to insert at cursor"
-                onClick={() => onInsert(tok.value)}
-              >
-                {tok.value}
-              </button>
-            ) : tok.kind === "code" ? (
-              <code key={i} className="stepwise-hint-code">
-                {tok.value}
-              </code>
-            ) : (
-              <span key={i}>{tok.value}</span>
-            ),
-          )
-        )}
-      </div>
-      <button
-        type="button"
-        className="stepwise-hint-copy"
-        onClick={onCopy}
-        aria-label="Copy hint"
-        title="Copy hint to clipboard"
-      >
-        {copied ? "Copied" : "Copy"}
-      </button>
-    </div>
-  );
 }
 
 export function Workspace() {
@@ -424,11 +335,6 @@ export function Workspace() {
     setHintHistory([]);
     void persist(starter, [], "not_started");
   }, [detail, persist]);
-
-  const evaluationBanner = useMemo(
-    () => (run ? friendlyEvaluationBanner(run) : null),
-    [run],
-  );
 
   const trackCounts = useMemo(() => {
     let precode = 0;
@@ -743,272 +649,15 @@ export function Workspace() {
                 </div>
               </div>
 
-              <div className="eval-panel">
-                <div className="eval-panel-head">
-                  <SectionTitle>Evaluation</SectionTitle>
-                </div>
-                <div className="eval-scroll">
-                  {!run && !stepwise && (
-                    <>
-                      {inlineHint ? (
-                        <div className="inline-hint">
-                          <SectionTitle>Inline Hint</SectionTitle>
-                          <div className="inline-hint-content">
-                            <div className="inline-hint-field">
-                              <strong>Issue:</strong> {inlineHint.line_issue}
-                            </div>
-                            <div className="inline-hint-field">
-                              <strong>Next Steps:</strong> {inlineHint.next_steps}
-                            </div>
-                            <div className="inline-hint-field">
-                              <strong>Redirect:</strong> {inlineHint.problem_redirect}
-                            </div>
-                          </div>
-                          <p className="inline-hint-note">
-                            Hint updates as you type (500ms debounce).
-                          </p>
-                        </div>
-                      ) : (
-                        <p className="eval-placeholder">
-                          {detail?.stepwise_available
-                            ? "Click Run Code to check your first sentence. You'll get feedback and a hint for the next line."
-                            : "Run your code to execute visible tests, hidden checks, and receive interviewer notes. Evaluation is deterministic from the runner, not from the language model."}
-                        </p>
-                      )}
-                    </>
-                  )}
-                  {stepwise &&
-                    (() => {
-                      const isFail =
-                        stepwise.first_failed_index !== null &&
-                        stepwise.first_failed_index !== undefined;
-                      const bannerKind = stepwise.is_full_solution
-                        ? "done"
-                        : isFail
-                          ? "fail"
-                          : "progress";
-                      const bannerText = stepwise.is_full_solution
-                        ? "Full solution correct!"
-                        : isFail
-                          ? "Incorrect. Start over."
-                          : "Correct! Keep going.";
-                      return (
-                        <div className="stepwise">
-                          <p
-                            className={`stepwise-banner stepwise-banner--${bannerKind}`}
-                            data-testid="stepwise-banner"
-                          >
-                            {bannerText}
-                          </p>
-
-                          <div className="stepwise-progress">
-                            <div className="stepwise-progress-label">
-                              <strong>{stepwise.correct_count}</strong> /{" "}
-                              <strong>{stepwise.total}</strong> sentences
-                            </div>
-                            <div
-                              className="stepwise-bar"
-                              role="progressbar"
-                              aria-valuemin={0}
-                              aria-valuemax={stepwise.total}
-                              aria-valuenow={stepwise.correct_count}
-                            >
-                              <div
-                                className="stepwise-bar-fill"
-                                style={{
-                                  width: `${
-                                    stepwise.total > 0
-                                      ? (stepwise.correct_count /
-                                          stepwise.total) *
-                                        100
-                                      : 0
-                                  }%`,
-                                }}
-                              />
-                            </div>
-                          </div>
-
-                          {!stepwise.is_full_solution && stepwise.next_hint && (
-                            <HintContent
-                              text={stepwise.next_hint}
-                              onInsert={insertSnippet}
-                              testId="stepwise-hint"
-                            />
-                          )}
-
-                          {stepwise.is_full_solution && (
-                            <div className="stepwise-success">
-                              {stepwise.final_explanation && (
-                                <p className="stepwise-explanation">
-                                  {stepwise.final_explanation}
-                                </p>
-                              )}
-                              {stepwiseCode.trim() && (
-                                <pre
-                                  className="stepwise-solution"
-                                  aria-label="Your correct solution"
-                                >
-                                  <code>{stepwiseCode}</code>
-                                </pre>
-                              )}
-                            </div>
-                          )}
-
-                        </div>
-                      );
-                    })()}
-                  {stepwise && (
-                    <div className="hint-block">
-                      <SectionTitle>Hint history</SectionTitle>
-                      {hintHistory.length === 0 ? (
-                        <p className="hint-empty">
-                          Each Run Code here checks the next sentence and saves
-                          its feedback below.
-                        </p>
-                      ) : (
-                        <ol className="hint-ol">
-                          {hintHistory.map((hint, index) => (
-                            <li key={index} className="hint-li">
-                              <span className="hint-num">{index + 1}. </span>
-                              <HintContent
-                                text={hint}
-                                onInsert={insertSnippet}
-                                className="stepwise-hint stepwise-hint--history"
-                              />
-                            </li>
-                          ))}
-                        </ol>
-                      )}
-                    </div>
-                  )}
-                  {run && !stepwise && (
-                    <div>
-                      {evaluationBanner ? (
-                        <p
-                          className="eval-banner"
-                          data-testid="evaluation-banner"
-                        >
-                          {evaluationBanner}
-                        </p>
-                      ) : null}
-                      <div className="eval-row">
-                        <StatusBadge status={run.status} />
-                        <span className="eval-stats">
-                          Visible {run.evaluation.passed_visible_tests}/
-                          {run.evaluation.total_visible_tests}
-                          <span className="eval-stats-muted">|</span>
-                          Hidden {run.evaluation.passed_hidden_tests}/
-                          {run.evaluation.total_hidden_tests}
-                          <span className="ml-xs text-muted">
-                            (inputs withheld)
-                          </span>
-                        </span>
-                      </div>
-
-                      <div className="u-mb-section">
-                        <SectionTitle>Visible tests</SectionTitle>
-                        <div className="table-wrap">
-                          <table className="eval-table">
-                            <thead>
-                              <tr>
-                                <th>Case</th>
-                                <th>Result</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {run.visible_test_results.map((testResult) => (
-                                <tr key={testResult.index}>
-                                  <td className="text-secondary">
-                                    {testResult.label ?? `#${testResult.index + 1}`}
-                                  </td>
-                                  <td
-                                    className={
-                                      testResult.passed ? "eval-pass" : "eval-fail"
-                                    }
-                                  >
-                                    {testResult.passed ? "Pass" : "Fail"}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-
-                      {(run.evaluation.error_type ||
-                        run.evaluation.error_message) && (
-                        <div className="u-mb-section">
-                          <SectionTitle>
-                            {run.status === "internal_error"
-                              ? "Platform"
-                              : "Execution"}
-                          </SectionTitle>
-                          <div
-                            className={
-                              run.status === "internal_error"
-                                ? "err-block err-block--internal"
-                                : "err-block err-block--exec"
-                            }
-                          >
-                            <div className="err-type">
-                              {run.evaluation.error_type}
-                            </div>
-                            <pre className="err-pre">
-                              {run.evaluation.error_message}
-                            </pre>
-                          </div>
-                        </div>
-                      )}
-
-                      {run.evaluation.failing_case_summary && (
-                        <div className="u-mb-section">
-                          <SectionTitle>Case note</SectionTitle>
-                          <p className="case-note">
-                            {run.evaluation.failing_case_summary}
-                          </p>
-                        </div>
-                      )}
-
-                      <div className="u-mb-section">
-                        <SectionTitle>Interviewer notes</SectionTitle>
-                        <p className="feedback">{run.interviewer_feedback}</p>
-                      </div>
-
-                      {run.evaluation.feedback_targets.length > 0 && (
-                        <div className="u-mb-section">
-                          <SectionTitle>Focus areas</SectionTitle>
-                          <ul className="focus-list">
-                            {run.evaluation.feedback_targets.map(
-                              (feedbackTarget, index) => (
-                                <li key={index}>{feedbackTarget}</li>
-                              ),
-                            )}
-                          </ul>
-                        </div>
-                      )}
-
-                      <div className="hint-block">
-                        <SectionTitle>Hint history</SectionTitle>
-                        {hintHistory.length === 0 ? (
-                          <p className="hint-empty">
-                            After a run, request hints. Each step builds on prior
-                            hints (levels 1-4).
-                          </p>
-                        ) : (
-                          <ol className="hint-ol">
-                            {hintHistory.map((hint, index) => (
-                              <li key={index} className="hint-li">
-                                <span className="hint-num">{index + 1}. </span>
-                                <span className="hint-text">{hint}</span>
-                              </li>
-                            ))}
-                          </ol>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <EvaluationPanel
+                detail={detail}
+                run={run}
+                stepwise={stepwise}
+                stepwiseCode={stepwiseCode}
+                inlineHint={inlineHint}
+                hintHistory={hintHistory}
+                onInsertSnippet={insertSnippet}
+              />
             </div>
           </main>
         </div>
