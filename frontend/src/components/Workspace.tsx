@@ -27,6 +27,7 @@ import {
   setLocalProgress,
 } from "@/lib/progress";
 import { buildStarter } from "@/lib/starter";
+import { filterProblemsByTrack, type TrackFilter } from "@/lib/tracks";
 import type {
   CategorySummary,
   PracticeProgress,
@@ -133,8 +134,6 @@ function HintContent({
   );
 }
 
-type TrackFilter = "all" | "precode100" | "dsa";
-
 export function Workspace() {
   const [categories, setCategories] = useState<CategorySummary[]>([]);
   const [problems, setProblems] = useState<ProblemSummary[]>([]);
@@ -174,11 +173,10 @@ export function Workspace() {
 
   useEffect(() => {
     if (trackFilter === "all" || problems.length === 0) return;
-    const inTrack = (p: ProblemSummary) =>
-      (p.track_id || "dsa") === trackFilter;
+    const visibleProblems = filterProblemsByTrack(problems, trackFilter);
     const current = problems.find((p) => p.id === problemId);
-    if (!current || !inTrack(current)) {
-      const first = problems.find(inTrack);
+    if (!current || !visibleProblems.some((problem) => problem.id === current.id)) {
+      const first = visibleProblems[0];
       if (first) setProblemId(first.id);
     }
   }, [trackFilter, problems, problemId]);
@@ -434,8 +432,10 @@ export function Workspace() {
   const trackCounts = useMemo(() => {
     let precode = 0;
     let dsa = 0;
+    let blind75 = 0;
     let precodeSolved = 0;
     let dsaSolved = 0;
+    let blind75Solved = 0;
     for (const problem of problems) {
       const track = problem.track_id || "dsa";
       const solved = progressById[problem.id] === "solved";
@@ -446,12 +446,18 @@ export function Workspace() {
         dsa++;
         if (solved) dsaSolved++;
       }
+      if (filterProblemsByTrack([problem], "blind75").length > 0) {
+        blind75++;
+        if (solved) blind75Solved++;
+      }
     }
     return {
       all: problems.length,
       allSolved: precodeSolved + dsaSolved,
       precode,
       precodeSolved,
+      blind75,
+      blind75Solved,
       dsa,
       dsaSolved,
     };
@@ -478,6 +484,8 @@ export function Workspace() {
               <span className="ws-header-sub">
                 {trackFilter === "precode100"
                   ? "PreCode foundations"
+                  : trackFilter === "blind75"
+                    ? "Blind 75"
                   : trackFilter === "dsa"
                     ? "NeetCode-style"
                     : "Full curriculum"}
@@ -486,6 +494,8 @@ export function Workspace() {
             <p className="ws-header-desc">
               {trackFilter === "precode100"
                 ? "Foundations-first practice: small steps, clear tests, and hints that teach."
+                : trackFilter === "blind75"
+                  ? "A focused 75-problem interview set pulled from the existing NeetCode-style catalog."
                 : trackFilter === "dsa"
                   ? "Classic DSA interview set. You write the solution; we run tests and give structured feedback."
                   : "Pick a track below, or browse everything."}
@@ -522,6 +532,19 @@ export function Workspace() {
             <span className="track-tab-sub">
               Foundations &middot; {trackCounts.precodeSolved}/
               {trackCounts.precode} solved
+            </span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={trackFilter === "blind75"}
+            className={`track-tab${trackFilter === "blind75" ? " track-tab--active" : ""}`}
+            onClick={() => setTrackFilter("blind75")}
+          >
+            <span className="track-tab-title">Blind 75</span>
+            <span className="track-tab-sub">
+              Core interview set &middot; {trackCounts.blind75Solved}/
+              {trackCounts.blind75} solved
             </span>
           </button>
           <button

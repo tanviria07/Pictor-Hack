@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { deriveCategoriesFromProblems } from "@/lib/catalog";
+import {
+  filterCategoriesByTrack,
+  filterProblemsByTrack,
+  type TrackFilter,
+} from "@/lib/tracks";
 import { DifficultyBadge } from "./DifficultyBadge";
 import { PracticeStatusDot } from "./PracticeStatusDot";
 import type {
@@ -47,7 +51,21 @@ type TrackGroup = {
   categories: CategorySummary[];
 };
 
-function groupCategoriesByTrack(categories: CategorySummary[]): TrackGroup[] {
+function groupCategoriesByTrack(
+  categories: CategorySummary[],
+  trackFilter: TrackFilter,
+): TrackGroup[] {
+  if (trackFilter === "blind75") {
+    return [
+      {
+        trackId: "blind75",
+        trackTitle: "Blind 75",
+        trackDescription:
+          "Classic interview subset drawn from the existing NeetCode-style catalog.",
+        categories,
+      },
+    ];
+  }
   const groups: TrackGroup[] = [];
   for (const c of categories) {
     const tid = c.track_id || "dsa";
@@ -102,26 +120,19 @@ export function ProblemExplorer({
   selectedId: string | null;
   onSelectProblem: (id: string) => void;
   loading: boolean;
-  trackFilter?: "all" | "precode100" | "dsa";
+  trackFilter?: TrackFilter;
 }) {
   const [search, setSearch] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const displayCategories = useMemo((): CategorySummary[] => {
-    const base =
-      categories.length > 0
-        ? categories
-        : problems.length === 0
-          ? []
-          : deriveCategoriesFromProblems(problems);
-    if (trackFilter === "all") return base;
-    return base.filter((c) => (c.track_id || "dsa") === trackFilter);
+    return filterCategoriesByTrack(categories, problems, trackFilter);
   }, [categories, problems, trackFilter]);
 
   const trackGroups = useMemo(
-    () => groupCategoriesByTrack(displayCategories),
-    [displayCategories],
+    () => groupCategoriesByTrack(displayCategories, trackFilter),
+    [displayCategories, trackFilter],
   );
 
   useEffect(() => {
@@ -135,12 +146,12 @@ export function ProblemExplorer({
   }, [displayCategories]);
 
   const filteredProblems = useMemo(() => {
-    return problems.filter(
+    return filterProblemsByTrack(problems, trackFilter).filter(
       (problem) =>
         matchesSearch(problem, search) &&
         matchesDifficulty(problem, difficulty),
     );
-  }, [problems, search, difficulty]);
+  }, [problems, search, difficulty, trackFilter]);
 
   const problemsByCategory = useMemo(() => {
     const categoryMap = new Map<string, ProblemSummary[]>();
