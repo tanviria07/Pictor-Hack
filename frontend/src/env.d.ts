@@ -1,12 +1,14 @@
-/** Injected at build time by Parcel (see .env / Docker ENV). */
-declare namespace NodeJS {
-  interface ProcessEnv {
-    readonly API_BASE?: string;
-    readonly ASYNC_RUN?: string;
-    readonly NODE_ENV?: "development" | "production" | "test";
-  }
+/// <reference types="vite/client" />
+
+interface ImportMetaEnv {
+  readonly VITE_GEMINI_API_KEY?: string;
+  readonly VITE_GEMINI_MODEL?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
 }
 
 declare const process: {
-  env: NodeJS.ProcessEnv;
+  env: Record<string, string | undefined>;
 };

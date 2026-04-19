@@ -41,6 +41,7 @@ import { DifficultyBadge } from "./DifficultyBadge";
 import { ProblemExplorer } from "./ProblemExplorer";
 import { PythonEditor, type PythonEditorHandle } from "./PythonEditor";
 import { StatusBadge } from "./StatusBadge";
+import { VoiceCoach } from "./VoiceCoach";
 
 function SectionTitle({ children }: { children: ReactNode }) {
   return <h3 className="sec-title">{children}</h3>;
@@ -1012,6 +1013,7 @@ export function Workspace() {
           </main>
         </div>
       </div>
+      <VoiceCoach problemDetail={detail} code={code} hints={hintHistory} />
     </div>
   );
 }

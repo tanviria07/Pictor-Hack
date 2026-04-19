@@ -1175,7 +1175,7 @@ textarea:focus-visible {
 
 .track-tabs {
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.5rem;
   width: 100%;
 }
@@ -1545,6 +1545,213 @@ textarea:focus-visible {
   color: inherit;
   background: transparent;
   padding: 0;
+}
+
+/* --- Voice Coach Widget --- */
+.voice-coach-shell {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.voice-coach-panel {
+  width: min(24rem, calc(100vw - 2rem));
+  max-height: min(28rem, calc(100vh - 7rem));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-hairline);
+  background: rgba(28, 28, 30, 0.98);
+  box-shadow: var(--shadow-float);
+}
+
+.voice-coach-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+.voice-coach-panel-title {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.voice-coach-panel-sub {
+  margin: 0.2rem 0 0;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.voice-coach-close {
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.35rem;
+  border-radius: 6px;
+}
+
+.voice-coach-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.voice-coach-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.voice-coach-copy,
+.voice-coach-error-text {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.voice-coach-copy {
+  color: var(--text-secondary);
+}
+
+.voice-coach-error-text {
+  color: #ff9b90;
+}
+
+.voice-coach-bubble {
+  padding: 0.75rem 0.875rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-hairline);
+}
+
+.voice-coach-bubble p {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+}
+
+.voice-coach-bubble--user {
+  background: rgba(10, 132, 255, 0.12);
+  border-color: rgba(10, 132, 255, 0.28);
+}
+
+.voice-coach-bubble--coach {
+  background: rgba(48, 209, 88, 0.1);
+  border-color: rgba(48, 209, 88, 0.24);
+}
+
+.voice-coach-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.voice-coach-panel-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem 1rem;
+  border-top: 1px solid var(--border-hairline);
+}
+
+.voice-coach-action {
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  padding: 0.55rem 0.95rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.voice-coach-action:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.voice-coach-action:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.voice-coach-action--secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.voice-coach-action--secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.voice-coach-hint {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.voice-coach-widget {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: var(--shadow-float);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.voice-coach-widget:hover {
+  background: var(--accent-hover);
+  transform: scale(1.05);
+}
+
+.voice-coach-listening {
+  animation: voice-pulse 1.5s ease-in-out infinite;
+  background: #3b82f6;
+}
+
+.voice-coach-processing {
+  background: #f59e0b;
+}
+
+.voice-coach-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes voice-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
 }
 
 .stepwise-explanation {
