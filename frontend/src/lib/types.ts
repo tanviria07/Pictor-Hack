@@ -37,12 +37,6 @@ export interface RunResponse {
   interviewer_feedback: string;
 }
 
-/** POST /api/run/jobs */
-export interface RunJobSubmitResponse {
-  job_id: string;
-  status: string;
-}
-
 /** GET /api/run/jobs/:id (async poll) */
 export interface RunJobPollResponse {
   job_id: string;

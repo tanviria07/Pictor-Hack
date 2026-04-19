@@ -100,6 +100,21 @@ Open [http://localhost:3000](http://localhost:3000) (or `http://127.0.0.1:3000`)
 - The model **must not** be used to judge tests; it only rewrites feedback/hints under strict system prompts.
 - Without a key, run feedback uses deterministic strings from the runner; hints use the seeded `hint_plan` in each problem JSON.
 
+## Voice coach (Jose)
+
+Optional in-browser voice agent that coaches you while you solve problems.
+
+- Add `GEMINI_API_KEY=...` (or the legacy `VITE_GEMINI_API_KEY`) to `frontend/.env`.
+- Default model is `gemini-2.5-flash`; override with `GEMINI_MODEL`.
+- The browser records a short audio clip with `MediaRecorder` and sends it
+  directly to Gemini 2.5 Flash, which transcribes the question and writes
+  a spoken-style reply in one call. No dependency on Chrome's Web Speech
+  API. If `MediaRecorder` is unavailable, it falls back to SpeechRecognition.
+- Open the panel with the circular **VC** button (bottom right) or press
+  **Ctrl+Shift+V**. Recording auto-stops after ~1.5s of silence (20s hard cap).
+- Jose never gives full code solutions — responses are 1–3 short sentences,
+  TTS-friendly, and never markdown. See `frontend/src/lib/coach-prompts.ts`.
+
 ## Safety note
 
 The Python runner uses AST checks, restricted builtins, and subprocess timeouts. **Production** would need OS-level sandboxing (containers, seccomp, cgroup limits, no network); see comments in `runner-python/app/safety.py` and `runner-python/app/main.py`.
