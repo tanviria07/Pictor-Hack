@@ -2,6 +2,8 @@ import { formatApiErrorMessage } from "./errors";
 import type {
   CategorySummary,
   HintResponse,
+  InlineHintRequest,
+  InlineHintResponse,
   ProblemDetail,
   ProblemSummary,
   RunJobPollResponse,
@@ -146,6 +148,10 @@ export async function getHint(body: {
   hint_level_requested?: number;
 }): Promise<HintResponse> {
   return j("/api/hint", { method: "POST", body: JSON.stringify(body) });
+}
+
+export async function getInlineHint(body: InlineHintRequest): Promise<InlineHintResponse> {
+  return j("/api/inline-hint", { method: "POST", body: JSON.stringify(body) });
 }
 
 export async function saveSession(body: SessionPayload): Promise<{ ok: boolean }> {

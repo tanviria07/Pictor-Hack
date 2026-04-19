@@ -13,6 +13,13 @@ type HintJSON struct {
 	NextFocus string `json:"next_focus"`
 }
 
+// InlineHintJSON is the model output shape for POST /api/inline-hint.
+type InlineHintJSON struct {
+	LineIssue       string `json:"line_issue"`
+	NextSteps       string `json:"next_steps"`
+	ProblemRedirect string `json:"problem_redirect"`
+}
+
 // ParseHintJSON extracts a HintJSON from raw model output (JSON mode or fenced).
 func ParseHintJSON(content string) (HintJSON, error) {
 	content = strings.TrimSpace(content)
@@ -27,6 +34,21 @@ func ParseHintJSON(content string) (HintJSON, error) {
 	if strings.TrimSpace(out.Hint) == "" && strings.TrimSpace(out.Feedback) == "" && strings.TrimSpace(out.NextFocus) == "" {
 		return HintJSON{}, fmt.Errorf("no feedback, hint, or next_focus in json")
 	}
+	return out, nil
+}
+
+// ParseInlineHintJSON extracts an InlineHintJSON from raw model output.
+func ParseInlineHintJSON(content string) (InlineHintJSON, error) {
+	content = strings.TrimSpace(content)
+	if content == "" {
+		return InlineHintJSON{}, fmt.Errorf("empty model output")
+	}
+	content = extractJSONObject(stripMarkdownFence(content))
+	var out InlineHintJSON
+	if err := json.Unmarshal([]byte(content), &out); err != nil {
+		return InlineHintJSON{}, fmt.Errorf("parse inline hint json: %w", err)
+	}
+	// All fields are optional; allow empty strings.
 	return out, nil
 }
 

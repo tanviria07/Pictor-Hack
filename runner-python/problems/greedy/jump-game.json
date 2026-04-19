@@ -66,5 +66,28 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def can_jump(nums):",
+    "    max_reach = 0",
+    "    for i in range(len(nums)):",
+    "        if i > max_reach:",
+    "            return False",
+    "        max_reach = max(max_reach, i + nums[i])",
+    "        if max_reach >= len(nums) - 1:",
+    "            return True",
+    "    return False"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the parameter `nums` as given in the starter code.",
+    "Initialize a variable to track the farthest index we can reach so far, starting from 0.",
+    "Loop through each index in the array using a for loop.",
+    "Check if the current index is beyond the farthest we can reach; if so, we cannot proceed.",
+    "If the condition is true, return False because we are stuck and cannot move forward.",
+    "Update the farthest reachable index by comparing the current max with the jump from the current position.",
+    "Check if the updated farthest reach is at least the last index; if so, we can finish early.",
+    "If the condition is true, return True since we have confirmed we can reach the end.",
+    "After the loop, if we haven't returned True or False earlier, return False as we cannot reach the end."
+  ],
+  "final_explanation": "The solution uses a greedy approach to track the farthest index reachable as we iterate through the array. At each step, if the current index exceeds the farthest reachable, we return False; otherwise, we update the reach and check if we can already reach the end. This ensures we efficiently determine reachability without simulating all jumps."
 }

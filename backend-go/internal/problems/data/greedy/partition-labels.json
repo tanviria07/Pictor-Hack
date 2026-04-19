@@ -59,5 +59,34 @@
     "level_4": "Try to greedily choose the smallest partition that includes the first letter.  If you have something like \"abaccbdeffed\", then you might need to add b.  You can use an map like \"last['b'] = 5\" to help you expand the width of your partition."
   },
   "canonical_solution_summary": "Try to greedily choose the smallest partition that includes the first letter.  If you have something like \"abaccbdeffed\", then you might need to add b.  You can use an map like \"last['b'] = 5\" to help you expand the width of your partition.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def partition_labels(s):",
+    "    last_occurrence = {}",
+    "    for i, char in enumerate(s):",
+    "        last_occurrence[char] = i",
+    "    result = []",
+    "    start = 0",
+    "    end = 0",
+    "    for i, char in enumerate(s):",
+    "        end = max(end, last_occurrence[char])",
+    "        if i == end:",
+    "            result.append(end - start + 1)",
+    "            start = i + 1"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameter.",
+    "Initialize an empty dictionary to store the last index where each character appears.",
+    "Loop through each character in the string along with its index.",
+    "Update the dictionary to map the character to its current index, which will eventually hold the last occurrence.",
+    "Create an empty list to store the sizes of the partitions.",
+    "Set a variable to track the starting index of the current partition.",
+    "Set a variable to track the ending index of the current partition, initially at 0.",
+    "Loop through the string again with indices to build partitions.",
+    "Update the end index to be the maximum between the current end and the last occurrence of the current character.",
+    "Check if the current index equals the end index, meaning the partition is complete.",
+    "Add the size of the partition to the result list and update the start index for the next partition.",
+    ""
+  ],
+  "final_explanation": "The solution uses a greedy approach by first recording the last occurrence of each character. Then, it iterates through the string, expanding the current partition's end to include the last occurrence of all characters seen so far. When the current index reaches this end, a partition is complete, and its size is added to the result. This ensures each character appears in only one part while maximizing the number of partitions."
 }

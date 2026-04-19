@@ -81,6 +81,15 @@ func (c *Client) HintJSONCompletion(ctx context.Context, systemPrompt, userConte
 	})
 }
 
+// InlineHintCompletion requests JSON-only inline hint output for POST /api/inline-hint.
+func (c *Client) InlineHintCompletion(ctx context.Context, systemPrompt, userContent string) (string, error) {
+	return c.chatCompletion(ctx, chatParams{
+		System: systemPrompt,
+		User:   userContent,
+		JSON:   true,
+	})
+}
+
 type chatParams struct {
 	System string
 	User   string

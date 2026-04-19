@@ -8,6 +8,7 @@ import {
 } from "react";
 import {
   getHint,
+  getInlineHint,
   getProblem,
   listCategories,
   listProblems,
@@ -33,6 +34,7 @@ import type {
   ProblemSummary,
   RunResponse,
   StepwiseValidateResponse,
+  InlineHintResponse,
 } from "@/lib/types";
 import { DifficultyBadge } from "./DifficultyBadge";
 import { ProblemExplorer } from "./ProblemExplorer";
@@ -154,6 +156,10 @@ export function Workspace() {
     editorRef.current?.insertAtCursor(snippet);
   }, []);
   const [hintHistory, setHintHistory] = useState<string[]>([]);
+  const [inlineHint, setInlineHint] = useState<InlineHintResponse | null>(null);
+  const [cursorLine, setCursorLine] = useState(1);
+  const [cursorColumn, setCursorColumn] = useState(1);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [progressById, setProgressById] = useState<
     Record<string, PracticeProgress>
   >({});
@@ -365,6 +371,49 @@ export function Workspace() {
       setLoading("idle");
     }
   }, [code, hintHistory, persist, problemId, run]);
+
+  // Fetch inline hint when code or cursor changes (debounced).
+  useEffect(() => {
+    if (!problemId || !detail || loading !== "idle") return;
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    debounceTimerRef.current = setTimeout(async () => {
+      // Don't fetch if code is empty or same as starter.
+      if (code.trim() === "" || code === buildStarter(detail)) {
+        setInlineHint(null);
+        return;
+      }
+      try {
+        const hint = await getInlineHint({
+          problem_id: problemId,
+          code,
+          cursor_line: cursorLine,
+          cursor_column: cursorColumn,
+        });
+        setInlineHint(hint);
+      } catch (e) {
+        // Silently ignore errors for inline hints.
+        console.debug("Inline hint error:", e);
+      }
+    }, 500);
+    return () => {
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    };
+  }, [problemId, detail, code, cursorLine, cursorColumn, loading]);
+
+  const onInlineHintRefresh = useCallback(async () => {
+    if (!problemId || !detail) return;
+    try {
+      const hint = await getInlineHint({
+        problem_id: problemId,
+        code,
+        cursor_line: cursorLine,
+        cursor_column: cursorColumn,
+      });
+      setInlineHint(hint);
+    } catch (e) {
+      setErr(formatThrownError(e));
+    }
+  }, [problemId, detail, code, cursorLine, cursorColumn]);
 
   const onReset = useCallback(() => {
     if (!detail) return;
@@ -618,6 +667,15 @@ export function Workspace() {
               </button>
               <button
                 type="button"
+                onClick={() => void onInlineHintRefresh()}
+                disabled={loading !== "idle" || !problemId}
+                className="btn-hint-inline"
+                title="Refresh real‑time line‑by‑line hint"
+              >
+                Refresh Inline Hint
+              </button>
+              <button
+                type="button"
                 onClick={onReset}
                 disabled={!detail}
                 className="btn-reset"
@@ -653,6 +711,10 @@ export function Workspace() {
                           }
                         : undefined
                     }
+                    onCursorChange={(ln, col) => {
+                      setCursorLine(ln);
+                      setCursorColumn(col);
+                    }}
                   />
                 </div>
               </div>
@@ -663,11 +725,33 @@ export function Workspace() {
                 </div>
                 <div className="eval-scroll">
                   {!run && !stepwise && (
-                    <p className="eval-placeholder">
-                      {detail?.stepwise_available
-                        ? "Click Run Code to check your first sentence. You'll get feedback and a hint for the next line."
-                        : "Run your code to execute visible tests, hidden checks, and receive interviewer notes. Evaluation is deterministic from the runner, not from the language model."}
-                    </p>
+                    <>
+                      {inlineHint ? (
+                        <div className="inline-hint">
+                          <SectionTitle>Inline Hint</SectionTitle>
+                          <div className="inline-hint-content">
+                            <div className="inline-hint-field">
+                              <strong>Issue:</strong> {inlineHint.line_issue}
+                            </div>
+                            <div className="inline-hint-field">
+                              <strong>Next Steps:</strong> {inlineHint.next_steps}
+                            </div>
+                            <div className="inline-hint-field">
+                              <strong>Redirect:</strong> {inlineHint.problem_redirect}
+                            </div>
+                          </div>
+                          <p className="inline-hint-note">
+                            Hint updates as you type (500ms debounce).
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="eval-placeholder">
+                          {detail?.stepwise_available
+                            ? "Click Run Code to check your first sentence. You'll get feedback and a hint for the next line."
+                            : "Run your code to execute visible tests, hidden checks, and receive interviewer notes. Evaluation is deterministic from the runner, not from the language model."}
+                        </p>
+                      )}
+                    </>
                   )}
                   {stepwise &&
                     (() => {

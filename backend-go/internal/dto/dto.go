@@ -82,6 +82,21 @@ type HintResponse struct {
 	InterviewerFeedback string `json:"interviewer_feedback"` // Combined note for legacy clients
 }
 
+// InlineHintRequest is POST /api/inline-hint for real-time line‑by‑line feedback.
+type InlineHintRequest struct {
+	ProblemID    string `json:"problem_id"`
+	Code         string `json:"code"`
+	CursorLine   int    `json:"cursor_line"`
+	CursorColumn int    `json:"cursor_column"`
+}
+
+// InlineHintResponse is returned by POST /api/inline-hint.
+type InlineHintResponse struct {
+	LineIssue       string `json:"line_issue"`
+	NextSteps       string `json:"next_steps"`
+	ProblemRedirect string `json:"problem_redirect"`
+}
+
 // PracticeStatus is coarse progress for a problem (no auth; optional server mirror).
 type PracticeStatus string
 

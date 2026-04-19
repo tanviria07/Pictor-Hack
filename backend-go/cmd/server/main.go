@@ -58,10 +58,13 @@ func main() {
 		log.Println("async run queue enabled (Redis)")
 	}
 
+	inlineSvc := service.NewInlineService(ds)
+
 	h := &handler.Handler{
 		Runs:         runs,
 		RunJobs:      runJobs,
 		Hints:        service.NewHintService(ds, st),
+		Inline:       inlineSvc,
 		Sessions:     st,
 		MaxCodeBytes: cfg.MaxCodeBytes,
 	}

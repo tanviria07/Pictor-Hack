@@ -55,5 +55,36 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def is_nstraight_hand(hand, groupSize):",
+    "    if len(hand) % groupSize != 0:",
+    "        return False",
+    "    from collections import Counter",
+    "    count = Counter(hand)",
+    "    sorted_keys = sorted(count.keys())",
+    "    for key in sorted_keys:",
+    "        if count[key] > 0:",
+    "            for i in range(groupSize):",
+    "                if count[key + i] < count[key]:",
+    "                    return False",
+    "                count[key + i] -= count[key]",
+    "    return True"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with parameters 'hand' and 'groupSize' as given in the problem description.",
+    "Check if the total number of cards is divisible by groupSize; if not, it's impossible to form groups.",
+    "Return False immediately if the divisibility condition fails.",
+    "Import Counter from collections to help count occurrences of each card value efficiently.",
+    "Create a Counter object to store how many times each card value appears in the hand.",
+    "Get a sorted list of unique card values to process them in increasing order.",
+    "Loop through each unique card value in sorted order.",
+    "Only proceed if there are remaining cards of this value to use in forming groups.",
+    "For each group starting at this key, check the next 'groupSize' consecutive values.",
+    "Ensure each consecutive value has at least as many cards as the starting value; if not, return False.",
+    "Subtract the number of groups formed starting at this key from the counts of all consecutive values.",
+    "If all checks pass, return True indicating the hand can be rearranged.",
+    ""
+  ],
+  "final_explanation": "The solution uses a greedy approach: sort unique card values and for each smallest available card, try to form a group of consecutive cards of size groupSize. It checks counts using a Counter and subtracts used cards, ensuring all groups can be formed without running out of consecutive cards. This efficiently determines if rearrangement is possible by verifying divisibility and consecutive availability."
 }

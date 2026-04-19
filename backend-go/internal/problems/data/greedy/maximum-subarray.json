@@ -83,5 +83,24 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def max_sub_array(nums):",
+    "    max_sum = nums[0]",
+    "    current_sum = nums[0]",
+    "    for num in nums[1:]:",
+    "        current_sum = max(num, current_sum + num)",
+    "        max_sum = max(max_sum, current_sum)",
+    "    return max_sum"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameters.",
+    "Initialize a variable to track the overall maximum sum, starting with the first element.",
+    "Initialize another variable to track the current subarray sum, also starting with the first element.",
+    "Loop through the rest of the array elements, starting from the second one.",
+    "Update the current sum by choosing between starting a new subarray at this element or extending the previous one.",
+    "Update the overall maximum sum if the current sum is larger.",
+    "Return the overall maximum sum as the final result."
+  ],
+  "final_explanation": "This solution uses Kadane's algorithm to efficiently find the maximum subarray sum in one pass. It maintains two sums: the current subarray sum, which is updated at each step by either extending the previous subarray or starting fresh, and the overall maximum sum seen so far. This approach ensures optimal performance by avoiding nested loops and leveraging dynamic programming principles."
 }

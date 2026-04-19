@@ -24,6 +24,7 @@ type Handler struct {
 	Runs         *service.RunService
 	RunJobs      *service.RunJobService
 	Hints        *service.HintService
+	Inline       *service.InlineService
 	Sessions     store.SessionRepository
 	MaxCodeBytes int // max submitted code size; if zero, a default is used in validateRunInput
 }
@@ -251,6 +252,33 @@ func (h *Handler) Hint(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("hint:", err)
 		httpx.ErrorWithDetails(w, http.StatusInternalServerError, httpx.ErrHintUnavailable, "Could not build a hint right now.", map[string]string{"reason": err.Error()})
+		return
+	}
+	httpx.JSON(w, http.StatusOK, out)
+}
+
+// InlineHint returns real-time line‑by‑line feedback for partial code.
+func (h *Handler) InlineHint(w http.ResponseWriter, r *http.Request) {
+	var req dto.InlineHintRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	if req.ProblemID == "" {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "problem_id required")
+		return
+	}
+	if req.CursorLine < 1 {
+		req.CursorLine = 1
+	}
+	out, err := h.Inline.InlineHint(r.Context(), req)
+	if errors.Is(err, problems.ErrNotFound) {
+		httpx.Error(w, http.StatusNotFound, httpx.ErrNotFound, "unknown problem_id")
+		return
+	}
+	if err != nil {
+		log.Println("inline hint:", err)
+		httpx.ErrorWithDetails(w, http.StatusInternalServerError, httpx.ErrHintUnavailable, "Could not generate inline hint.", map[string]string{"reason": err.Error()})
 		return
 	}
 	httpx.JSON(w, http.StatusOK, out)

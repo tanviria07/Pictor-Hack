@@ -82,5 +82,44 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "solution_sentences": [
+    "def can_complete_circuit(gas, cost):",
+    "    n = len(gas)",
+    "    total_gas = 0",
+    "    total_cost = 0",
+    "    for i in range(n):",
+    "        total_gas += gas[i]",
+    "        total_cost += cost[i]",
+    "    if total_gas < total_cost:",
+    "        return -1",
+    "    start = 0",
+    "    tank = 0",
+    "    for i in range(n):",
+    "        tank += gas[i] - cost[i]",
+    "        if tank < 0:",
+    "            start = i + 1",
+    "            tank = 0",
+    "    return start"
+  ],
+  "hints_per_sentence": [
+    "Start by defining the function with the given parameters.",
+    "Store the number of stations in a variable for convenience.",
+    "Initialize a variable to accumulate total gas available.",
+    "Initialize another variable to accumulate total cost needed.",
+    "Loop through each station index.",
+    "Add the gas at the current station to the total gas.",
+    "Add the cost at the current station to the total cost.",
+    "After the loop, check if total gas is less than total cost.",
+    "If total gas is insufficient, return -1 immediately.",
+    "Initialize a variable to track the potential starting index.",
+    "Initialize a variable to track the current gas tank level.",
+    "Loop through each station index again.",
+    "Update the tank by adding the net gain (gas minus cost) at this station.",
+    "Check if the tank becomes negative at any point.",
+    "If tank is negative, reset the start to the next station and reset tank to zero.",
+    "After the loop, return the starting index found.",
+    ""
+  ],
+  "final_explanation": "The solution first checks if total gas is at least total cost; if not, it's impossible to complete the circuit. Then, it iterates through stations, tracking the tank's net gas. If the tank goes negative, it means starting from the previous start point is invalid, so the start is moved to the next station and the tank is reset. This greedy approach efficiently finds the unique starting index if one exists."
 }

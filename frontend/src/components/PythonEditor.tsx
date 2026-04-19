@@ -38,8 +38,9 @@ export const PythonEditor = forwardRef<
     onChange: (v: string) => void;
     disabled?: boolean;
     onRun?: () => void;
+    onCursorChange?: (line: number, col: number) => void;
   }
->(function PythonEditor({ value, onChange, disabled, onRun }, ref) {
+>(function PythonEditor({ value, onChange, disabled, onRun, onCursorChange }, ref) {
   const ta = useRef<HTMLTextAreaElement>(null);
   const pendingCaret = useRef<number | null>(null);
   const [line, setLine] = useState(1);
@@ -62,7 +63,8 @@ export const PythonEditor = forwardRef<
     const { line: ln, col } = lineColFromPos(el.value, pos);
     setLine(ln);
     setColumn(col);
-  }, []);
+    onCursorChange?.(ln, col);
+  }, [onCursorChange]);
 
   useEffect(() => {
     syncCaret();

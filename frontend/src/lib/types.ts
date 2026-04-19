@@ -116,6 +116,19 @@ export interface HintResponse {
 /** Local / session practice progress (not runner evaluation status). */
 export type PracticeProgress = "not_started" | "in_progress" | "solved";
 
+export interface InlineHintRequest {
+  problem_id: string;
+  code: string;
+  cursor_line: number;
+  cursor_column: number;
+}
+
+export interface InlineHintResponse {
+  line_issue: string;
+  next_steps: string;
+  problem_redirect: string;
+}
+
 export interface SessionPayload {
   problem_id: string;
   code: string;
