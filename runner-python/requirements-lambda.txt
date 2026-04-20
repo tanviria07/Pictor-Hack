@@ -1,0 +1,17 @@
+# Runtime dependencies for the AWS Lambda deployment package of the
+# Kitkode Python runner. Install target is Amazon Linux 2023 /
+# python3.11, architecture x86_64.
+#
+# This file is intentionally trimmed vs requirements.txt:
+# - no `uvicorn` (Lambda invokes Mangum directly, not a web server)
+# - no `pytest` (dev-only)
+# - no `docker` (RUNNER_USE_DOCKER=0 on Lambda by design)
+# - no `openai` (only needed for DEEPSEEK_* paths which live on the Go API)
+#
+# Pin everything so `pip install -r` into the deployment zip is
+# reproducible. Keep these in sync with runner-python/requirements.txt
+# when bumping FastAPI / Pydantic.
+
+fastapi==0.115.6
+pydantic==2.10.4
+mangum==0.19.0
