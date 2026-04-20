@@ -1,0 +1,51 @@
+# fly.toml — Kitkode Go API on Fly.io
+#
+# Expected flow:
+#   fly launch --no-deploy --name kitkode-api --dockerfile ./Dockerfile --copy-config
+#   fly volumes create kitkode_data --size 1 --region iad
+#   fly secrets set \
+#     RUNNER_URL=http://kitkode-runner.internal:8001 \
+#     CORS_ORIGINS=https://kitkode.pages.dev \
+#     GEMINI_API_KEY=... \
+#     DEEPSEEK_API_KEY=...    # optional
+#   fly deploy
+#
+# DATABASE_PATH is set under [env] so the SQLite file lives on the
+# attached Fly volume and survives redeploys.
+
+app = "kitkode-api"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  DATABASE_PATH = "/data/kitkode.db"
+  RUNNER_URL = "http://kitkode-runner.internal:8001"
+  RUNNER_USE_SUBPROCESS = "1"
+  GEMINI_MODEL = "gemini-2.5-flash"
+
+[[mounts]]
+  source = "kitkode_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "off"
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/health"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256

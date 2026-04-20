@@ -121,16 +121,23 @@ Then open **http://localhost:3000**.
 
 Optional in-browser voice agent that coaches you while you solve problems.
 
-- Add `GEMINI_API_KEY=...` (or the legacy `VITE_GEMINI_API_KEY`) to `frontend/.env`.
-- Default model is `gemini-2.5-flash`; override with `GEMINI_MODEL`.
-- The browser records a short audio clip with `MediaRecorder` and sends it
-  directly to Gemini 2.5 Flash, which transcribes the question and writes
-  a spoken-style reply in one call. No dependency on Chrome's Web Speech
-  API. If `MediaRecorder` is unavailable, it falls back to SpeechRecognition.
+- Set `GEMINI_API_KEY=...` on the **Go API** (`backend-go/.env` locally,
+  `fly secrets set` in production). Default model is `gemini-2.5-flash`;
+  override with `GEMINI_MODEL`. The key never reaches the browser.
+- The frontend flag `VOICE_COACH_ENABLED` controls whether the Jose
+  widget is rendered (default on). Set it to `0` to hide the UI entirely
+  in a given build.
+- The browser records a short audio clip with `MediaRecorder` and POSTs
+  it to `POST /api/voice/turn`; the Go API forwards it to Gemini 2.5
+  Flash with the system prompt applied server-side, and returns a JSON
+  `{ transcript, reply }`. Follow-up question suggestions go through
+  `POST /api/voice/suggest`. The browser never talks to Google directly.
 - Open the panel with the circular **VC** button (bottom right) or press
   **Ctrl+Shift+V**. Recording auto-stops after ~1.5s of silence (20s hard cap).
 - Jose never gives full code solutions — responses are 1–3 short sentences,
-  TTS-friendly, and never markdown. See `frontend/src/lib/coach-prompts.ts`.
+  TTS-friendly, and never markdown. The prompts live in
+  `backend-go/internal/service/voice.go` (server) and are mirrored in
+  `frontend/src/lib/coach-prompts.ts` for display only.
 
 ## Safety note
 
@@ -147,6 +154,15 @@ The Python runner uses AST checks, restricted builtins, and subprocess timeouts.
 - `GET /api/session/:problem_id`
 
 Optional (when `REDIS_URL` is set on the API): `POST /api/run/jobs`, `GET /api/run/jobs/{job_id}` for async evaluation via a Redis worker (`runner-python` worker process).
+
+Voice coach (when `GEMINI_API_KEY` is set on the API):
+
+- `POST /api/voice/turn` — `{ "context", "transcript"? , "audio_base64"?, "audio_mime"? }` → `{ "transcript", "reply" }`
+- `POST /api/voice/suggest` — `{ "context" }` → `{ "questions": [string, ...] }`
+
+See [`DEPLOY.md`](DEPLOY.md) for the Cloudflare Pages + Fly.io deploy
+recipe (Gemini key server-side, SQLite on a Fly volume, runner bound
+to the private network only).
 
 ## Categories & UI
 

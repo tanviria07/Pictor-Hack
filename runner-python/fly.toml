@@ -1,0 +1,28 @@
+# fly.toml — Kitkode Python runner on Fly.io (private only)
+#
+# Expected flow:
+#   fly launch --no-deploy --name kitkode-runner --dockerfile ./Dockerfile --copy-config
+#   fly deploy
+#
+# Notice there is NO [http_service] or [[services]] block: the runner is
+# reachable only over Fly's private WireGuard network at
+# `http://kitkode-runner.internal:8001`. The Go API (kitkode-api) calls it
+# via that internal DNS name, so the runner is never exposed to the public
+# internet.
+
+app = "kitkode-runner"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8001"
+  RUNNER_USE_SUBPROCESS = "1"
+  RUNNER_USE_DOCKER = "0"
+  RUNNER_CORS_ORIGINS = "http://kitkode-api.internal:8080"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256
