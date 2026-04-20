@@ -1,7 +1,15 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import {
   requestGeminiCoachReply,
   requestGeminiVoiceTurn,
+  requestSuggestedQuestions,
 } from "@/lib/gemini-voice";
 import { GEMINI_API_KEY, GEMINI_MODEL } from "@/lib/config";
 import { buildCoachContext } from "@/lib/voice-context";
@@ -46,9 +54,34 @@ interface VoiceCoachProps {
   hints: string[];
 }
 
+interface Turn {
+  id: number;
+  role: "user" | "coach";
+  text: string;
+}
+
 const MAX_RECORDING_MS = 20000;
 const SILENCE_STOP_MS = 1500;
 const SILENCE_THRESHOLD = 0.015; // RMS 0..1
+const LEVEL_BAR_COUNT = 5;
+
+const DEFAULT_SUGGESTIONS_GENERAL: readonly string[] = [
+  "Where should I start?",
+  "Explain the brute force",
+  "What data structure fits?",
+];
+
+const DEFAULT_SUGGESTIONS_PROBLEM: readonly string[] = [
+  "What approach should I try?",
+  "What's the time complexity?",
+  "Am I on the right track?",
+];
+
+const DEFAULT_SUGGESTIONS_POST_REPLY: readonly string[] = [
+  "Can you give me a hint?",
+  "What's an edge case I'm missing?",
+  "How would I optimize this?",
+];
 
 function pickBestVoice(): SpeechSynthesisVoice | null {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return null;
@@ -108,7 +141,6 @@ function pickRecorderMime(): { mime: string; geminiMime: string } | null {
   for (const c of candidates) {
     if (MediaRecorder.isTypeSupported?.(c.mime)) return c;
   }
-  // Default browser format — Gemini supports webm/ogg widely.
   return { mime: "", geminiMime: "audio/webm" };
 }
 
@@ -126,22 +158,29 @@ async function blobToBase64(blob: Blob): Promise<string> {
   return window.btoa(binary);
 }
 
+let nextTurnId = 1;
+function makeTurn(role: "user" | "coach", text: string): Turn {
+  return { id: nextTurnId++, role, text };
+}
+
 export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const recorderMimeRef = useRef<{ mime: string; geminiMime: string } | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
   const silenceTimerRef = useRef<number | null>(null);
   const maxStopTimerRef = useRef<number | null>(null);
   const vadRafRef = useRef<number | null>(null);
+  const levelWriteTsRef = useRef(0);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const suggestAbortRef = useRef<AbortController | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
-  const bodyRef = useRef<HTMLDivElement | null>(null);
+  const threadRef = useRef<HTMLDivElement | null>(null);
   const transcriptRef = useRef("");
   const voiceRef = useRef<SpeechSynthesisVoice | null>(null);
-  // Whether we've decided to use SpeechRecognition as a fallback this session.
   const [useSRFallback, setUseSRFallback] = useState(false);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -149,8 +188,11 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
   const [isThinking, setIsThinking] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [transcript, setTranscript] = useState("");
-  const [reply, setReply] = useState("");
+  const [turns, setTurns] = useState<Turn[]>([]);
+  const [levels, setLevels] = useState<number[]>(() =>
+    new Array(LEVEL_BAR_COUNT).fill(0),
+  );
+  const [suggestions, setSuggestions] = useState<string[]>([]);
 
   const speechRecognitionCtor = useMemo(
     () =>
@@ -171,6 +213,17 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
   const supported = Boolean(
     GEMINI_API_KEY && hasSynthesis && (hasRecorder || speechRecognitionCtor),
   );
+
+  // Seed starter suggestions based on current problem.
+  useEffect(() => {
+    if (turns.length > 0) return;
+    setSuggestions(
+      (problemDetail
+        ? DEFAULT_SUGGESTIONS_PROBLEM
+        : DEFAULT_SUGGESTIONS_GENERAL
+      ).slice(),
+    );
+  }, [problemDetail, turns.length]);
 
   // Preload TTS voices.
   useEffect(() => {
@@ -224,7 +277,30 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
     [hasSynthesis],
   );
 
-  // ---- Shared cleanup for a recording session. ----
+  // Fetch contextual follow-up suggestions (non-blocking).
+  const refreshSuggestions = useCallback(() => {
+    if (!GEMINI_API_KEY) return;
+    suggestAbortRef.current?.abort();
+    const controller = new AbortController();
+    suggestAbortRef.current = controller;
+
+    const context = buildCoachContext(problemDetail, code, hints);
+    void (async () => {
+      const fetched = await requestSuggestedQuestions({
+        apiKey: GEMINI_API_KEY,
+        model: GEMINI_MODEL,
+        context,
+        signal: controller.signal,
+      });
+      if (controller.signal.aborted) return;
+      if (fetched.length > 0) {
+        setSuggestions(fetched);
+      } else {
+        setSuggestions(DEFAULT_SUGGESTIONS_POST_REPLY.slice());
+      }
+    })();
+  }, [code, hints, problemDetail]);
+
   const teardownRecording = useCallback(() => {
     if (vadRafRef.current !== null) {
       cancelAnimationFrame(vadRafRef.current);
@@ -244,12 +320,14 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
       /* noop */
     }
     audioCtxRef.current = null;
+    analyserRef.current = null;
 
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
     }
     recorderRef.current = null;
+    setLevels(new Array(LEVEL_BAR_COUNT).fill(0));
   }, []);
 
   const stopRecorder = useCallback(() => {
@@ -266,7 +344,6 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
     setIsListening(false);
   }, [teardownRecording]);
 
-  // ---- Gemini-only audio pipeline (preferred). ----
   const submitAudioBlob = useCallback(
     async (blob: Blob) => {
       if (!blob.size) {
@@ -291,9 +368,14 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
           signal: controller.signal,
         });
         if (controller.signal.aborted) return;
-        if (result.transcript) setTranscript(result.transcript);
-        setReply(result.reply);
+        setTurns((prev) => {
+          const next: Turn[] = [...prev];
+          if (result.transcript) next.push(makeTurn("user", result.transcript));
+          next.push(makeTurn("coach", result.reply));
+          return next;
+        });
         speakReply(result.reply);
+        refreshSuggestions();
       } catch (err) {
         if (controller.signal.aborted) return;
         setError(err instanceof Error ? err.message : "Voice coach request failed.");
@@ -302,7 +384,7 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
         setIsThinking(false);
       }
     },
-    [code, hints, problemDetail, speakReply],
+    [code, hints, problemDetail, refreshSuggestions, speakReply],
   );
 
   const startRecording = useCallback(async () => {
@@ -310,8 +392,6 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
 
     stopSpeaking();
     setError(null);
-    setReply("");
-    setTranscript("");
     transcriptRef.current = "";
     setIsOpen(true);
     chunksRef.current = [];
@@ -376,7 +456,6 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
       }
     };
 
-    // Simple voice-activity detection: stop ~1.5s after user goes quiet.
     try {
       const AudioCtor =
         window.AudioContext ||
@@ -387,14 +466,22 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
         audioCtxRef.current = ctx;
         const source = ctx.createMediaStreamSource(stream);
         const analyser = ctx.createAnalyser();
-        analyser.fftSize = 1024;
+        analyser.fftSize = 256;
         source.connect(analyser);
-        const buf = new Float32Array(analyser.fftSize);
+        analyserRef.current = analyser;
+
+        const timeBuf = new Float32Array(analyser.fftSize);
+        const freqBuf = new Uint8Array(analyser.frequencyBinCount);
+        const LEVEL_WRITE_MS = 70;
+
         const tick = () => {
-          analyser.getFloatTimeDomainData(buf);
+          // Voice-activity detection (RMS on time domain).
+          analyser.getFloatTimeDomainData(timeBuf);
           let sum = 0;
-          for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
-          const rms = Math.sqrt(sum / buf.length);
+          for (let i = 0; i < timeBuf.length; i++) {
+            sum += timeBuf[i] * timeBuf[i];
+          }
+          const rms = Math.sqrt(sum / timeBuf.length);
           if (rms > SILENCE_THRESHOLD) {
             if (silenceTimerRef.current !== null) {
               window.clearTimeout(silenceTimerRef.current);
@@ -405,12 +492,31 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
               stopRecorder();
             }, SILENCE_STOP_MS);
           }
+
+          // Throttle visualization updates so we don't thrash React.
+          const now = performance.now();
+          if (now - levelWriteTsRef.current > LEVEL_WRITE_MS) {
+            levelWriteTsRef.current = now;
+            analyser.getByteFrequencyData(freqBuf);
+            const bars: number[] = [];
+            const bandSize = Math.floor(freqBuf.length / LEVEL_BAR_COUNT);
+            for (let b = 0; b < LEVEL_BAR_COUNT; b++) {
+              let acc = 0;
+              const start = b * bandSize;
+              const end = Math.min(freqBuf.length, start + bandSize);
+              for (let i = start; i < end; i++) acc += freqBuf[i];
+              const avg = acc / Math.max(1, end - start);
+              // Normalize and boost responsiveness.
+              bars.push(Math.min(1, (avg / 255) * 1.8));
+            }
+            setLevels(bars);
+          }
           vadRafRef.current = requestAnimationFrame(tick);
         };
         vadRafRef.current = requestAnimationFrame(tick);
       }
     } catch {
-      // VAD is best-effort; fall back to the hard max-duration timer.
+      /* VAD + meter are best-effort; the max-duration timer still stops us. */
     }
 
     maxStopTimerRef.current = window.setTimeout(() => {
@@ -430,7 +536,7 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
     }
   }, [hasRecorder, stopSpeaking, submitAudioBlob, teardownRecording, stopRecorder]);
 
-  // ---- SpeechRecognition fallback (only used if MediaRecorder not available). ----
+  // ---- SpeechRecognition fallback (only if MediaRecorder is unavailable). ----
   const submitTranscript = useCallback(
     async (spokenText: string) => {
       if (!spokenText.trim()) return;
@@ -440,6 +546,7 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
 
       setIsThinking(true);
       setError(null);
+      setTurns((prev) => [...prev, makeTurn("user", spokenText)]);
       try {
         const context = buildCoachContext(problemDetail, code, hints);
         const nextReply = await requestGeminiCoachReply({
@@ -450,8 +557,9 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
           signal: controller.signal,
         });
         if (controller.signal.aborted) return;
-        setReply(nextReply);
+        setTurns((prev) => [...prev, makeTurn("coach", nextReply)]);
         speakReply(nextReply);
+        refreshSuggestions();
       } catch (err) {
         if (controller.signal.aborted) return;
         setError(err instanceof Error ? err.message : "Voice coach request failed.");
@@ -460,7 +568,7 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
         setIsThinking(false);
       }
     },
-    [code, hints, problemDetail, speakReply],
+    [code, hints, problemDetail, refreshSuggestions, speakReply],
   );
 
   const startSpeechRecognition = useCallback(async () => {
@@ -476,8 +584,6 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
 
     stopSpeaking();
     setError(null);
-    setReply("");
-    setTranscript("");
     transcriptRef.current = "";
     setIsOpen(true);
 
@@ -496,7 +602,6 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
         .join(" ")
         .trim();
       transcriptRef.current = text;
-      setTranscript(text);
     };
     recognition.onerror = (event) => {
       const msg = friendlySpeechError(event.error);
@@ -520,7 +625,6 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
     }
   }, [speechRecognitionCtor, stopSpeaking, submitTranscript]);
 
-  // ---- Unified entry point ----
   const startListening = useCallback(async () => {
     if (hasRecorder && !useSRFallback) {
       const ok = await startRecording();
@@ -558,17 +662,50 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
     else void startListening();
   }, [isListening, startListening, stopListening]);
 
-  // Global shortcut: Ctrl+Shift+V.
+  const askSuggestion = useCallback(
+    (text: string) => {
+      if (!text || isListening || isThinking) return;
+      stopSpeaking();
+      setIsOpen(true);
+      void submitTranscript(text);
+    },
+    [isListening, isThinking, stopSpeaking, submitTranscript],
+  );
+
+  const resetConversation = useCallback(() => {
+    stopListening();
+    stopSpeaking();
+    abortRef.current?.abort();
+    suggestAbortRef.current?.abort();
+    setTurns([]);
+    setError(null);
+    setSuggestions(
+      (problemDetail
+        ? DEFAULT_SUGGESTIONS_PROBLEM
+        : DEFAULT_SUGGESTIONS_GENERAL
+      ).slice(),
+    );
+  }, [problemDetail, stopListening, stopSpeaking]);
+
+  const replayLast = useCallback(() => {
+    const last = [...turns].reverse().find((t) => t.role === "coach");
+    if (last) {
+      if (isSpeaking) stopSpeaking();
+      else speakReply(last.text);
+    }
+  }, [isSpeaking, speakReply, stopSpeaking, turns]);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!(event.ctrlKey && event.shiftKey && event.code === "KeyV")) return;
       event.preventDefault();
       if (!supported) return;
+      if (!isOpen) setIsOpen(true);
       toggleListening();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [supported, toggleListening]);
+  }, [isOpen, supported, toggleListening]);
 
   useEffect(() => {
     return () => {
@@ -579,6 +716,7 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
       }
       teardownRecording();
       abortRef.current?.abort();
+      suggestAbortRef.current?.abort();
       if (typeof window !== "undefined" && "speechSynthesis" in window) {
         window.speechSynthesis.cancel();
       }
@@ -591,123 +729,217 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
   }, [isOpen]);
 
   useEffect(() => {
-    if (!bodyRef.current) return;
-    bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
-  }, [transcript, reply, error, isThinking]);
+    if (!threadRef.current) return;
+    threadRef.current.scrollTop = threadRef.current.scrollHeight;
+  }, [turns, isThinking, error]);
 
   if (!GEMINI_API_KEY) return null;
 
-  const micLabel = isThinking
-    ? "..."
-    : isListening
-      ? "Mic"
+  const stage: "idle" | "listening" | "thinking" | "speaking" = isListening
+    ? "listening"
+    : isThinking
+      ? "thinking"
       : isSpeaking
-        ? "Spk"
-        : "VC";
+        ? "speaking"
+        : "idle";
+
+  const statusText: Record<typeof stage, string> = {
+    idle: turns.length === 0 ? "Tap to start talking to Jose" : "Tap to ask again",
+    listening: "Listening… speak now",
+    thinking: "Jose is thinking…",
+    speaking: "Jose is speaking",
+  };
+
+  const hasLastCoachReply = turns.some((t) => t.role === "coach");
 
   return (
     <div className="voice-coach-shell">
       {isOpen && (
         <div
           ref={panelRef}
-          className="voice-coach-panel"
+          className={`voice-coach-panel voice-coach-panel--${stage}`}
           tabIndex={-1}
           aria-live="polite"
         >
           <div className="voice-coach-panel-head">
-            <div>
+            <div className="voice-coach-panel-heading">
               <p className="voice-coach-panel-title">Jose</p>
               <p className="voice-coach-panel-sub">
                 {problemDetail?.title ?? "General coding coach"}
               </p>
             </div>
-            <button
-              type="button"
-              className="voice-coach-close"
-              onClick={() => {
-                stopListening();
-                stopSpeaking();
-                abortRef.current?.abort();
-                setIsOpen(false);
-              }}
-              aria-label="Close voice coach"
-            >
-              x
-            </button>
+            <div className="voice-coach-panel-head-actions">
+              <button
+                type="button"
+                className="voice-coach-icon-btn"
+                onClick={resetConversation}
+                disabled={turns.length === 0 && !error}
+                aria-label="Start a new conversation"
+                title="New chat"
+              >
+                <NewChatIcon />
+              </button>
+              <button
+                type="button"
+                className="voice-coach-icon-btn"
+                onClick={() => {
+                  stopListening();
+                  stopSpeaking();
+                  abortRef.current?.abort();
+                  setIsOpen(false);
+                }}
+                aria-label="Close voice coach"
+                title="Close"
+              >
+                <CloseIcon />
+              </button>
+            </div>
           </div>
 
-          <div ref={bodyRef} className="voice-coach-panel-body">
+          <div className="voice-coach-stage" data-stage={stage}>
+            <button
+              type="button"
+              className={`voice-coach-orb voice-coach-orb--${stage}`}
+              onClick={() => {
+                if (!supported) return;
+                toggleListening();
+              }}
+              disabled={!supported || isThinking}
+              aria-label={
+                isListening
+                  ? "Stop listening"
+                  : isThinking
+                    ? "Jose is thinking"
+                    : "Start listening"
+              }
+              title={
+                isListening
+                  ? "Tap to stop"
+                  : isThinking
+                    ? "Thinking…"
+                    : "Tap to talk"
+              }
+            >
+              <span className="voice-coach-orb-rings" aria-hidden="true">
+                <span className="voice-coach-orb-ring" />
+                <span className="voice-coach-orb-ring" />
+                <span className="voice-coach-orb-ring" />
+              </span>
+              <span className="voice-coach-orb-core" aria-hidden="true">
+                {stage === "thinking" ? (
+                  <ThinkingDots />
+                ) : stage === "speaking" ? (
+                  <SpeakerWave />
+                ) : (
+                  <MicIcon />
+                )}
+              </span>
+            </button>
+
+            <div className="voice-coach-stage-status">
+              <p className="voice-coach-status-text">{statusText[stage]}</p>
+              {stage === "listening" && (
+                <div className="voice-coach-level" aria-hidden="true">
+                  {levels.map((v, i) => (
+                    <span
+                      key={i}
+                      className="voice-coach-level-bar"
+                      style={
+                        {
+                          ["--level" as string]: Math.max(0.08, v),
+                        } as CSSProperties
+                      }
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div ref={threadRef} className="voice-coach-thread">
             {!supported && (
               <p className="voice-coach-copy">
                 Jose needs a microphone, speech synthesis, and a Gemini API
                 key. Try the latest Chrome or Edge over HTTPS (or localhost).
               </p>
             )}
-            {supported &&
-              !transcript &&
-              !reply &&
-              !error &&
-              !isListening &&
-              !isThinking && (
-                <p className="voice-coach-copy">
-                  Tap the mic and ask Jose about your approach, complexity, or
-                  what hint to try next. Recording stops automatically after a
-                  short silence.
-                </p>
-              )}
-            {isListening && !transcript && (
-              <p className="voice-coach-copy">Listening... speak now.</p>
+            {supported && turns.length === 0 && !error && !isThinking && (
+              <p className="voice-coach-copy">
+                Ask about your approach, complexity, edge cases, or what hint
+                to try next. Recording auto-stops after a short pause.
+              </p>
             )}
-            {transcript && (
-              <div className="voice-coach-bubble voice-coach-bubble--user">
-                <span className="voice-coach-label">You</span>
-                <p>{transcript}</p>
+            {turns.map((t) => (
+              <div
+                key={t.id}
+                className={`voice-coach-bubble voice-coach-bubble--${t.role}`}
+              >
+                <span className="voice-coach-bubble-avatar" aria-hidden="true">
+                  {t.role === "user" ? "You" : "J"}
+                </span>
+                <div className="voice-coach-bubble-body">
+                  <span className="voice-coach-label">
+                    {t.role === "user" ? "You" : "Jose"}
+                  </span>
+                  <p>{t.text}</p>
+                </div>
               </div>
-            )}
+            ))}
             {isThinking && (
-              <p className="voice-coach-copy">Jose is thinking...</p>
-            )}
-            {reply && (
-              <div className="voice-coach-bubble voice-coach-bubble--coach">
-                <span className="voice-coach-label">Jose</span>
-                <p>{reply}</p>
+              <div className="voice-coach-bubble voice-coach-bubble--coach voice-coach-bubble--thinking">
+                <span className="voice-coach-bubble-avatar" aria-hidden="true">
+                  J
+                </span>
+                <div className="voice-coach-bubble-body">
+                  <span className="voice-coach-label">Jose</span>
+                  <ThinkingDots />
+                </div>
               </div>
             )}
             {error && <p className="voice-coach-error-text">{error}</p>}
           </div>
 
-          <div className="voice-coach-panel-actions">
+          {supported && suggestions.length > 0 && (
+            <div className="voice-coach-suggestions" role="group" aria-label="Suggested questions">
+              <span className="voice-coach-suggestions-label">Try asking</span>
+              <div className="voice-coach-suggestions-row">
+                {suggestions.map((s, i) => (
+                  <button
+                    key={`${s}-${i}`}
+                    type="button"
+                    className="voice-coach-chip"
+                    onClick={() => askSuggestion(s)}
+                    disabled={isListening || isThinking}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="voice-coach-footer">
             <button
               type="button"
-              className="voice-coach-action"
-              onClick={toggleListening}
-              disabled={!supported || isThinking}
+              className="voice-coach-footer-btn"
+              onClick={replayLast}
+              disabled={!hasLastCoachReply || isListening || isThinking}
+              aria-label={isSpeaking ? "Stop playback" : "Replay last reply"}
+              title={isSpeaking ? "Stop" : "Replay"}
             >
-              {isListening
-                ? "Stop Listening"
-                : isThinking
-                  ? "Thinking..."
-                  : "Start Listening"}
+              {isSpeaking ? <StopIcon /> : <ReplayIcon />}
+              <span>{isSpeaking ? "Stop" : "Replay"}</span>
             </button>
-            <button
-              type="button"
-              className="voice-coach-action voice-coach-action--secondary"
-              onClick={() => {
-                if (isSpeaking) stopSpeaking();
-                else speakReply(reply);
-              }}
-              disabled={!reply || isListening || isThinking}
-            >
-              {isSpeaking ? "Stop" : "Replay"}
-            </button>
-            <span className="voice-coach-hint">Ctrl+Shift+V</span>
+            <span className="voice-coach-kbd" title="Global shortcut">
+              Ctrl+Shift+V
+            </span>
           </div>
         </div>
       )}
 
       <button
         type="button"
-        className={`voice-coach-widget${isListening ? " voice-coach-listening" : ""}${isThinking ? " voice-coach-processing" : ""}`}
+        className={`voice-coach-widget voice-coach-widget--${stage}`}
         onClick={() => {
           if (!isOpen) {
             setIsOpen(true);
@@ -723,8 +955,132 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
             : "Open Jose (Ctrl+Shift+V)"
         }
       >
-        <span className="voice-coach-icon">{micLabel}</span>
+        <span className="voice-coach-widget-ring" aria-hidden="true" />
+        <span className="voice-coach-widget-icon">
+          {stage === "thinking" ? (
+            <ThinkingDots />
+          ) : stage === "speaking" ? (
+            <SpeakerWave />
+          ) : (
+            <MicIcon />
+          )}
+        </span>
       </button>
     </div>
+  );
+}
+
+// ---- SVG icons (no dependencies) ----
+
+function MicIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect
+        x="9"
+        y="3"
+        width="6"
+        height="12"
+        rx="3"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        fill="currentColor"
+        fillOpacity="0.2"
+      />
+      <path
+        d="M5 11a7 7 0 0014 0M12 18v3M8 21h8"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function ThinkingDots() {
+  return (
+    <span className="voice-coach-dots" aria-hidden="true">
+      <span />
+      <span />
+      <span />
+    </span>
+  );
+}
+
+function SpeakerWave() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M4 10v4h3l5 4V6L7 10H4z"
+        fill="currentColor"
+        fillOpacity="0.85"
+      />
+      <path
+        d="M16 8c1.5 1.2 2.5 2.6 2.5 4s-1 2.8-2.5 4"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M19 5c2.2 1.8 3.5 4.2 3.5 7s-1.3 5.2-3.5 7"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        opacity="0.7"
+      />
+    </svg>
+  );
+}
+
+function ReplayIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M4 12a8 8 0 108-8v3m0 0L9 4m3 3L9 10"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function StopIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" />
+    </svg>
+  );
+}
+
+function NewChatIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M4 19l2-5a8 8 0 116 3l-8 2z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 9v6M9 12h6"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M6 6l12 12M18 6L6 18"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 }

@@ -1,4 +1,4 @@
-import { SYSTEM_PROMPT } from "./coach-prompts";
+import { SUGGESTIONS_PROMPT, SYSTEM_PROMPT } from "./coach-prompts";
 
 interface GeminiTextRequest {
   apiKey: string;
@@ -249,4 +249,66 @@ function stripCodeFences(text: string): string {
       .trim();
   }
   return trimmed;
+}
+
+/**
+ * Ask Gemini for 3 short follow-up questions the user might want to ask next.
+ * Returns an empty array on any failure so the UI can gracefully fall back.
+ */
+export async function requestSuggestedQuestions({
+  apiKey,
+  model,
+  context,
+  signal,
+  timeoutMs = 12000,
+}: {
+  apiKey: string;
+  model: string;
+  context: string;
+  signal?: AbortSignal;
+  timeoutMs?: number;
+}): Promise<string[]> {
+  if (!apiKey) return [];
+
+  const body = {
+    contents: [
+      {
+        role: "user",
+        parts: [
+          { text: SUGGESTIONS_PROMPT },
+          { text: `Snapshot:\n${context}` },
+        ],
+      },
+    ],
+    generationConfig: {
+      temperature: 0.95,
+      maxOutputTokens: 180,
+      topP: 0.95,
+      responseMimeType: "application/json",
+    },
+    safetySettings: SAFETY_SETTINGS,
+  };
+
+  let data: GeminiGenerateResponse;
+  try {
+    data = await postJSON(endpoint(model, apiKey), body, signal, timeoutMs);
+  } catch {
+    return [];
+  }
+  let raw: string;
+  try {
+    raw = extractText(data);
+  } catch {
+    return [];
+  }
+  try {
+    const parsed = JSON.parse(stripCodeFences(raw)) as { questions?: unknown };
+    const qs = Array.isArray(parsed.questions) ? parsed.questions : [];
+    return qs
+      .map((q) => (typeof q === "string" ? q.trim() : ""))
+      .filter((q) => q.length > 0 && q.length <= 80)
+      .slice(0, 3);
+  } catch {
+    return [];
+  }
 }
