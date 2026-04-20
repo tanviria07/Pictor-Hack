@@ -1,6 +1,6 @@
 # backend-go â€” API server
 
-REST orchestration for **Pictor Hack**. This process **does not** execute user Python and **does not** determine submission correctness. The Python runner service owns execution and structured evaluation.
+REST orchestration for **Kitkode**. This process **does not** execute user Python and **does not** determine submission correctness. The Python runner service owns execution and structured evaluation.
 
 ## Responsibilities
 

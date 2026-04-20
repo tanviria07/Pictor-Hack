@@ -1,6 +1,6 @@
-# Pictor Hack
+# Kitkode
 
-Local MVP for **Python interview practice**: you write every line of solution code. The stack evaluates deterministically in the Python runner, then the Go backend optionally calls **DeepSeek** only to phrase **interviewer-style notes and progressive hints** and never to decide correctness.
+Local MVP for **Python interview practice**: you write every line of solution code. The stack evaluates deterministically in the Python runner, and the Go backend optionally calls **DeepSeek** only to phrase **interviewer-style notes and progressive hints** — never to decide correctness.
 
 ## Architecture
 
@@ -75,7 +75,7 @@ go build -o bin/server ./cmd/server
 bin\server
 ```
 
-Defaults: `PORT=8080`, `RUNNER_URL=http://127.0.0.1:8001`, SQLite at `./data/pictorhack.db`.
+Defaults: `PORT=8080`, `RUNNER_URL=http://127.0.0.1:8001`, SQLite at `./data/pictorhack.db` *(legacy file name kept to preserve existing local sessions; rename only if you do not mind resetting progress)*.
 
 ### 3. Frontend
 
@@ -93,6 +93,23 @@ Open [http://localhost:3000](http://localhost:3000) (or `http://127.0.0.1:3000`)
 - **Env (optional):** Copy `frontend/.env.example` → `frontend/.env`. `API_BASE` points the browser at a full API URL when not using same-origin `/api`. `ASYNC_RUN=1` makes the client prefer the async run queue when your API exposes it (baked in at **build** time for Docker).
 - **Docker UI:** `frontend/Dockerfile` runs **nginx** with `frontend/nginx.conf`, proxying `/api` to the `backend` service in `docker-compose.yml`.
 - **E2E:** From `frontend/`, `npm run test:e2e` runs Playwright against the workspace (starts dev server if needed).
+
+## One-shot local startup
+
+Three terminals, in order:
+
+```bash
+# 1) runner
+cd runner-python && .venv\Scripts\activate && uvicorn app.main:app --host 127.0.0.1 --port 8001
+
+# 2) API
+cd backend-go && bin\server
+
+# 3) frontend
+cd frontend && npm run dev
+```
+
+Then open **http://localhost:3000**.
 
 ## DeepSeek
 
@@ -155,3 +172,13 @@ Then mirror `shared/problems/` into `backend-go/internal/problems/data/` and `ru
 ## Problem set
 
 The repo includes **PreCode 100** (beginner track) and the full **NeetCode 150**-style DSA set under `shared/problems/`, mirrored into the backend embed tree and the runner problem directories.
+
+## Notes on the rename
+
+The project was previously called **Pictor Hack**. For stability a few internal identifiers still carry the old name and are intentionally left untouched:
+
+- Go module path `pictorhack/backend` (renaming would touch every import).
+- SQLite default path `./data/pictorhack.db` (preserves existing local sessions).
+- Browser `localStorage` key `pictorhack.practice.v1` (preserves saved progress).
+
+These are internal and never surface in the UI.

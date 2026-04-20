@@ -1,1 +1,1 @@
-# Pictor Hack - Python execution and evaluation service
+# Kitkode - Python execution and evaluation service

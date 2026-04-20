@@ -20,8 +20,8 @@ from app.stepwise import validate_request as run_stepwise
 from app.stepwise_gen import generate_for_problem
 
 app = FastAPI(
-    title="Pictor Hack Python Runner",
-    description="Pictor Hack Python execution and evaluation service.",
+    title="Kitkode Python Runner",
+    description="Kitkode Python execution and evaluation service.",
     version="0.1.0",
 )
 

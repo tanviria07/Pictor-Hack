@@ -70,6 +70,6 @@ func main() {
 	}
 
 	srv := httpapi.NewRouter(h, cfg.CORSOrigins, cfg.RateLimitPerMinute)
-	log.Println("Pictor Hack API listening on", cfg.HTTPAddr)
+	log.Println("Kitkode API listening on", cfg.HTTPAddr)
 	log.Fatal(http.ListenAndServe(cfg.HTTPAddr, srv))
 }

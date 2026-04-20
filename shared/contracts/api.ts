@@ -1,5 +1,5 @@
 /**
- * Shared API contracts for Pictor Hack (frontend <-> backend).
+ * Shared API contracts for Kitkode (frontend <-> backend).
  * Mirror structs live in backend-go/internal/dto/dto.go
  */
 

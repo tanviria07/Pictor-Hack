@@ -387,7 +387,7 @@ export function Workspace() {
         <div className="ws-header-top">
           <div className="u-min-w-0">
             <div className="ws-header-row">
-              <span className="ws-header-title">Pictor Hack</span>
+              <span className="ws-header-title">Kitkode</span>
               <span className="ws-header-sub">
                 {trackFilter === "precode100"
                   ? "PreCode foundations"
