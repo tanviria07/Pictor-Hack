@@ -11,6 +11,7 @@ import (
 
 	"pictorhack/backend/internal/config"
 	"pictorhack/backend/internal/deepseek"
+	"pictorhack/backend/internal/gemini"
 	"pictorhack/backend/internal/handler"
 	"pictorhack/backend/internal/httpapi"
 	"pictorhack/backend/internal/problems"
@@ -60,11 +61,24 @@ func main() {
 
 	inlineSvc := service.NewInlineService(ds)
 
+	gm := gemini.New(gemini.Config{
+		APIKey:  cfg.GeminiAPIKey,
+		Model:   cfg.GeminiModel,
+		BaseURL: cfg.GeminiBaseURL,
+	})
+	voiceSvc := service.NewVoiceService(gm)
+	if voiceSvc.Enabled() {
+		log.Println("voice coach proxy enabled (Gemini model:", gm.Model(), ")")
+	} else {
+		log.Println("voice coach proxy disabled (set GEMINI_API_KEY to enable)")
+	}
+
 	h := &handler.Handler{
 		Runs:         runs,
 		RunJobs:      runJobs,
 		Hints:        service.NewHintService(ds, st),
 		Inline:       inlineSvc,
+		Voice:        voiceSvc,
 		Sessions:     st,
 		MaxCodeBytes: cfg.MaxCodeBytes,
 	}

@@ -11,7 +11,7 @@ import {
   requestGeminiVoiceTurn,
   requestSuggestedQuestions,
 } from "@/lib/gemini-voice";
-import { GEMINI_API_KEY, GEMINI_MODEL } from "@/lib/config";
+import { VOICE_COACH_ENABLED } from "@/lib/config";
 import { buildCoachContext } from "@/lib/voice-context";
 import type { ProblemDetail } from "@/lib/types";
 
@@ -211,7 +211,7 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
     typeof window !== "undefined" && "speechSynthesis" in window;
 
   const supported = Boolean(
-    GEMINI_API_KEY && hasSynthesis && (hasRecorder || speechRecognitionCtor),
+    VOICE_COACH_ENABLED && hasSynthesis && (hasRecorder || speechRecognitionCtor),
   );
 
   // Seed starter suggestions based on current problem.
@@ -279,7 +279,7 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
 
   // Fetch contextual follow-up suggestions (non-blocking).
   const refreshSuggestions = useCallback(() => {
-    if (!GEMINI_API_KEY) return;
+    if (!VOICE_COACH_ENABLED) return;
     suggestAbortRef.current?.abort();
     const controller = new AbortController();
     suggestAbortRef.current = controller;
@@ -287,8 +287,6 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
     const context = buildCoachContext(problemDetail, code, hints);
     void (async () => {
       const fetched = await requestSuggestedQuestions({
-        apiKey: GEMINI_API_KEY,
-        model: GEMINI_MODEL,
         context,
         signal: controller.signal,
       });
@@ -360,8 +358,6 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
         const base64 = await blobToBase64(blob);
         const context = buildCoachContext(problemDetail, code, hints);
         const result = await requestGeminiVoiceTurn({
-          apiKey: GEMINI_API_KEY,
-          model: GEMINI_MODEL,
           context,
           audioBase64: base64,
           audioMime: recorderMimeRef.current?.geminiMime || "audio/webm",
@@ -550,8 +546,6 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
       try {
         const context = buildCoachContext(problemDetail, code, hints);
         const nextReply = await requestGeminiCoachReply({
-          apiKey: GEMINI_API_KEY,
-          model: GEMINI_MODEL,
           context,
           transcript: spokenText,
           signal: controller.signal,
@@ -733,7 +727,7 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
     threadRef.current.scrollTop = threadRef.current.scrollHeight;
   }, [turns, isThinking, error]);
 
-  if (!GEMINI_API_KEY) return null;
+  if (!VOICE_COACH_ENABLED) return null;
 
   const stage: "idle" | "listening" | "thinking" | "speaking" = isListening
     ? "listening"
@@ -859,8 +853,8 @@ export function VoiceCoach({ problemDetail, code, hints }: VoiceCoachProps) {
           <div ref={threadRef} className="voice-coach-thread">
             {!supported && (
               <p className="voice-coach-copy">
-                Jose needs a microphone, speech synthesis, and a Gemini API
-                key. Try the latest Chrome or Edge over HTTPS (or localhost).
+                Jose needs a microphone and browser speech synthesis. Try the
+                latest Chrome or Edge over HTTPS (or localhost).
               </p>
             )}
             {supported && turns.length === 0 && !error && !isThinking && (

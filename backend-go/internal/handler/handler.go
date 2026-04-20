@@ -25,6 +25,7 @@ type Handler struct {
 	RunJobs      *service.RunJobService
 	Hints        *service.HintService
 	Inline       *service.InlineService
+	Voice        *service.VoiceService
 	Sessions     store.SessionRepository
 	MaxCodeBytes int // max submitted code size; if zero, a default is used in validateRunInput
 }
@@ -281,6 +282,58 @@ func (h *Handler) InlineHint(w http.ResponseWriter, r *http.Request) {
 		httpx.ErrorWithDetails(w, http.StatusInternalServerError, httpx.ErrHintUnavailable, "Could not generate inline hint.", map[string]string{"reason": err.Error()})
 		return
 	}
+	httpx.JSON(w, http.StatusOK, out)
+}
+
+// VoiceTurn proxies a Jose voice coach turn through the server-side Gemini
+// client. Accepts either a short audio clip or a plain transcript.
+func (h *Handler) VoiceTurn(w http.ResponseWriter, r *http.Request) {
+	if h.Voice == nil || !h.Voice.Enabled() {
+		httpx.Error(w, http.StatusServiceUnavailable, httpx.ErrHintUnavailable, "Voice coach is not configured on this server.")
+		return
+	}
+	// Cap the request body defensively; base64 audio is the dominant size.
+	r.Body = http.MaxBytesReader(w, r.Body, int64(service.MaxAudioBytes*2+service.MaxContextBytes+1024))
+
+	var req service.TurnRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	out, err := h.Voice.HandleTurn(r.Context(), req)
+	switch {
+	case errors.Is(err, service.ErrEmptyInput):
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "request must include audio or transcript")
+		return
+	case errors.Is(err, service.ErrInputTooLarge):
+		httpx.Error(w, http.StatusRequestEntityTooLarge, httpx.ErrBadRequest, "voice payload too large")
+		return
+	case errors.Is(err, service.ErrBadAudio):
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid audio payload")
+		return
+	case err != nil:
+		log.Println("voice turn:", err)
+		httpx.ErrorWithDetails(w, http.StatusBadGateway, httpx.ErrHintUnavailable, "Jose could not respond right now.", map[string]string{"reason": err.Error()})
+		return
+	}
+	httpx.JSON(w, http.StatusOK, out)
+}
+
+// VoiceSuggest proxies the follow-up question generator. Always returns 200
+// with a (possibly empty) list so the browser falls back gracefully.
+func (h *Handler) VoiceSuggest(w http.ResponseWriter, r *http.Request) {
+	if h.Voice == nil || !h.Voice.Enabled() {
+		httpx.JSON(w, http.StatusOK, service.Suggestions{Questions: []string{}})
+		return
+	}
+	r.Body = http.MaxBytesReader(w, r.Body, int64(service.MaxContextBytes+1024))
+
+	var req service.SuggestRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	out := h.Voice.Suggest(r.Context(), req)
 	httpx.JSON(w, http.StatusOK, out)
 }
 

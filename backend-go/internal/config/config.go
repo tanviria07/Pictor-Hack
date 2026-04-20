@@ -19,6 +19,10 @@ type Config struct {
 	DeepSeekURL   string
 	DeepSeekModel string
 
+	GeminiAPIKey  string
+	GeminiModel   string
+	GeminiBaseURL string
+
 	RedisURL              string
 	RunQueueKey           string
 	RunJobKeyPrefix       string
@@ -71,6 +75,13 @@ func Load() Config {
 	if dsModel == "" {
 		dsModel = "deepseek-chat"
 	}
+
+	geminiModel := os.Getenv("GEMINI_MODEL")
+	if geminiModel == "" {
+		geminiModel = "gemini-2.5-flash"
+	}
+
+	geminiBase := strings.TrimRight(os.Getenv("GEMINI_BASE_URL"), "/")
 
 	redisURL := strings.TrimSpace(os.Getenv("REDIS_URL"))
 
@@ -128,6 +139,10 @@ func Load() Config {
 		DeepSeekKey:   os.Getenv("DEEPSEEK_API_KEY"),
 		DeepSeekURL:   dsURL,
 		DeepSeekModel: dsModel,
+
+		GeminiAPIKey:  os.Getenv("GEMINI_API_KEY"),
+		GeminiModel:   geminiModel,
+		GeminiBaseURL: geminiBase,
 
 		RedisURL:              redisURL,
 		RunQueueKey:           queue,
