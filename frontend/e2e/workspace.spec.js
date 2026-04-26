@@ -193,9 +193,9 @@ test.describe("Workspace (mocked API)", () => {
         await expect(page.getByText("Company Practice Tracks")).toBeVisible({
             timeout: 30_000,
         });
-        await page.getByRole("button", { name: /Google/ }).click();
+        await page.getByLabel("Company Practice Tracks").selectOption("Google");
         await expect(page.getByTestId("problem-item-two-sum")).toBeVisible();
-        await page.getByRole("button", { name: /Microsoft/ }).click();
+        await page.getByLabel("Company Practice Tracks").selectOption("Microsoft");
         await expect(page.getByText("No problems found for this company/filter yet.")).toBeVisible();
     });
 });

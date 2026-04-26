@@ -140,24 +140,24 @@ export function ProblemExplorer({ categories, problems, progress, selectedId, on
     }, [filteredProblems, visibleCategories]);
     return (<div className="ex">
       <div className="ex-toolbar">
-        <div className="company-track-block">
-          <div className="company-track-head">
-            <span className="company-track-title">Company Practice Tracks</span>
-            <span className="company-track-note">Unofficial curated sets</span>
-          </div>
-          <div className="company-card-grid" role="list" aria-label="Company practice tracks">
+        <div className="company-track-menu">
+          <label className="company-track-label" htmlFor="company-track">
+            Company Practice Tracks
+          </label>
+          <select id="company-track" value={company} onChange={(e) => setCompany(e.target.value)} className="ex-select company-track-select">
+            <option value="">Browse all tracks</option>
             {COMPANY_TRACKS.map((track) => {
             const { solved, total } = companySolvedCount(trackProblems, progress, track.name);
-            const active = company === track.name;
-            return (<button key={track.name} type="button" className={`company-card${active ? " company-card--active" : ""}`} onClick={() => setCompany((value) => value === track.name ? "" : track.name)} aria-pressed={active}>
-                  <span className="company-card-name">{track.name}</span>
-                  <span className="company-card-desc">{track.description}</span>
-                  <span className="company-card-count">
-                    {solved}/{total} solved
-                  </span>
-                </button>);
+            return (<option key={track.name} value={track.name}>
+                  {track.name} · {solved}/{total} solved
+                </option>);
         })}
-          </div>
+          </select>
+          <p className="company-track-note">
+            {company
+            ? COMPANY_TRACKS.find((track) => track.name === company)?.description
+            : "Unofficial curated sets for focused company practice."}
+          </p>
         </div>
 
         <label className="sr-only" htmlFor="problem-search">
