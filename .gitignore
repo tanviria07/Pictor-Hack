@@ -76,5 +76,6 @@ runner-python/.runner-jobs/
 # Playwright
 frontend/test-results/
 frontend/playwright-report/
+frontend/.codex-temp/
 playwright/.cache/
 .aider*

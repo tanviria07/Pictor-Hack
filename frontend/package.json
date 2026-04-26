@@ -5,8 +5,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "parcel index.html --port 3000",
-    "build": "parcel build index.html --dist-dir dist",
+    "dev": "node ./scripts/run-with-local-temp.mjs parcel index.html --port 3000 --host 127.0.0.1",
+    "build": "node ./scripts/run-with-local-temp.mjs parcel build index.html --dist-dir dist",
     "lint": "eslint . --ext js,jsx --max-warnings 0",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
