@@ -364,6 +364,40 @@ textarea:focus-visible {
   color: var(--text-muted);
 }
 
+.company-track-summary {
+  margin: 0.875rem 1rem 0;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(10, 132, 255, 0.24);
+  background: rgba(10, 132, 255, 0.08);
+}
+
+.company-track-summary-title,
+.company-track-summary-desc,
+.company-track-summary-note {
+  margin: 0;
+}
+
+.company-track-summary-title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.company-track-summary-desc {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.company-track-summary-note {
+  margin-top: 0.375rem;
+  font-size: 0.625rem;
+  line-height: 1.35;
+  color: var(--text-muted);
+}
+
 .ex-scroll {
   flex: 1;
   min-height: 0;
@@ -543,6 +577,41 @@ textarea:focus-visible {
 .ex-prob-btn--selected .ex-prob-title {
   font-weight: 600;
   color: var(--text-primary);
+}
+
+.company-priority {
+  flex-shrink: 0;
+  border-radius: 999px;
+  border: 1px solid var(--border-hairline);
+  padding: 0.125rem 0.375rem;
+  font-size: 0.5625rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+}
+
+.company-priority--core {
+  border-color: rgba(48, 209, 88, 0.42);
+  background: rgba(48, 209, 88, 0.12);
+  color: #8ff0a4;
+}
+
+.company-priority--high {
+  border-color: rgba(10, 132, 255, 0.42);
+  background: rgba(10, 132, 255, 0.12);
+  color: #9dccff;
+}
+
+.company-priority--medium {
+  border-color: rgba(255, 214, 10, 0.38);
+  background: rgba(255, 214, 10, 0.1);
+  color: #f7d774;
+}
+
+.company-priority--bonus {
+  border-color: rgba(174, 174, 178, 0.3);
+  background: rgba(174, 174, 178, 0.08);
+  color: var(--text-muted);
 }
 
 /* --- Problem panel (aside) --- */

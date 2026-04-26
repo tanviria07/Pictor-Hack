@@ -205,5 +205,23 @@
     "If so, add its coordinates to the result list.",
     "Return the result list containing all valid coordinates."
   ],
-  "final_explanation": "The solution uses BFS from the ocean edges to find all cells that water can flow from to each ocean. By starting from the Pacific (left/top) and Atlantic (right/bottom) borders and moving inward based on height constraints, we mark reachable cells. Finally, we intersect these sets to find cells that can flow to both oceans, ensuring efficient O(m*n) time and space."
+  "final_explanation": "The solution uses BFS from the ocean edges to find all cells that water can flow from to each ocean. By starting from the Pacific (left/top) and Atlantic (right/bottom) borders and moving inward based on height constraints, we mark reachable cells. Finally, we intersect these sets to find cells that can flow to both oceans, ensuring efficient O(m*n) time and space.",
+  "company_track_tags": [
+    {
+      "company_id": "openai",
+      "priority": "high",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 18
+    },
+    {
+      "company_id": "google",
+      "priority": "medium",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 20
+    }
+  ],
+  "company_tags": [
+    "Google",
+    "OpenAI"
+  ]
 }

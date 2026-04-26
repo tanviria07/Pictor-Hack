@@ -73,7 +73,31 @@
     "level_3": "Once all the characters are covered, move the left pointer and ensure that all the characters are still covered to minimize the subarray size.",
     "level_4": "Continue expanding the right and left pointers until you reach the end of s."
   },
-  "company_tags": ["Google", "OpenAI"],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "OpenAI"
+  ],
   "canonical_solution_summary": "Continue expanding the right and left pointers until you reach the end of s.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "company_track_tags": [
+    {
+      "company_id": "google",
+      "priority": "core",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 8
+    },
+    {
+      "company_id": "openai",
+      "priority": "core",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 8
+    },
+    {
+      "company_id": "amazon",
+      "priority": "high",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 11
+    }
+  ]
 }

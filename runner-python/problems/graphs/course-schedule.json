@@ -76,7 +76,11 @@
     "level_3": "Topological sort could also be done via BFS.",
     "level_4": "Topological sort could also be done via BFS."
   },
-  "company_tags": ["Google", "OpenAI"],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "OpenAI"
+  ],
   "canonical_solution_summary": "Topological sort could also be done via BFS.",
   "disallowed_full_solution_exposure": true,
   "solution_sentences": [
@@ -121,5 +125,25 @@
     "After processing, check if all courses were taken by comparing count to total courses.",
     ""
   ],
-  "final_explanation": "This solution uses Kahn's algorithm for topological sorting to detect cycles in a directed graph. By building a graph of course dependencies and tracking indegrees, we process courses with no prerequisites first, reducing indegrees of dependent courses. If all courses are processed, there's no cycle and it's possible to finish; otherwise, a cycle exists, making it impossible."
+  "final_explanation": "This solution uses Kahn's algorithm for topological sorting to detect cycles in a directed graph. By building a graph of course dependencies and tracking indegrees, we process courses with no prerequisites first, reducing indegrees of dependent courses. If all courses are processed, there's no cycle and it's possible to finish; otherwise, a cycle exists, making it impossible.",
+  "company_track_tags": [
+    {
+      "company_id": "openai",
+      "priority": "high",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 17
+    },
+    {
+      "company_id": "google",
+      "priority": "medium",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 19
+    },
+    {
+      "company_id": "amazon",
+      "priority": "bonus",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 30
+    }
+  ]
 }

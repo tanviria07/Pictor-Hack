@@ -53,5 +53,30 @@
     "level_4": "Following up on the previous hint, we can make use of a min-heap to store the end times of the meetings in various rooms. \n\nSo, every time we want to check if any room is free or not, simply check the topmost element of the min heap as that would be the room that would get free the earliest out of all the other rooms currently occupied.\n\nIf the room we extracted from the top of the min heap isn't free, then no other room is. So, we can save time here and simply allocate a new room."
   },
   "canonical_solution_summary": "Following up on the previous hint, we can make use of a min-heap to store the end times of the meetings in various rooms. \n\nSo, every time we want to check if any room is free or not, simply check the topmost element of the min heap as that would be the room that would get free the earliest out of all the other rooms currently occupied.\n\nIf the room we extracted from the top of the min heap isn't free, then no other room is. So, we can save time here and simply allocate a new room.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "company_track_tags": [
+    {
+      "company_id": "openai",
+      "priority": "high",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 14
+    },
+    {
+      "company_id": "google",
+      "priority": "high",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 16
+    },
+    {
+      "company_id": "amazon",
+      "priority": "medium",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 23
+    }
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "OpenAI"
+  ]
 }

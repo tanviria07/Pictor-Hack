@@ -110,5 +110,16 @@
     "Once the loop ends, the left pointer points to the minimum element; return that element from the array.",
     ""
   ],
-  "final_explanation": "This solution uses binary search to find the minimum in O(log n) time by comparing the middle element with the rightmost element. If the middle is greater, the minimum must be to the right; otherwise, it's to the left or at the middle. The pointers converge until they meet at the minimum element."
+  "final_explanation": "This solution uses binary search to find the minimum in O(log n) time by comparing the middle element with the rightmost element. If the middle is greater, the minimum must be to the right; otherwise, it's to the left or at the middle. The pointers converge until they meet at the minimum element.",
+  "company_track_tags": [
+    {
+      "company_id": "amazon",
+      "priority": "high",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 18
+    }
+  ],
+  "company_tags": [
+    "Amazon"
+  ]
 }

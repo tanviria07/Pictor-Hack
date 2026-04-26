@@ -98,7 +98,12 @@
     "level_3": "Use the constraints and examples to narrow the intended time complexity.",
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
-  "company_tags": ["Amazon", "Microsoft"],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Microsoft",
+    "OpenAI"
+  ],
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
   "disallowed_full_solution_exposure": true,
   "solution_sentences": [
@@ -123,5 +128,25 @@
     "In each iteration, add the number (key) from the sorted item to the result list.",
     "Return the result list as the final output."
   ],
-  "final_explanation": "The solution counts the frequency of each number using a dictionary, then sorts the items by frequency in descending order. Finally, it extracts the first k numbers from this sorted list to return the top k frequent elements."
+  "final_explanation": "The solution counts the frequency of each number using a dictionary, then sorts the items by frequency in descending order. Finally, it extracts the first k numbers from this sorted list to return the top k frequent elements.",
+  "company_track_tags": [
+    {
+      "company_id": "google",
+      "priority": "core",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 3
+    },
+    {
+      "company_id": "openai",
+      "priority": "core",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 3
+    },
+    {
+      "company_id": "amazon",
+      "priority": "core",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 4
+    }
+  ]
 }

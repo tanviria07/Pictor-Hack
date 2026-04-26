@@ -2,7 +2,15 @@ import { useEffect, useMemo, useState } from "react";
 import { filterCategoriesByTrack, filterProblemsByTrack, } from "../../lib/tracks";
 import { DifficultyBadge } from "../../components/DifficultyBadge";
 import { PracticeStatusDot } from "../../components/PracticeStatusDot";
-import { COMPANY_TRACKS, hasCompanyTag } from "./companyTracks";
+import {
+    COMPANY_TRACKS,
+    COMPANY_TRACK_DISCLAIMER,
+    compareByCompanyOrder,
+    companyById,
+    companyTagFor,
+    hasCompanyTag,
+    priorityLabel,
+} from "./companyTracks";
 function matchesSearch(problem, query) {
     if (!query.trim())
         return true;
@@ -71,11 +79,11 @@ function trackSolvedCount(problems, progress, categoryIds) {
     }
     return { solved, total };
 }
-function companySolvedCount(problems, progress, companyName) {
+function companySolvedCount(problems, progress, companyId) {
     let solved = 0;
     let total = 0;
     for (const problem of problems) {
-        if (!hasCompanyTag(problem, companyName))
+        if (!hasCompanyTag(problem, companyId))
             continue;
         total++;
         if (progress[problem.id] === "solved")
@@ -90,14 +98,18 @@ export function ProblemExplorer({ categories, problems, progress, selectedId, on
     const [company, setCompany] = useState("");
     const [expanded, setExpanded] = useState({});
     const trackProblems = useMemo(() => filterProblemsByTrack(problems, trackFilter), [problems, trackFilter]);
+    const activeCompany = useMemo(() => companyById(company), [company]);
+    const effectiveTrackFilter = company ? "all" : trackFilter;
     const companyBaseProblems = useMemo(() => {
         if (!company)
             return trackProblems;
-        return trackProblems.filter((problem) => hasCompanyTag(problem, company));
-    }, [company, trackProblems]);
+        return problems
+            .filter((problem) => hasCompanyTag(problem, company))
+            .sort(compareByCompanyOrder(company));
+    }, [company, problems, trackProblems]);
     const displayCategories = useMemo(() => {
-        return filterCategoriesByTrack(categories, companyBaseProblems, trackFilter);
-    }, [categories, companyBaseProblems, trackFilter]);
+        return filterCategoriesByTrack(categories, companyBaseProblems, effectiveTrackFilter);
+    }, [categories, companyBaseProblems, effectiveTrackFilter]);
     const categoryOptions = useMemo(() => {
         const activeCategories = new Set(companyBaseProblems.map((problem) => problem.category));
         return displayCategories.filter((item) => activeCategories.has(item.id));
@@ -126,7 +138,7 @@ export function ProblemExplorer({ categories, problems, progress, selectedId, on
         const activeCategories = new Set(filteredProblems.map((problem) => problem.category));
         return displayCategories.filter((item) => activeCategories.has(item.id));
     }, [displayCategories, filteredProblems]);
-    const trackGroups = useMemo(() => groupCategoriesByTrack(visibleCategories, trackFilter), [visibleCategories, trackFilter]);
+    const trackGroups = useMemo(() => groupCategoriesByTrack(visibleCategories, effectiveTrackFilter), [visibleCategories, effectiveTrackFilter]);
     const problemsByCategory = useMemo(() => {
         const categoryMap = new Map();
         for (const category of visibleCategories)
@@ -147,16 +159,14 @@ export function ProblemExplorer({ categories, problems, progress, selectedId, on
           <select id="company-track" value={company} onChange={(e) => setCompany(e.target.value)} className="ex-select company-track-select">
             <option value="">Browse all tracks</option>
             {COMPANY_TRACKS.map((track) => {
-            const { solved, total } = companySolvedCount(trackProblems, progress, track.name);
-            return (<option key={track.name} value={track.name}>
-                  {track.name} · {solved}/{total} solved
+            const { solved, total } = companySolvedCount(problems, progress, track.id);
+            return (<option key={track.id} value={track.id}>
+                  {track.name} - {solved}/{total} solved
                 </option>);
         })}
           </select>
           <p className="company-track-note">
-            {company
-            ? COMPANY_TRACKS.find((track) => track.name === company)?.description
-            : "Unofficial curated sets for focused company practice."}
+            {activeCompany ? activeCompany.description : COMPANY_TRACK_DISCLAIMER}
           </p>
         </div>
 
@@ -190,6 +200,13 @@ export function ProblemExplorer({ categories, problems, progress, selectedId, on
 
       <div className="ex-scroll">
         {loading && (<p className="ex-loading">Loading...</p>)}
+        {!loading && activeCompany && (<div className="company-track-summary">
+            <p className="company-track-summary-title">
+              {activeCompany.name} internship prep
+            </p>
+            <p className="company-track-summary-desc">{activeCompany.description}</p>
+            <p className="company-track-summary-note">{COMPANY_TRACK_DISCLAIMER}</p>
+          </div>)}
         {!loading && problems.length === 0 && (<div className="ex-empty">
             <p>No problems loaded.</p>
             <p className="ex-empty-hint">
@@ -246,6 +263,12 @@ export function ProblemExplorer({ categories, problems, progress, selectedId, on
                                     <span className="ex-prob-title">
                                       {problem.title}
                                     </span>
+                                    {company && (() => {
+                                        const tag = companyTagFor(problem, company);
+                                        return tag ? (<span className={`company-priority company-priority--${tag.priority}`} title={tag.reason}>
+                                          {priorityLabel(tag.priority)}
+                                        </span>) : null;
+                                    })()}
                                     <DifficultyBadge difficulty={problem.difficulty} compact trackId={problem.track_id}/>
                                   </button>
                                 </li>);

@@ -92,5 +92,16 @@
     "At each house, choose the better option: skip it or rob it and add to two houses back.",
     "Return the last computed value, which is the maximum for all houses."
   ],
-  "final_explanation": "This solution uses dynamic programming to build up the maximum money that can be robbed up to each house without alerting the police. At each step, you decide whether to rob the current house (adding its money to the maximum from two houses before) or skip it (taking the maximum from the previous house). This ensures no adjacent houses are robbed, and the final result is the maximum achievable amount."
+  "final_explanation": "This solution uses dynamic programming to build up the maximum money that can be robbed up to each house without alerting the police. At each step, you decide whether to rob the current house (adding its money to the maximum from two houses before) or skip it (taking the maximum from the previous house). This ensures no adjacent houses are robbed, and the final result is the maximum achievable amount.",
+  "company_track_tags": [
+    {
+      "company_id": "amazon",
+      "priority": "bonus",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 35
+    }
+  ],
+  "company_tags": [
+    "Amazon"
+  ]
 }

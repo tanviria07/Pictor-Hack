@@ -64,7 +64,38 @@
     "level_3": "Since maximum string size is at most 26, generate and check all possible substrings with length at most 26.",
     "level_4": "Since maximum string size is at most 26, generate and check all possible substrings with length at most 26."
   },
-  "company_tags": ["Google", "Microsoft", "OpenAI"],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Microsoft",
+    "OpenAI"
+  ],
   "canonical_solution_summary": "Since maximum string size is at most 26, generate and check all possible substrings with length at most 26.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "company_track_tags": [
+    {
+      "company_id": "google",
+      "priority": "core",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 7
+    },
+    {
+      "company_id": "openai",
+      "priority": "core",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 7
+    },
+    {
+      "company_id": "amazon",
+      "priority": "high",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 9
+    },
+    {
+      "company_id": "microsoft",
+      "priority": "high",
+      "reason": "clean implementation, readability, arrays, strings, trees",
+      "recommended_order": 9
+    }
+  ]
 }

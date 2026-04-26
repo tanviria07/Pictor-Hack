@@ -30,31 +30,32 @@ var (
 )
 
 type rawProblem struct {
-	ID                       string            `json:"id"`
-	Slug                     string            `json:"slug,omitempty"`
-	Title                    string            `json:"title"`
-	Difficulty               string            `json:"difficulty"`
-	Category                 string            `json:"category"`
-	Description              string            `json:"description"`
-	Examples                 []dto.Example     `json:"examples"`
-	Constraints              []string          `json:"constraints"`
-	FunctionName             string            `json:"function_name"`
-	ExecutionMode            string            `json:"execution_mode"`
-	ClassName                string            `json:"class_name"`
-	StarterCode              string            `json:"starter_code"`
-	Parameters               []dto.Parameter   `json:"parameters"`
-	ExpectedReturnType       string            `json:"expected_return_type"`
-	VisibleTests             []any             `json:"visible_tests"`
-	HiddenTests              []any             `json:"hidden_tests"`
-	HintPlan                 map[string]string `json:"hint_plan"`
-	CanonicalSolutionSummary string            `json:"canonical_solution_summary"`
-	DisallowedFullSolution   bool              `json:"disallowed_full_solution_exposure"`
-	SkillTags                []string          `json:"skill_tags,omitempty"`
-	Tags                     []string          `json:"tags,omitempty"`
-	CompanyTags              []string          `json:"company_tags,omitempty"`
-	SolutionSentences        []string          `json:"solution_sentences,omitempty"`
-	HintsPerSentence         []string          `json:"hints_per_sentence,omitempty"`
-	FinalExplanation         string            `json:"final_explanation,omitempty"`
+	ID                       string                `json:"id"`
+	Slug                     string                `json:"slug,omitempty"`
+	Title                    string                `json:"title"`
+	Difficulty               string                `json:"difficulty"`
+	Category                 string                `json:"category"`
+	Description              string                `json:"description"`
+	Examples                 []dto.Example         `json:"examples"`
+	Constraints              []string              `json:"constraints"`
+	FunctionName             string                `json:"function_name"`
+	ExecutionMode            string                `json:"execution_mode"`
+	ClassName                string                `json:"class_name"`
+	StarterCode              string                `json:"starter_code"`
+	Parameters               []dto.Parameter       `json:"parameters"`
+	ExpectedReturnType       string                `json:"expected_return_type"`
+	VisibleTests             []any                 `json:"visible_tests"`
+	HiddenTests              []any                 `json:"hidden_tests"`
+	HintPlan                 map[string]string     `json:"hint_plan"`
+	CanonicalSolutionSummary string                `json:"canonical_solution_summary"`
+	DisallowedFullSolution   bool                  `json:"disallowed_full_solution_exposure"`
+	SkillTags                []string              `json:"skill_tags,omitempty"`
+	Tags                     []string              `json:"tags,omitempty"`
+	CompanyTags              []string              `json:"company_tags,omitempty"`
+	CompanyTrackTags         []dto.CompanyTrackTag `json:"company_track_tags,omitempty"`
+	SolutionSentences        []string              `json:"solution_sentences,omitempty"`
+	HintsPerSentence         []string              `json:"hints_per_sentence,omitempty"`
+	FinalExplanation         string                `json:"final_explanation,omitempty"`
 }
 
 func Init() error {
@@ -245,18 +246,19 @@ func ListSummaries(categoryFilter, difficultyFilter string) []dto.ProblemSummary
 			slug = p.ID
 		}
 		out = append(out, dto.ProblemSummary{
-			ID:            p.ID,
-			Title:         p.Title,
-			Difficulty:    p.Difficulty,
-			Category:      p.Category,
-			CategoryTitle: categoryTitle(p.Category),
-			FunctionName:  p.FunctionName,
-			Slug:          slug,
-			TrackID:       tid,
-			TrackTitle:    tt,
-			SkillTags:     append([]string(nil), p.SkillTags...),
-			Tags:          append([]string(nil), p.Tags...),
-			CompanyTags:   append([]string(nil), p.CompanyTags...),
+			ID:               p.ID,
+			Title:            p.Title,
+			Difficulty:       p.Difficulty,
+			Category:         p.Category,
+			CategoryTitle:    categoryTitle(p.Category),
+			FunctionName:     p.FunctionName,
+			Slug:             slug,
+			TrackID:          tid,
+			TrackTitle:       tt,
+			SkillTags:        append([]string(nil), p.SkillTags...),
+			Tags:             append([]string(nil), p.Tags...),
+			CompanyTags:      append([]string(nil), p.CompanyTags...),
+			CompanyTrackTags: append([]dto.CompanyTrackTag(nil), p.CompanyTrackTags...),
 		})
 	}
 	return out
@@ -298,6 +300,7 @@ func GetPublic(id string) (*dto.ProblemDetail, error) {
 		SkillTags:          append([]string(nil), p.SkillTags...),
 		Tags:               append([]string(nil), p.Tags...),
 		CompanyTags:        append([]string(nil), p.CompanyTags...),
+		CompanyTrackTags:   append([]dto.CompanyTrackTag(nil), p.CompanyTrackTags...),
 		StepwiseAvailable:  len(p.SolutionSentences) > 0,
 		StepwiseTotal:      len(p.SolutionSentences),
 	}, nil

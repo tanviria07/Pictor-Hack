@@ -74,5 +74,16 @@
     "level_4": "The optimal runtime complexity is O(height of BST)."
   },
   "canonical_solution_summary": "The optimal runtime complexity is O(height of BST).",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "company_track_tags": [
+    {
+      "company_id": "google",
+      "priority": "medium",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 28
+    }
+  ],
+  "company_tags": [
+    "Google"
+  ]
 }

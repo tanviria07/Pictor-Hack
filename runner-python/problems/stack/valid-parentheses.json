@@ -81,7 +81,38 @@
     "level_3": "When you encounter a closing bracket, check if the top of the stack was the opening for it. If yes, pop it from the stack. Otherwise, return false.",
     "level_4": "When you encounter a closing bracket, check if the top of the stack was the opening for it. If yes, pop it from the stack. Otherwise, return false."
   },
-  "company_tags": ["Amazon", "Microsoft"],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Microsoft",
+    "OpenAI"
+  ],
   "canonical_solution_summary": "When you encounter a closing bracket, check if the top of the stack was the opening for it. If yes, pop it from the stack. Otherwise, return false.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "company_track_tags": [
+    {
+      "company_id": "google",
+      "priority": "high",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 9
+    },
+    {
+      "company_id": "openai",
+      "priority": "high",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 9
+    },
+    {
+      "company_id": "microsoft",
+      "priority": "high",
+      "reason": "clean implementation, readability, arrays, strings, trees",
+      "recommended_order": 10
+    },
+    {
+      "company_id": "amazon",
+      "priority": "high",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 13
+    }
+  ]
 }

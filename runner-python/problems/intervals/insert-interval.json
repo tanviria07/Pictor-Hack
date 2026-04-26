@@ -121,5 +121,23 @@
     "level_4": "This can be done by comparing the end of the last interval with the start of the new interval and vice versa."
   },
   "canonical_solution_summary": "This can be done by comparing the end of the last interval with the start of the new interval and vice versa.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "company_track_tags": [
+    {
+      "company_id": "google",
+      "priority": "high",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 15
+    },
+    {
+      "company_id": "amazon",
+      "priority": "medium",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 20
+    }
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google"
+  ]
 }

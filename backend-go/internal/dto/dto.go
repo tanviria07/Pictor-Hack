@@ -146,49 +146,59 @@ type CategorySummary struct {
 	SectionDescription string `json:"section_description,omitempty"`
 }
 
+// CompanyTrackTag describes unofficial company-track placement metadata.
+type CompanyTrackTag struct {
+	CompanyID        string `json:"company_id"`
+	Priority         string `json:"priority"`
+	Reason           string `json:"reason"`
+	RecommendedOrder int    `json:"recommended_order"`
+}
+
 // ProblemSummary is GET /api/problems item.
 type ProblemSummary struct {
-	ID            string   `json:"id"`
-	Title         string   `json:"title"`
-	Difficulty    string   `json:"difficulty"`
-	Category      string   `json:"category"`
-	CategoryTitle string   `json:"category_title"`
-	FunctionName  string   `json:"function_name"`
-	Slug          string   `json:"slug,omitempty"`
-	TrackID       string   `json:"track_id,omitempty"`
-	TrackTitle    string   `json:"track_title,omitempty"`
-	SkillTags     []string `json:"skill_tags,omitempty"`
-	Tags          []string `json:"tags,omitempty"`
-	CompanyTags   []string `json:"company_tags,omitempty"`
+	ID               string            `json:"id"`
+	Title            string            `json:"title"`
+	Difficulty       string            `json:"difficulty"`
+	Category         string            `json:"category"`
+	CategoryTitle    string            `json:"category_title"`
+	FunctionName     string            `json:"function_name"`
+	Slug             string            `json:"slug,omitempty"`
+	TrackID          string            `json:"track_id,omitempty"`
+	TrackTitle       string            `json:"track_title,omitempty"`
+	SkillTags        []string          `json:"skill_tags,omitempty"`
+	Tags             []string          `json:"tags,omitempty"`
+	CompanyTags      []string          `json:"company_tags,omitempty"`
+	CompanyTrackTags []CompanyTrackTag `json:"company_track_tags,omitempty"`
 }
 
 // ProblemDetail is GET /api/problems/:id (no hidden test payloads).
 type ProblemDetail struct {
-	ID                 string      `json:"id"`
-	Title              string      `json:"title"`
-	Difficulty         string      `json:"difficulty"`
-	Category           string      `json:"category"`
-	CategoryTitle      string      `json:"category_title"`
-	Description        string      `json:"description"`
-	Examples           []Example   `json:"examples"`
-	Constraints        []string    `json:"constraints"`
-	FunctionName       string      `json:"function_name"`
-	ExecutionMode      string      `json:"execution_mode,omitempty"`
-	ClassName          string      `json:"class_name,omitempty"`
-	StarterCode        string      `json:"starter_code,omitempty"`
-	Parameters         []Parameter `json:"parameters"`
-	ExpectedReturnType string      `json:"expected_return_type"`
-	VisibleTestCount   int         `json:"visible_test_count"`
-	HiddenTestCount    int         `json:"hidden_test_count"`
-	Slug               string      `json:"slug,omitempty"`
-	TrackID            string      `json:"track_id,omitempty"`
-	TrackTitle         string      `json:"track_title,omitempty"`
-	SectionDescription string      `json:"section_description,omitempty"`
-	SkillTags          []string    `json:"skill_tags,omitempty"`
-	Tags               []string    `json:"tags,omitempty"`
-	CompanyTags        []string    `json:"company_tags,omitempty"`
-	StepwiseAvailable  bool        `json:"stepwise_available,omitempty"`
-	StepwiseTotal      int         `json:"stepwise_total,omitempty"`
+	ID                 string            `json:"id"`
+	Title              string            `json:"title"`
+	Difficulty         string            `json:"difficulty"`
+	Category           string            `json:"category"`
+	CategoryTitle      string            `json:"category_title"`
+	Description        string            `json:"description"`
+	Examples           []Example         `json:"examples"`
+	Constraints        []string          `json:"constraints"`
+	FunctionName       string            `json:"function_name"`
+	ExecutionMode      string            `json:"execution_mode,omitempty"`
+	ClassName          string            `json:"class_name,omitempty"`
+	StarterCode        string            `json:"starter_code,omitempty"`
+	Parameters         []Parameter       `json:"parameters"`
+	ExpectedReturnType string            `json:"expected_return_type"`
+	VisibleTestCount   int               `json:"visible_test_count"`
+	HiddenTestCount    int               `json:"hidden_test_count"`
+	Slug               string            `json:"slug,omitempty"`
+	TrackID            string            `json:"track_id,omitempty"`
+	TrackTitle         string            `json:"track_title,omitempty"`
+	SectionDescription string            `json:"section_description,omitempty"`
+	SkillTags          []string          `json:"skill_tags,omitempty"`
+	Tags               []string          `json:"tags,omitempty"`
+	CompanyTags        []string          `json:"company_tags,omitempty"`
+	CompanyTrackTags   []CompanyTrackTag `json:"company_track_tags,omitempty"`
+	StepwiseAvailable  bool              `json:"stepwise_available,omitempty"`
+	StepwiseTotal      int               `json:"stepwise_total,omitempty"`
 }
 
 // StepwiseValidateRequest is POST /api/validate. The runner splits the code

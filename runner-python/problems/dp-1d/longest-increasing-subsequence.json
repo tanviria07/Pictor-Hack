@@ -110,5 +110,16 @@
     "Update the DP value for the current index if a longer increasing subsequence is found.",
     "After processing all elements, return the maximum value in the DP array as the answer."
   ],
-  "final_explanation": "This solution uses dynamic programming to track the longest increasing subsequence ending at each index. By comparing each element with all previous ones, we build up the DP array where dp[i] stores the LIS length ending at nums[i]. The final answer is the maximum value in dp, representing the overall longest subsequence in the array."
+  "final_explanation": "This solution uses dynamic programming to track the longest increasing subsequence ending at each index. By comparing each element with all previous ones, we build up the DP array where dp[i] stores the LIS length ending at nums[i]. The final answer is the maximum value in dp, representing the overall longest subsequence in the array.",
+  "company_track_tags": [
+    {
+      "company_id": "google",
+      "priority": "bonus",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 34
+    }
+  ],
+  "company_tags": [
+    "Google"
+  ]
 }

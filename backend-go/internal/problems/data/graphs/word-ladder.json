@@ -125,5 +125,23 @@
     "If the loop finishes without finding endWord, return 0 as no sequence exists.",
     ""
   ],
-  "final_explanation": "This solution uses BFS to find the shortest transformation sequence, treating words as nodes and single-letter changes as edges. By exploring all possible one-letter variations from each word and tracking visited words, it efficiently finds the minimum steps or returns 0 if impossible. The set conversion optimizes lookups, and deque ensures O(1) queue operations."
+  "final_explanation": "This solution uses BFS to find the shortest transformation sequence, treating words as nodes and single-letter changes as edges. By exploring all possible one-letter variations from each word and tracking visited words, it efficiently finds the minimum steps or returns 0 if impossible. The set conversion optimizes lookups, and deque ensures O(1) queue operations.",
+  "company_track_tags": [
+    {
+      "company_id": "openai",
+      "priority": "medium",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 19
+    },
+    {
+      "company_id": "google",
+      "priority": "medium",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 22
+    }
+  ],
+  "company_tags": [
+    "Google",
+    "OpenAI"
+  ]
 }

@@ -105,5 +105,37 @@
     "",
     ""
   ],
-  "final_explanation": "This solution uses binary search to efficiently locate the target in a sorted list by repeatedly halving the search interval. It compares the middle element to the target and adjusts the boundaries based on the comparison, ensuring O(log n) time complexity. If the target is found, its index is returned; otherwise, -1 is returned after exhausting the search space."
+  "final_explanation": "This solution uses binary search to efficiently locate the target in a sorted list by repeatedly halving the search interval. It compares the middle element to the target and adjusts the boundaries based on the comparison, ensuring O(log n) time complexity. If the target is found, its index is returned; otherwise, -1 is returned after exhausting the search space.",
+  "company_track_tags": [
+    {
+      "company_id": "google",
+      "priority": "high",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 11
+    },
+    {
+      "company_id": "openai",
+      "priority": "high",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 11
+    },
+    {
+      "company_id": "microsoft",
+      "priority": "high",
+      "reason": "clean implementation, readability, arrays, strings, trees",
+      "recommended_order": 13
+    },
+    {
+      "company_id": "amazon",
+      "priority": "high",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 16
+    }
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Microsoft",
+    "OpenAI"
+  ]
 }

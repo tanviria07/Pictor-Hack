@@ -53,5 +53,23 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "company_track_tags": [
+    {
+      "company_id": "amazon",
+      "priority": "medium",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 22
+    },
+    {
+      "company_id": "microsoft",
+      "priority": "medium",
+      "reason": "clean implementation, readability, arrays, strings, trees",
+      "recommended_order": 28
+    }
+  ],
+  "company_tags": [
+    "Amazon",
+    "Microsoft"
+  ]
 }

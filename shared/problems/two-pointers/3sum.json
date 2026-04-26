@@ -97,5 +97,16 @@
     "level_4": "The second train of thought for two-sum is, without changing the array, can we use additional space somehow? Like maybe a hash map to speed up the search?"
   },
   "canonical_solution_summary": "The second train of thought for two-sum is, without changing the array, can we use additional space somehow? Like maybe a hash map to speed up the search?",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "company_track_tags": [
+    {
+      "company_id": "microsoft",
+      "priority": "core",
+      "reason": "clean implementation, readability, arrays, strings, trees",
+      "recommended_order": 7
+    }
+  ],
+  "company_tags": [
+    "Microsoft"
+  ]
 }

@@ -156,5 +156,23 @@
     "",
     ""
   ],
-  "final_explanation": "This solution uses BFS to simulate the rotting process minute by minute. It first counts all fresh oranges and initializes a queue with all initially rotten oranges. Then, it processes each minute by spreading rot to adjacent fresh oranges, updating the queue and fresh count. The time complexity is O(m*n) as each cell is visited at most once, and it efficiently determines if all oranges can rot or returns -1 if some remain fresh."
+  "final_explanation": "This solution uses BFS to simulate the rotting process minute by minute. It first counts all fresh oranges and initializes a queue with all initially rotten oranges. Then, it processes each minute by spreading rot to adjacent fresh oranges, updating the queue and fresh count. The time complexity is O(m*n) as each cell is visited at most once, and it efficiently determines if all oranges can rot or returns -1 if some remain fresh.",
+  "company_track_tags": [
+    {
+      "company_id": "google",
+      "priority": "medium",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 21
+    },
+    {
+      "company_id": "amazon",
+      "priority": "bonus",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 29
+    }
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google"
+  ]
 }

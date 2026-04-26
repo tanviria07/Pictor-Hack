@@ -92,7 +92,12 @@
     "level_3": "The second train of thought is, without changing the array, can we use additional space somehow? Like maybe a hash map to speed up the search?",
     "level_4": "The second train of thought is, without changing the array, can we use additional space somehow? Like maybe a hash map to speed up the search?"
   },
-  "company_tags": ["Google", "Amazon", "Microsoft"],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Microsoft",
+    "OpenAI"
+  ],
   "canonical_solution_summary": "The second train of thought is, without changing the array, can we use additional space somehow? Like maybe a hash map to speed up the search?",
   "disallowed_full_solution_exposure": true,
   "solution_sentences": [
@@ -113,5 +118,31 @@
     "If it is, return a list containing the index of the complement (from the dictionary) and the current index `i`.",
     "Otherwise, add the current number and its index to the dictionary for future checks."
   ],
-  "final_explanation": "This solution uses a hash map (dictionary) to store each number and its index as we iterate through the list. For each number, we compute its complement (target minus the number) and check if it's already in the map. If found, we return the indices; otherwise, we add the current number to the map. This approach runs in O(n) time and O(n) space, efficiently solving the problem in one pass."
+  "final_explanation": "This solution uses a hash map (dictionary) to store each number and its index as we iterate through the list. For each number, we compute its complement (target minus the number) and check if it's already in the map. If found, we return the indices; otherwise, we add the current number to the map. This approach runs in O(n) time and O(n) space, efficiently solving the problem in one pass.",
+  "company_track_tags": [
+    {
+      "company_id": "amazon",
+      "priority": "core",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 1
+    },
+    {
+      "company_id": "google",
+      "priority": "core",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 1
+    },
+    {
+      "company_id": "microsoft",
+      "priority": "core",
+      "reason": "clean implementation, readability, arrays, strings, trees",
+      "recommended_order": 1
+    },
+    {
+      "company_id": "openai",
+      "priority": "core",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 1
+    }
+  ]
 }

@@ -137,5 +137,30 @@
     "After processing all neighbors, return the clone from the helper function.",
     "Finally, call the helper with the input node and return the result as the cloned graph."
   ],
-  "final_explanation": "The solution uses depth-first search (DFS) to traverse the graph, creating clones of each node exactly once. A dictionary maps original nodes to their clones to handle cycles and avoid duplication. For each node, we clone its value and recursively clone its neighbors, building the connections in the cloned graph."
+  "final_explanation": "The solution uses depth-first search (DFS) to traverse the graph, creating clones of each node exactly once. A dictionary maps original nodes to their clones to handle cycles and avoid duplication. For each node, we clone its value and recursively clone its neighbors, building the connections in the cloned graph.",
+  "company_track_tags": [
+    {
+      "company_id": "openai",
+      "priority": "high",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 16
+    },
+    {
+      "company_id": "google",
+      "priority": "high",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 18
+    },
+    {
+      "company_id": "amazon",
+      "priority": "bonus",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 31
+    }
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "OpenAI"
+  ]
 }

@@ -94,5 +94,16 @@
     "level_4": "Use Priority Queue."
   },
   "canonical_solution_summary": "Use Priority Queue.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "company_track_tags": [
+    {
+      "company_id": "amazon",
+      "priority": "medium",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 26
+    }
+  ],
+  "company_tags": [
+    "Amazon"
+  ]
 }

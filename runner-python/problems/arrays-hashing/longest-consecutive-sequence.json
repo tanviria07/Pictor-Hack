@@ -119,5 +119,30 @@
     "Update the longest streak if the current one is longer.",
     "After the loop, return the longest streak found."
   ],
-  "final_explanation": "The solution uses a set to achieve O(n) time by allowing constant-time checks for consecutive numbers. It identifies the start of each sequence (where the previous number is missing) and expands from there to count the streak, updating the maximum length. This avoids sorting and efficiently processes each number only once."
+  "final_explanation": "The solution uses a set to achieve O(n) time by allowing constant-time checks for consecutive numbers. It identifies the start of each sequence (where the previous number is missing) and expands from there to count the streak, updating the maximum length. This avoids sorting and efficiently processes each number only once.",
+  "company_track_tags": [
+    {
+      "company_id": "google",
+      "priority": "core",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 5
+    },
+    {
+      "company_id": "openai",
+      "priority": "core",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 6
+    },
+    {
+      "company_id": "amazon",
+      "priority": "core",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 7
+    }
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "OpenAI"
+  ]
 }

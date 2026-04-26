@@ -78,7 +78,12 @@
     "level_3": "Use the constraints and examples to narrow the intended time complexity.",
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
-  "company_tags": ["Amazon", "Microsoft"],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Microsoft",
+    "OpenAI"
+  ],
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
   "disallowed_full_solution_exposure": true,
   "solution_sentences": [
@@ -99,5 +104,31 @@
     "Update the minimum coins for the current amount by considering using this coin.",
     "Return the result for the target amount, handling the case where it's impossible."
   ],
-  "final_explanation": "This solution uses dynamic programming to build up the minimum coins needed for each amount from 0 to the target. By iterating through each coin and updating the dp array, it efficiently finds the optimal combination. If the target amount remains at infinity, it returns -1 indicating no solution."
+  "final_explanation": "This solution uses dynamic programming to build up the minimum coins needed for each amount from 0 to the target. By iterating through each coin and updating the dp array, it efficiently finds the optimal combination. If the target amount remains at infinity, it returns -1 indicating no solution.",
+  "company_track_tags": [
+    {
+      "company_id": "openai",
+      "priority": "medium",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 23
+    },
+    {
+      "company_id": "microsoft",
+      "priority": "bonus",
+      "reason": "clean implementation, readability, arrays, strings, trees",
+      "recommended_order": 30
+    },
+    {
+      "company_id": "google",
+      "priority": "bonus",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 32
+    },
+    {
+      "company_id": "amazon",
+      "priority": "bonus",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 34
+    }
+  ]
 }

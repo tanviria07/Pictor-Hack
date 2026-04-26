@@ -67,5 +67,16 @@
     "level_4": "How can you calculate the amount of water at each step?"
   },
   "canonical_solution_summary": "How can you calculate the amount of water at each step?",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "company_track_tags": [
+    {
+      "company_id": "microsoft",
+      "priority": "core",
+      "reason": "clean implementation, readability, arrays, strings, trees",
+      "recommended_order": 8
+    }
+  ],
+  "company_tags": [
+    "Microsoft"
+  ]
 }

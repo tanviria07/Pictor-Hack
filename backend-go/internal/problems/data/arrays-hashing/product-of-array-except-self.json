@@ -74,7 +74,12 @@
     "level_3": "Can you minimize additional space usage by reusing memory or modifying the input array to store intermediate results?",
     "level_4": "Can you minimize additional space usage by reusing memory or modifying the input array to store intermediate results?"
   },
-  "company_tags": ["Microsoft", "Google"],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Microsoft",
+    "OpenAI"
+  ],
   "canonical_solution_summary": "Can you minimize additional space usage by reusing memory or modifying the input array to store intermediate results?",
   "disallowed_full_solution_exposure": true,
   "solution_sentences": [
@@ -105,5 +110,31 @@
     "Update the right product by multiplying with the current element from the input.",
     "Return the final result list."
   ],
-  "final_explanation": "The solution uses two passes over the array: first, compute the product of all elements to the left of each index and store it in the result; second, compute the product of all elements to the right and multiply it with the stored left product. This avoids division and runs in O(n) time with O(1) extra space (excluding the output list)."
+  "final_explanation": "The solution uses two passes over the array: first, compute the product of all elements to the left of each index and store it in the result; second, compute the product of all elements to the right and multiply it with the stored left product. This avoids division and runs in O(n) time with O(1) extra space (excluding the output list).",
+  "company_track_tags": [
+    {
+      "company_id": "google",
+      "priority": "core",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 4
+    },
+    {
+      "company_id": "amazon",
+      "priority": "core",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 5
+    },
+    {
+      "company_id": "microsoft",
+      "priority": "core",
+      "reason": "clean implementation, readability, arrays, strings, trees",
+      "recommended_order": 5
+    },
+    {
+      "company_id": "openai",
+      "priority": "core",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 5
+    }
+  ]
 }

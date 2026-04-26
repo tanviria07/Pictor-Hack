@@ -95,7 +95,12 @@
     "level_3": "Use the constraints and examples to narrow the intended time complexity.",
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
-  "company_tags": ["Google", "Amazon"],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Microsoft",
+    "OpenAI"
+  ],
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
   "disallowed_full_solution_exposure": true,
   "solution_sentences": [
@@ -118,5 +123,31 @@
     "Add the current string to the list associated with its sorted key in the dictionary.",
     "Finally, return all the values from the dictionary as a list of lists, which groups the anagrams together."
   ],
-  "final_explanation": "The solution groups anagrams by using a dictionary where the key is the sorted version of each string, since anagrams become identical when sorted. As we iterate through the list, we add each string to the list corresponding to its sorted key, ensuring all anagrams are collected together. Finally, we return the dictionary's values as a list of lists, which gives the grouped anagrams in any order."
+  "final_explanation": "The solution groups anagrams by using a dictionary where the key is the sorted version of each string, since anagrams become identical when sorted. As we iterate through the list, we add each string to the list corresponding to its sorted key, ensuring all anagrams are collected together. Finally, we return the dictionary's values as a list of lists, which gives the grouped anagrams in any order.",
+  "company_track_tags": [
+    {
+      "company_id": "google",
+      "priority": "core",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 2
+    },
+    {
+      "company_id": "openai",
+      "priority": "core",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 2
+    },
+    {
+      "company_id": "amazon",
+      "priority": "core",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 3
+    },
+    {
+      "company_id": "microsoft",
+      "priority": "core",
+      "reason": "clean implementation, readability, arrays, strings, trees",
+      "recommended_order": 3
+    }
+  ]
 }

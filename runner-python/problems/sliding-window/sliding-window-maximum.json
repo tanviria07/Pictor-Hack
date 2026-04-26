@@ -80,5 +80,16 @@
     "level_4": "Remove redundant elements and the queue should store only elements that need to be considered."
   },
   "canonical_solution_summary": "Remove redundant elements and the queue should store only elements that need to be considered.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "company_track_tags": [
+    {
+      "company_id": "amazon",
+      "priority": "high",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 12
+    }
+  ],
+  "company_tags": [
+    "Amazon"
+  ]
 }

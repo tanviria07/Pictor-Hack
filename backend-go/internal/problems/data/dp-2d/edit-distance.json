@@ -93,5 +93,23 @@
     "After filling the table, return the value at the bottom-right corner, which represents the full strings.",
     ""
   ],
-  "final_explanation": "This solution uses dynamic programming to build a table where dp[i][j] stores the minimum edit distance between the first i characters of word1 and first j characters of word2. Base cases handle empty strings, and recurrence compares characters: if they match, no extra cost; otherwise, take the minimum cost of insert, delete, or replace plus one. The final answer is at dp[m][n], efficiently computed in O(m*n) time."
+  "final_explanation": "This solution uses dynamic programming to build a table where dp[i][j] stores the minimum edit distance between the first i characters of word1 and first j characters of word2. Base cases handle empty strings, and recurrence compares characters: if they match, no extra cost; otherwise, take the minimum cost of insert, delete, or replace plus one. The final answer is at dp[m][n], efficiently computed in O(m*n) time.",
+  "company_track_tags": [
+    {
+      "company_id": "openai",
+      "priority": "medium",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 25
+    },
+    {
+      "company_id": "google",
+      "priority": "bonus",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 35
+    }
+  ],
+  "company_tags": [
+    "Google",
+    "OpenAI"
+  ]
 }

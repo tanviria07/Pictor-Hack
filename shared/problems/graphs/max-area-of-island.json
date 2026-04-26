@@ -238,5 +238,16 @@
     "",
     ""
   ],
-  "final_explanation": "The solution uses DFS to explore each island, marking visited cells to avoid double-counting. It iterates through all cells, starting a DFS from each unvisited land cell to compute its area, and keeps track of the maximum area encountered. This ensures all islands are examined efficiently in O(rows * cols) time."
+  "final_explanation": "The solution uses DFS to explore each island, marking visited cells to avoid double-counting. It iterates through all cells, starting a DFS from each unvisited land cell to compute its area, and keeps track of the maximum area encountered. This ensures all islands are examined efficiently in O(rows * cols) time.",
+  "company_track_tags": [
+    {
+      "company_id": "amazon",
+      "priority": "medium",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 28
+    }
+  ],
+  "company_tags": [
+    "Amazon"
+  ]
 }

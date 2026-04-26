@@ -111,7 +111,12 @@
     "level_3": "Use the constraints and examples to narrow the intended time complexity.",
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
-  "company_tags": ["Amazon", "Google"],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Microsoft",
+    "OpenAI"
+  ],
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
   "disallowed_full_solution_exposure": true,
   "solution_sentences": [
@@ -158,5 +163,31 @@
     "Recursively explore the cell to the left.",
     ""
   ],
-  "final_explanation": "The solution uses a depth-first search (DFS) approach to count islands. It iterates through each cell in the grid, and whenever it finds land ('1'), it increments the island count and uses DFS to mark all adjacent land cells as visited by setting them to '0'. This ensures each island is counted only once, and the algorithm efficiently explores the grid in-place without extra space for visited tracking."
+  "final_explanation": "The solution uses a depth-first search (DFS) approach to count islands. It iterates through each cell in the grid, and whenever it finds land ('1'), it increments the island count and uses DFS to mark all adjacent land cells as visited by setting them to '0'. This ensures each island is counted only once, and the algorithm efficiently explores the grid in-place without extra space for visited tracking.",
+  "company_track_tags": [
+    {
+      "company_id": "openai",
+      "priority": "high",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 15
+    },
+    {
+      "company_id": "google",
+      "priority": "high",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 17
+    },
+    {
+      "company_id": "amazon",
+      "priority": "medium",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 27
+    },
+    {
+      "company_id": "microsoft",
+      "priority": "bonus",
+      "reason": "clean implementation, readability, arrays, strings, trees",
+      "recommended_order": 29
+    }
+  ]
 }

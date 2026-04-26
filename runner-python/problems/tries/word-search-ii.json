@@ -108,5 +108,23 @@
     "level_4": "If the current candidate does not exist in all words' prefix, you could stop backtracking immediately. What kind of data structure could answer such query efficiently? Does a hash table work? Why or why not? How about a Trie? If you would like to learn how to implement a basic trie, please work on this problem: Implement Trie (Prefix Tree) first."
   },
   "canonical_solution_summary": "If the current candidate does not exist in all words' prefix, you could stop backtracking immediately. What kind of data structure could answer such query efficiently? Does a hash table work? Why or why not? How about a Trie? If you would like to learn how to implement a basic trie, please work on this problem: Implement Trie (Prefix Tree) first.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "company_track_tags": [
+    {
+      "company_id": "openai",
+      "priority": "medium",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 21
+    },
+    {
+      "company_id": "google",
+      "priority": "bonus",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 30
+    }
+  ],
+  "company_tags": [
+    "Google",
+    "OpenAI"
+  ]
 }

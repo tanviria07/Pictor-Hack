@@ -79,7 +79,18 @@
     "level_3": "Use the constraints and examples to narrow the intended time complexity.",
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
-  "company_tags": ["Amazon", "Microsoft"],
+  "company_tags": [
+    "Amazon",
+    "Microsoft"
+  ],
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "company_track_tags": [
+    {
+      "company_id": "microsoft",
+      "priority": "high",
+      "reason": "clean implementation, readability, arrays, strings, trees",
+      "recommended_order": 15
+    }
+  ]
 }

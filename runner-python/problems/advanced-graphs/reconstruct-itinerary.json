@@ -141,5 +141,16 @@
     "Start the DFS from the fixed starting airport \"JFK\".",
     "Reverse the itinerary list to get the correct order and return it."
   ],
-  "final_explanation": "This solution models the flights as a directed graph where each airport points to a list of destinations. By sorting destinations in reverse order and using a depth-first search that processes flights in lexical order, we ensure the itinerary uses all tickets and returns the lexicographically smallest path. The itinerary is built in reverse during the DFS and then reversed at the end to produce the correct sequence starting from JFK."
+  "final_explanation": "This solution models the flights as a directed graph where each airport points to a list of destinations. By sorting destinations in reverse order and using a depth-first search that processes flights in lexical order, we ensure the itinerary uses all tickets and returns the lexicographically smallest path. The itinerary is built in reverse during the DFS and then reversed at the end to produce the correct sequence starting from JFK.",
+  "company_track_tags": [
+    {
+      "company_id": "google",
+      "priority": "medium",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 24
+    }
+  ],
+  "company_tags": [
+    "Google"
+  ]
 }

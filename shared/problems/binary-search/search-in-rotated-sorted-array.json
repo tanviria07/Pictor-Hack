@@ -89,7 +89,11 @@
     "level_3": "Use the constraints and examples to narrow the intended time complexity.",
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
-  "company_tags": ["Microsoft", "Amazon"],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "Microsoft"
+  ],
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
   "disallowed_full_solution_exposure": true,
   "solution_sentences": [
@@ -130,5 +134,13 @@
     "Move the right pointer to just before the middle to narrow the search leftwards.",
     "If the loop finishes without finding the target, return -1 to indicate it's not in the array."
   ],
-  "final_explanation": "This solution uses a modified binary search to handle the rotated sorted array. By checking which half is sorted at each step, we can determine if the target lies in that sorted half and adjust the search bounds accordingly, maintaining O(log n) time complexity. This approach efficiently navigates the rotation without needing to find the pivot explicitly."
+  "final_explanation": "This solution uses a modified binary search to handle the rotated sorted array. By checking which half is sorted at each step, we can determine if the target lies in that sorted half and adjust the search bounds accordingly, maintaining O(log n) time complexity. This approach efficiently navigates the rotation without needing to find the pivot explicitly.",
+  "company_track_tags": [
+    {
+      "company_id": "google",
+      "priority": "high",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 12
+    }
+  ]
 }

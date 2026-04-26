@@ -85,7 +85,11 @@
     "level_3": "Use the constraints and examples to narrow the intended time complexity.",
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
-  "company_tags": ["Google", "OpenAI"],
+  "company_tags": [
+    "Amazon",
+    "Google",
+    "OpenAI"
+  ],
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
   "disallowed_full_solution_exposure": true,
   "solution_sentences": [
@@ -114,5 +118,25 @@
     "Return whether the entire string can be segmented by checking the last element of dp.",
     ""
   ],
-  "final_explanation": "This solution uses dynamic programming to build up whether prefixes of the string can be segmented. It checks each possible substring ending at index i, and if a previous prefix up to j is segmentable and the substring from j to i is in the dictionary, it marks the prefix up to i as segmentable. The final answer is determined by whether the full string (prefix up to length n) is segmentable."
+  "final_explanation": "This solution uses dynamic programming to build up whether prefixes of the string can be segmented. It checks each possible substring ending at index i, and if a previous prefix up to j is segmentable and the substring from j to i is in the dictionary, it marks the prefix up to i as segmentable. The final answer is determined by whether the full string (prefix up to length n) is segmentable.",
+  "company_track_tags": [
+    {
+      "company_id": "openai",
+      "priority": "medium",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 24
+    },
+    {
+      "company_id": "amazon",
+      "priority": "bonus",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 33
+    },
+    {
+      "company_id": "google",
+      "priority": "bonus",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 33
+    }
+  ]
 }

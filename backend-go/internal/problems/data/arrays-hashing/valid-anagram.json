@@ -85,5 +85,23 @@
     "Increment the count for this character in the t dictionary similarly.",
     "After the loop, compare the two dictionaries; if they're equal, the strings are anagrams."
   ],
-  "final_explanation": "This solution checks if two strings are anagrams by first ensuring they have the same length, then counting the frequency of each character in both strings using dictionaries. After building the counts, it compares the dictionaries; if they match, every character appears the same number of times in both strings, confirming they are anagrams."
+  "final_explanation": "This solution checks if two strings are anagrams by first ensuring they have the same length, then counting the frequency of each character in both strings using dictionaries. After building the counts, it compares the dictionaries; if they match, every character appears the same number of times in both strings, confirming they are anagrams.",
+  "company_track_tags": [
+    {
+      "company_id": "microsoft",
+      "priority": "core",
+      "reason": "clean implementation, readability, arrays, strings, trees",
+      "recommended_order": 2
+    },
+    {
+      "company_id": "google",
+      "priority": "core",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 6
+    }
+  ],
+  "company_tags": [
+    "Google",
+    "Microsoft"
+  ]
 }

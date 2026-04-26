@@ -116,5 +116,23 @@
     "After the loop, left (or right) is the minimum speed, so return it.",
     ""
   ],
-  "final_explanation": "This solution uses binary search to efficiently find the minimum eating speed. We test speeds from 1 to the maximum pile size, calculating the total hours needed for each speed by summing the ceiling division of each pile by the speed. By narrowing the search range based on whether the total hours exceed h, we converge to the smallest speed that allows Koko to finish in time."
+  "final_explanation": "This solution uses binary search to efficiently find the minimum eating speed. We test speeds from 1 to the maximum pile size, calculating the total hours needed for each speed by summing the ceiling division of each pile by the speed. By narrowing the search range based on whether the total hours exceed h, we converge to the smallest speed that allows Koko to finish in time.",
+  "company_track_tags": [
+    {
+      "company_id": "google",
+      "priority": "high",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 13
+    },
+    {
+      "company_id": "amazon",
+      "priority": "high",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 17
+    }
+  ],
+  "company_tags": [
+    "Amazon",
+    "Google"
+  ]
 }

@@ -130,5 +130,23 @@
     "",
     ""
   ],
-  "final_explanation": "The solution uses a length-prefix encoding scheme where each string is prefixed with its length and a delimiter (like '#') to separate it from the actual content. This ensures that during decoding, you can accurately parse each string by reading the length first, then extracting exactly that many characters, avoiding ambiguity even if strings contain special characters. This approach efficiently handles empty lists and strings while maintaining the original order."
+  "final_explanation": "The solution uses a length-prefix encoding scheme where each string is prefixed with its length and a delimiter (like '#') to separate it from the actual content. This ensures that during decoding, you can accurately parse each string by reading the length first, then extracting exactly that many characters, avoiding ambiguity even if strings contain special characters. This approach efficiently handles empty lists and strings while maintaining the original order.",
+  "company_track_tags": [
+    {
+      "company_id": "microsoft",
+      "priority": "core",
+      "reason": "clean implementation, readability, arrays, strings, trees",
+      "recommended_order": 4
+    },
+    {
+      "company_id": "openai",
+      "priority": "core",
+      "reason": "Python reasoning, robustness, correctness, evaluation mindset",
+      "recommended_order": 4
+    }
+  ],
+  "company_tags": [
+    "Microsoft",
+    "OpenAI"
+  ]
 }

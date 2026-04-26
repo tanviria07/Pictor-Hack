@@ -152,5 +152,16 @@
     "Return this maximum time if it's finite (meaning all nodes are reachable), otherwise return -1.",
     ""
   ],
-  "final_explanation": "This solution uses Dijkstra's algorithm to compute the shortest path times from node k to all other nodes in a weighted directed graph. By maintaining a min-heap to always process the node with the smallest known time first, it efficiently finds the minimum times. The result is the maximum of these shortest times, representing the time for the signal to reach all nodes, or -1 if some nodes are unreachable."
+  "final_explanation": "This solution uses Dijkstra's algorithm to compute the shortest path times from node k to all other nodes in a weighted directed graph. By maintaining a min-heap to always process the node with the smallest known time first, it efficiently finds the minimum times. The result is the maximum of these shortest times, representing the time for the signal to reach all nodes, or -1 if some nodes are unreachable.",
+  "company_track_tags": [
+    {
+      "company_id": "amazon",
+      "priority": "bonus",
+      "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+      "recommended_order": 32
+    }
+  ],
+  "company_tags": [
+    "Amazon"
+  ]
 }

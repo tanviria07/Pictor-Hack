@@ -7,6 +7,20 @@ const problemSummary = {
     category_title: "Arrays & Hashing",
     function_name: "twoSum",
     company_tags: ["Google", "Amazon"],
+    company_track_tags: [
+        {
+            company_id: "google",
+            priority: "core",
+            reason: "graph, tree, DP, and optimization-heavy reasoning",
+            recommended_order: 1,
+        },
+        {
+            company_id: "amazon",
+            priority: "core",
+            reason: "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
+            recommended_order: 1,
+        },
+    ],
 };
 const problemDetail = {
     ...problemSummary,
@@ -91,6 +105,23 @@ async function mockApis(page) {
             status: 200,
             contentType: "application/json",
             body: JSON.stringify(runResponse),
+        });
+    });
+    await page.route("**/api/hint", async (route) => {
+        if (route.request().method() !== "POST") {
+            await route.continue();
+            return;
+        }
+        await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({
+                feedback: "Use the latest evaluation.",
+                hint: "Track complements in a dictionary.",
+                next_focus: "Return the two saved indices.",
+                hint_level: 1,
+                interviewer_feedback: "Use the latest evaluation. Track complements in a dictionary.",
+            }),
         });
     });
     await page.route("**/api/session/save", async (route) => {
@@ -193,9 +224,15 @@ test.describe("Workspace (mocked API)", () => {
         await expect(page.getByText("Company Practice Tracks")).toBeVisible({
             timeout: 30_000,
         });
-        await page.getByLabel("Company Practice Tracks").selectOption("Google");
+        await page.getByLabel("Company Practice Tracks").selectOption("google");
         await expect(page.getByTestId("problem-item-two-sum")).toBeVisible();
-        await page.getByLabel("Company Practice Tracks").selectOption("Microsoft");
+        await expect(page.getByTestId("problem-item-two-sum")).toContainText("CORE");
+        await page.getByTestId("problem-item-two-sum").click();
+        await page.getByTestId("run-code-button").click();
+        await expect(page.getByTestId("evaluation-banner")).toContainText("All tests passed");
+        await page.getByRole("button", { name: "Get Hint" }).click();
+        await expect(page.getByText("Track complements in a dictionary.")).toBeVisible();
+        await page.getByLabel("Company Practice Tracks").selectOption("microsoft");
         await expect(page.getByText("No problems found for this company/filter yet.")).toBeVisible();
     });
 });

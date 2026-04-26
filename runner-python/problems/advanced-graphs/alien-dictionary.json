@@ -125,5 +125,16 @@
     "",
     ""
   ],
-  "final_explanation": "This solution uses topological sorting on a directed graph where edges represent ordering constraints between letters derived from comparing adjacent words. It builds the graph by finding the first differing character in each word pair, handles invalid cases like prefixes, and performs BFS (Kahn's algorithm) to produce a valid order. If a cycle is detected or an invalid prefix case occurs, it returns an empty string."
+  "final_explanation": "This solution uses topological sorting on a directed graph where edges represent ordering constraints between letters derived from comparing adjacent words. It builds the graph by finding the first differing character in each word pair, handles invalid cases like prefixes, and performs BFS (Kahn's algorithm) to produce a valid order. If a cycle is detected or an invalid prefix case occurs, it returns an empty string.",
+  "company_track_tags": [
+    {
+      "company_id": "google",
+      "priority": "medium",
+      "reason": "graph, tree, DP, and optimization-heavy reasoning",
+      "recommended_order": 23
+    }
+  ],
+  "company_tags": [
+    "Google"
+  ]
 }
