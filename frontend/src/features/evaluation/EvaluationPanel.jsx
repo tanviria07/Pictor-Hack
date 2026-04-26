@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { friendlyEvaluationBanner } from "../lib/runFeedback";
-import { HintContent } from "./HintContent";
+import { friendlyEvaluationBanner } from "../../lib/runFeedback";
+import { HintContent } from "../hints/HintContent";
 function statusPresentation(run) {
     const ev = run.evaluation;
     const total = ev.total_visible_tests + ev.total_hidden_tests;

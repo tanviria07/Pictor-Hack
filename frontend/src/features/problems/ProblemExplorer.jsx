@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { filterCategoriesByTrack, filterProblemsByTrack, } from "../lib/tracks";
-import { DifficultyBadge } from "./DifficultyBadge";
-import { PracticeStatusDot } from "./PracticeStatusDot";
+import { filterCategoriesByTrack, filterProblemsByTrack, } from "../../lib/tracks";
+import { DifficultyBadge } from "../../components/DifficultyBadge";
+import { PracticeStatusDot } from "../../components/PracticeStatusDot";
 function matchesSearch(problem, query) {
     if (!query.trim())
         return true;

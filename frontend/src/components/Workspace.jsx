@@ -7,10 +7,10 @@ import { buildStarter } from "../lib/starter";
 import { filterProblemsByTrack } from "../lib/tracks";
 import { ENABLE_VOICE_COACH } from "../lib/config";
 import { VoiceCoach } from "../features/voiceCoach/VoiceCoach";
+import { ProblemExplorer } from "../features/problems/ProblemExplorer";
+import { PythonEditor } from "../features/editor/PythonEditor";
+import { EvaluationPanel } from "../features/evaluation/EvaluationPanel";
 import { DifficultyBadge } from "./DifficultyBadge";
-import { EvaluationPanel } from "./EvaluationPanel";
-import { ProblemExplorer } from "./ProblemExplorer";
-import { PythonEditor } from "./PythonEditor";
 function SectionTitle({ children }) {
     return <h3 className="sec-title">{children}</h3>;
 }
