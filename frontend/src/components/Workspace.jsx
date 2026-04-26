@@ -250,9 +250,8 @@ export function Workspace() {
                 });
                 setInlineHint(hint);
             }
-            catch (e) {
+            catch {
                 // Silently ignore errors for inline hints.
-                console.debug("Inline hint error:", e);
             }
         }, 500);
         return () => {

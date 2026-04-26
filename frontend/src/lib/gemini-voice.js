@@ -1,4 +1,4 @@
-import { SUGGESTIONS_PROMPT, SYSTEM_PROMPT } from "./coach-prompts";
+import { SYSTEM_PROMPT } from "./coach-prompts";
 const DEFAULT_TIMEOUT_MS = 20000;
 function endpoint(model, apiKey) {
     return `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
@@ -155,55 +155,4 @@ function stripCodeFences(text) {
             .trim();
     }
     return trimmed;
-}
-/**
- * Ask Gemini for 3 short follow-up questions the user might want to ask next.
- * Returns an empty array on any failure so the UI can gracefully fall back.
- */
-export async function requestSuggestedQuestions({ apiKey, model, context, signal, timeoutMs = 12000, }) {
-    if (!apiKey)
-        return [];
-    const body = {
-        contents: [
-            {
-                role: "user",
-                parts: [
-                    { text: SUGGESTIONS_PROMPT },
-                    { text: `Snapshot:\n${context}` },
-                ],
-            },
-        ],
-        generationConfig: {
-            temperature: 0.95,
-            maxOutputTokens: 180,
-            topP: 0.95,
-            responseMimeType: "application/json",
-        },
-        safetySettings: SAFETY_SETTINGS,
-    };
-    let data;
-    try {
-        data = await postJSON(endpoint(model, apiKey), body, signal, timeoutMs);
-    }
-    catch {
-        return [];
-    }
-    let raw;
-    try {
-        raw = extractText(data);
-    }
-    catch {
-        return [];
-    }
-    try {
-        const parsed = JSON.parse(stripCodeFences(raw));
-        const qs = Array.isArray(parsed.questions) ? parsed.questions : [];
-        return qs
-            .map((q) => (typeof q === "string" ? q.trim() : ""))
-            .filter((q) => q.length > 0 && q.length <= 80)
-            .slice(0, 3);
-    }
-    catch {
-        return [];
-    }
 }
