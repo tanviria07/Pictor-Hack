@@ -498,10 +498,10 @@ export function Workspace() {
               </div>
 
               <EvaluationPanel detail={detail} run={run} stepwise={stepwise} stepwiseCode={stepwiseCode} inlineHint={inlineHint} hintHistory={hintHistory} onInsertSnippet={insertSnippet}/>
+              <VoiceCoach problemId={problemId} problemDetail={detail} code={code} hints={hintHistory} run={run} stepwise={stepwise}/>
             </div>
           </main>
         </div>
       </div>
-      <VoiceCoach problemDetail={detail} code={code} hints={hintHistory}/>
     </div>);
 }

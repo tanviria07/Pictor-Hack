@@ -7,8 +7,11 @@ export const GEMINI_API_KEY = process.env.VITE_GEMINI_API_KEY ||
 export const GEMINI_MODEL = process.env.VITE_GEMINI_MODEL ||
     process.env.GEMINI_MODEL ||
     "gemini-2.5-flash";
+export const ENABLE_VOICE_COACH = String(process.env.ENABLE_VOICE_COACH ||
+    process.env.VITE_ENABLE_VOICE_COACH ||
+    "false").toLowerCase() === "true";
 if (typeof window !== "undefined" && !GEMINI_API_KEY) {
-    // Non-fatal: the voice coach will simply render nothing.
-    console.warn("[Jose] GEMINI_API_KEY is not set; voice coach is disabled. " +
+    // Non-fatal: the interview coach panel stays visible but disabled.
+    console.warn("[Jose] GEMINI_API_KEY is not set; interview coach is disabled. " +
         "Add VITE_GEMINI_API_KEY to frontend/.env and restart the dev server.");
 }

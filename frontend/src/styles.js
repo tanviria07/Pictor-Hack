@@ -777,7 +777,7 @@ textarea:focus-visible {
   flex: 1;
   min-height: 0;
   overflow: hidden;
-  grid-template-rows: minmax(320px, 1fr) minmax(200px, 36%);
+  grid-template-rows: minmax(260px, 1fr) minmax(180px, 30%) auto;
 }
 
 .code-panel {
@@ -877,6 +877,223 @@ textarea:focus-visible {
   font-size: 0.75rem;
   line-height: 1.5;
   color: var(--text-muted);
+}
+
+/* --- Interview coach panel --- */
+.coach-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 13.5rem;
+  max-height: 19rem;
+  overflow: hidden;
+  border-top: 1px solid var(--border-hairline);
+  background: rgba(20, 20, 22, 0.96);
+}
+
+.coach-panel--collapsed {
+  min-height: 0;
+  max-height: none;
+}
+
+.coach-panel-head {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
+  border-bottom: 1px solid var(--border-hairline);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.coach-panel-title-wrap {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.coach-panel-title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--text-primary);
+}
+
+.coach-panel-sub {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+.coach-panel-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.coach-icon-btn {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border-hairline);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.coach-icon-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.coach-icon-btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.coach-icon-btn--hot {
+  border-color: rgba(255, 69, 58, 0.55);
+  background: rgba(255, 69, 58, 0.16);
+  color: #ff9b90;
+}
+
+.coach-icon-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.coach-quick-actions {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem 0;
+}
+
+.coach-chip {
+  border: 1px solid var(--border-hairline);
+  border-radius: 999px;
+  background: var(--surface-panel-inner);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.375rem 0.75rem;
+}
+
+.coach-chip:hover:not(:disabled) {
+  border-color: rgba(10, 132, 255, 0.45);
+  background: rgba(10, 132, 255, 0.14);
+}
+
+.coach-chip:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.coach-thread {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  overflow-y: auto;
+  padding: 0.75rem 1rem;
+  overscroll-behavior: contain;
+}
+
+.coach-note,
+.coach-error {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.coach-note {
+  color: var(--text-muted);
+}
+
+.coach-error {
+  padding: 0.5rem 0.625rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 69, 58, 0.35);
+  background: rgba(255, 69, 58, 0.08);
+  color: #ff9b90;
+}
+
+.coach-turn {
+  max-width: 82%;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.coach-turn--user {
+  align-self: flex-end;
+  background: rgba(10, 132, 255, 0.12);
+  border-color: rgba(10, 132, 255, 0.28);
+}
+
+.coach-turn--coach {
+  align-self: flex-start;
+}
+
+.coach-turn-label {
+  display: block;
+  margin-bottom: 0.1875rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.coach-turn p {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+}
+
+.coach-compose {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 1rem 0.875rem;
+}
+
+.coach-compose input {
+  min-width: 0;
+  flex: 1;
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  background: var(--surface-panel-inner);
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.coach-compose button {
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 0.5rem 0.875rem;
+}
+
+.coach-compose button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
 }
 
 /* ---- Idle / empty state ---- */
