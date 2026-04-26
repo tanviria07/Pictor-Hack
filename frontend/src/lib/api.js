@@ -1,0 +1,134 @@
+import { formatApiErrorMessage } from "./errors";
+function withTimeout(signal, ms) {
+    const t = AbortSignal.timeout(ms);
+    return signal ? AbortSignal.any([t, signal]) : t;
+}
+const base = () => {
+    const raw = process.env.API_BASE;
+    const env = typeof raw === "string" ? raw.replace(/\/$/, "") : "";
+    if (env)
+        return env;
+    return "";
+};
+async function j(path, init) {
+    const url = `${base()}${path.startsWith("/") ? path : `/${path}`}`;
+    const hasBody = init?.body != null && init.body !== "";
+    const headers = new Headers(init?.headers);
+    if (hasBody && !headers.has("Content-Type")) {
+        headers.set("Content-Type", "application/json");
+    }
+    const r = await fetch(url, {
+        ...init,
+        signal: withTimeout(init?.signal, 25_000),
+        headers,
+    });
+    if (!r.ok) {
+        const t = await r.text();
+        throw new Error(formatApiErrorMessage(t || r.statusText, r.status));
+    }
+    return r.json();
+}
+export async function listCategories() {
+    return j("/api/categories");
+}
+export async function listProblems(filters) {
+    const q = new URLSearchParams();
+    if (filters?.category)
+        q.set("category", filters.category);
+    if (filters?.difficulty)
+        q.set("difficulty", filters.difficulty);
+    const qs = q.toString();
+    return j(`/api/problems${qs ? `?${qs}` : ""}`);
+}
+export async function getProblem(id) {
+    return j(`/api/problems/${encodeURIComponent(id)}`);
+}
+function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+/** Async path: Redis queue + worker (Docker / scaled deploy). */
+async function runCodeViaQueue(body) {
+    const url = `${base()}/api/run/jobs`;
+    const submit = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        signal: withTimeout(undefined, 15_000),
+    });
+    if (submit.status === 503 || submit.status === 404) {
+        throw new Error("__ASYNC_RUN_UNAVAILABLE__");
+    }
+    if (!submit.ok) {
+        const t = await submit.text();
+        throw new Error(formatApiErrorMessage(t || submit.statusText, submit.status));
+    }
+    const created = (await submit.json());
+    const jobId = created.job_id;
+    if (!jobId) {
+        throw new Error("Invalid async run response: missing job_id");
+    }
+    const maxPolls = 360;
+    for (let i = 0; i < maxPolls; i++) {
+        await sleep(500);
+        const pollUrl = `${base()}/api/run/jobs/${encodeURIComponent(jobId)}`;
+        const pr = await fetch(pollUrl, {
+            signal: withTimeout(undefined, 15_000),
+        });
+        if (!pr.ok) {
+            const t = await pr.text();
+            throw new Error(formatApiErrorMessage(t || pr.statusText, pr.status));
+        }
+        const data = (await pr.json());
+        if (data.status === "failed") {
+            throw new Error(data.error || "Run failed");
+        }
+        if (data.status === "completed" && data.result) {
+            return data.result;
+        }
+    }
+    throw new Error("Run timed out waiting for the worker");
+}
+export async function runCode(body) {
+    const useAsync = process.env.ASYNC_RUN === "1";
+    if (useAsync) {
+        try {
+            return await runCodeViaQueue(body);
+        }
+        catch (e) {
+            const msg = e instanceof Error ? e.message : String(e);
+            if (msg === "__ASYNC_RUN_UNAVAILABLE__") {
+                return j("/api/run", { method: "POST", body: JSON.stringify(body) });
+            }
+            throw e;
+        }
+    }
+    return j("/api/run", { method: "POST", body: JSON.stringify(body) });
+}
+export async function validateStepwise(body) {
+    return j("/api/validate", { method: "POST", body: JSON.stringify(body) });
+}
+export async function getHint(body) {
+    return j("/api/hint", { method: "POST", body: JSON.stringify(body) });
+}
+export async function getInlineHint(body) {
+    return j("/api/inline-hint", { method: "POST", body: JSON.stringify(body) });
+}
+export async function saveSession(body) {
+    return j("/api/session/save", { method: "POST", body: JSON.stringify(body) });
+}
+/** Session load is optional; failures must not block the editor. */
+export async function loadSession(problemId) {
+    try {
+        const url = `${base()}/api/session/${encodeURIComponent(problemId)}`;
+        const r = await fetch(url, { signal: withTimeout(undefined, 25_000) });
+        if (r.status === 404)
+            return null;
+        if (!r.ok) {
+            return null;
+        }
+        return r.json();
+    }
+    catch {
+        return null;
+    }
+}

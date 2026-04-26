@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "parcel index.html --port 3000",
-    "build": "tsc --noEmit && parcel build index.html --dist-dir dist",
-    "lint": "eslint . --ext ts,tsx --max-warnings 0",
+    "build": "parcel build index.html --dist-dir dist",
+    "lint": "eslint . --ext js,jsx --max-warnings 0",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },
@@ -17,14 +17,9 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.49.1",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
-    "@typescript-eslint/eslint-plugin": "^8.18.0",
-    "@typescript-eslint/parser": "^8.18.0",
     "eslint": "^8.57.1",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.16",
-    "parcel": "^2.14.4",
-    "typescript": "^5.6.3"
+    "parcel": "^2.14.4"
   }
 }
