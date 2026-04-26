@@ -1,4 +1,7 @@
-/* Kitkode — React + plain CSS (no Tailwind)
+const style = document.createElement("style");
+style.dataset.kitkode = "styles";
+style.textContent = String.raw`
+/* Kitkode UI rules
    Visual language: Apple-style dark mode — layered grays, soft depth, calm motion. */
 
 :root {
@@ -2485,3 +2488,6 @@ textarea:focus-visible {
   background: rgba(255, 255, 255, 0.22);
   background-clip: padding-box;
 }
+
+`;
+document.head.appendChild(style);

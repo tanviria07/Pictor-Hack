@@ -6,10 +6,10 @@ Local MVP for **Python interview practice**: you write every line of solution co
 
 | Piece | Role |
 |--------|------|
-| `frontend/` | React + plain CSS (Parcel dev/build; see below) |
+| `frontend/` | React JavaScript app (Parcel dev/build; see below) |
 | `backend-go/` | Problems API, SQLite sessions, orchestration, DeepSeek (server-side only) |
 | `runner-python/` | Syntax/safety checks, tests, structured evaluation |
-| `shared/` | Contracts (`shared/contracts/api.ts`) + problem JSON (`shared/problems/{category}/{id}.json`) |
+| `shared/` | Contracts (`shared/contracts/api.js`) + problem JSON (`shared/problems/{category}/{id}.json`) |
 | `scripts/` | Utilities (e.g. PreCode 100 generator, problem JSON encoding scan) |
 
 ## Curricula
