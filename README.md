@@ -6,7 +6,7 @@ Local MVP for **Python interview practice**: you write every line of solution co
 
 | Piece | Role |
 |--------|------|
-| `frontend/` | React + TypeScript + plain CSS (Parcel dev/build; see below) |
+| `frontend/` | React + plain CSS (Parcel dev/build; see below) |
 | `backend-go/` | Problems API, SQLite sessions, orchestration, DeepSeek (server-side only) |
 | `runner-python/` | Syntax/safety checks, tests, structured evaluation |
 | `shared/` | Contracts (`shared/contracts/api.ts`) + problem JSON (`shared/problems/{category}/{id}.json`) |
@@ -89,9 +89,8 @@ Open [http://localhost:3000](http://localhost:3000) (or `http://127.0.0.1:3000`)
 
 **Frontend details**
 
-- **Bundler:** [Parcel](https://parceljs.org/) compiles TypeScript/JSX and serves the dev server (`npm run dev`). Production output is static files under `frontend/dist/` from `npm run build`.
-- **Env (optional):** Copy `frontend/.env.example` → `frontend/.env`. `API_BASE` points the browser at a full API URL when not using same-origin `/api`. `ASYNC_RUN=1` makes the client prefer the async run queue when your API exposes it (baked in at **build** time for Docker).
-- **Docker UI:** `frontend/Dockerfile` runs **nginx** with `frontend/nginx.conf`, proxying `/api` to the `backend` service in `docker-compose.yml`.
+- **Bundler:** [Parcel](https://parceljs.org/) compiles JSX and serves the dev server (`npm run dev`). Production output is static files under `frontend/dist/` from `npm run build`.
+- **Env (optional):** Copy `frontend/.env.example` → `frontend/.env`. `API_BASE` points the browser at a full API URL when not using same-origin `/api`.
 - **E2E:** From `frontend/`, `npm run test:e2e` runs Playwright against the workspace (starts dev server if needed).
 
 ## One-shot local startup
@@ -134,7 +133,7 @@ Optional in-browser voice agent that coaches you while you solve problems.
 
 ## Safety note
 
-The Python runner uses AST checks, restricted builtins, and subprocess timeouts. **Production** would need OS-level sandboxing (containers, seccomp, cgroup limits, no network); see comments in `runner-python/app/safety.py` and `runner-python/app/main.py`.
+The Python runner uses AST checks, restricted builtins, and subprocess timeouts. It is intended for local development, not hostile multi-tenant execution.
 
 ## API (Go)
 
@@ -145,8 +144,6 @@ The Python runner uses AST checks, restricted builtins, and subprocess timeouts.
 - `POST /api/hint` - `{ "problem_id", "code", "evaluation" }` (evaluation from last run)
 - `POST /api/session/save` - `{ "problem_id", "code", "hint_history", "practice_status"?: "not_started"|"in_progress"|"solved" }`
 - `GET /api/session/:problem_id`
-
-Optional (when `REDIS_URL` is set on the API): `POST /api/run/jobs`, `GET /api/run/jobs/{job_id}` for async evaluation via a Redis worker (`runner-python` worker process).
 
 ## Categories & UI
 

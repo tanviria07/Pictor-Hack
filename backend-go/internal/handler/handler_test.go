@@ -47,7 +47,6 @@ func newTestHandler(t *testing.T, runnerHandler http.HandlerFunc) (*handler.Hand
 
 	h := &handler.Handler{
 		Runs:         runs,
-		RunJobs:      nil,
 		Hints:        service.NewHintService(ds, st),
 		Sessions:     st,
 		MaxCodeBytes: 1 << 20,
@@ -273,32 +272,6 @@ func TestHint_notFoundProblem(t *testing.T) {
 	srv.ServeHTTP(rec, req)
 	if rec.Code != http.StatusNotFound {
 		t.Fatalf("status %d %s", rec.Code, rec.Body.String())
-	}
-}
-
-func TestSubmitRunJob_whenDisabled(t *testing.T) {
-	h, cleanup := newTestHandler(t, nil)
-	defer cleanup()
-	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
-	b, _ := json.Marshal(map[string]string{"problem_id": "two-sum", "language": "python", "code": "x"})
-	rec := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodPost, "/api/run/jobs", bytes.NewReader(b))
-	req.Header.Set("Content-Type", "application/json")
-	srv.ServeHTTP(rec, req)
-	// Route not registered when RunJobs nil -> chi 404
-	if rec.Code != http.StatusNotFound {
-		t.Fatalf("expected 404 when async routes omitted, got %d %s", rec.Code, rec.Body.String())
-	}
-}
-
-func TestGetRunJob_routeMissing(t *testing.T) {
-	h, cleanup := newTestHandler(t, nil)
-	defer cleanup()
-	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
-	rec := httptest.NewRecorder()
-	srv.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/api/run/jobs/job-1", nil))
-	if rec.Code != http.StatusNotFound {
-		t.Fatalf("expected 404, got %d", rec.Code)
 	}
 }
 

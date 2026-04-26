@@ -68,6 +68,10 @@ Thumbs.db
 *.db
 backend-go/data/
 .logs/
+*.out.log
+*.err.log
+frontend/.env
+runner-python/.runner-jobs/
 
 # Playwright
 frontend/test-results/

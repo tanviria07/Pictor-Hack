@@ -30,11 +30,9 @@ function tryParseJsonError(raw) {
 function humanizeFromCode(code, message, status) {
     switch (code) {
         case "runner_unavailable":
-            return "The code runner is not reachable. Start runner-python on port 8001 (or the Docker worker stack) and ensure the Go API can reach it.";
-        case "queue_unavailable":
-            return "Async runs are not available. Set REDIS_URL on the API and start the worker, or use sync runs without ASYNC_RUN=1.";
+            return "The code runner is not reachable. Start runner-python on port 8001 and ensure the Go API can reach it.";
         case "service_unavailable":
-            return "A required service is temporarily unavailable. Retry in a moment or check Docker/Redis.";
+            return "A required service is temporarily unavailable. Retry in a moment or check the local backend services.";
         case "database_error":
             return "We could not save or load your session on the server. Your work is still in the editor; try again later.";
         case "hint_unavailable":
@@ -54,7 +52,7 @@ function humanizeFromCode(code, message, status) {
             break;
     }
     if (status === 502 || status === 503) {
-        return "A backend service is down or overloaded. Confirm the API, runner, and Redis (if using async runs) are running.";
+        return "A backend service is down or overloaded. Confirm the API and runner are running.";
     }
     return message;
 }

@@ -1,7 +1,7 @@
 """
 Static checks before executing user code: allowlisted imports only, restricted builtins.
 
-Docker + OS isolation are the primary boundary; this layer blocks obvious abuse in-process.
+This layer blocks obvious abuse in-process, but it is not a complete sandbox boundary.
 """
 
 from __future__ import annotations

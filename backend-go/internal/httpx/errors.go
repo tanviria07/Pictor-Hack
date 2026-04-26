@@ -15,7 +15,6 @@ const (
 	ErrRunnerUnavailable   = "runner_unavailable"
 	ErrInternal            = "internal_error"
 	ErrUnsupportedLanguage = "unsupported_language"
-	ErrQueueUnavailable    = "queue_unavailable"
 	ErrDatabaseError       = "database_error"
 	ErrHintUnavailable     = "hint_unavailable"
 	ErrRateLimited         = "rate_limited"

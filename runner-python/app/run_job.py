@@ -1,7 +1,7 @@
 """
-Entry point executed in a subprocess or Docker container for timeout isolation.
+Entry point executed in a subprocess for timeout isolation.
 
-Reads JSON from stdin, or from the file path in argv[1] (used for read-only bind mounts).
+Reads JSON from stdin, or from the file path in argv[1].
 """
 
 from __future__ import annotations

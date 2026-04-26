@@ -26,10 +26,6 @@ func NewRouter(h *handler.Handler, corsOrigins []string, rateLimitPerMinute int)
 		r.Get("/categories", h.ListCategories)
 		r.Get("/problems", h.ListProblems)
 		r.Get("/problems/{id}", h.GetProblem)
-		if h.RunJobs != nil {
-			r.Post("/run/jobs", h.SubmitRunJob)
-			r.Get("/run/jobs/{job_id}", h.GetRunJob)
-		}
 		r.Post("/run", h.Run)
 		r.Post("/validate", h.Validate)
 		r.Post("/generate-stepwise", h.GenerateStepwise)

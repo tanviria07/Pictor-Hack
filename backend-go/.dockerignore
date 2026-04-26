@@ -1,6 +1,0 @@
-bin
-data
-*.db
-.env
-.git
-*.md

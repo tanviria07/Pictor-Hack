@@ -1,4 +1,4 @@
-"""Synchronous code evaluation (shared by FastAPI and Redis worker)."""
+"""Local code evaluation used by the FastAPI runner."""
 
 from __future__ import annotations
 
@@ -27,18 +27,12 @@ def _problem_test_counts(problem_id: str) -> tuple[int, int]:
 
 def run_user_code(req: RunRequest) -> RunResponse:
     """
-    Evaluate user code for a problem. Used by /evaluate and the async worker.
+    Evaluate user code for a problem.
     """
     if not problem_path(req.problem_id).exists():
         raise FileNotFoundError(f"Unknown problem_id: {req.problem_id}")
     if req.language != "python":
         raise ValueError("Only python is supported in MVP.")
-
-    use_docker = os.environ.get("RUNNER_USE_DOCKER", "0") == "1"
-    if use_docker:
-        from app.docker_runner import run_in_docker
-
-        return run_in_docker(req)
 
     use_sub = os.environ.get("RUNNER_USE_SUBPROCESS", "1") == "1"
     if use_sub:
