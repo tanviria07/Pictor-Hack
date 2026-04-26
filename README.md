@@ -131,15 +131,6 @@ DeepSeek is optional and server-side only. Set `DEEPSEEK_API_KEY` in `backend-go
 
 DeepSeek must not judge correctness. It may only phrase feedback from runner context.
 
-## Voice Coach
-
-The Jose voice coach is disabled by default while it is unstable:
-
-```env
-ENABLE_VOICE_COACH=false
-```
-
-The code is isolated under `frontend/src/features/voiceCoach/`. It should not render unless `ENABLE_VOICE_COACH=true`. Keep normal text hints and inline hints independent from the voice coach.
 
 ## Testing
 
