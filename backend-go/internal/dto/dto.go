@@ -159,6 +159,7 @@ type ProblemSummary struct {
 	TrackTitle    string   `json:"track_title,omitempty"`
 	SkillTags     []string `json:"skill_tags,omitempty"`
 	Tags          []string `json:"tags,omitempty"`
+	CompanyTags   []string `json:"company_tags,omitempty"`
 }
 
 // ProblemDetail is GET /api/problems/:id (no hidden test payloads).
@@ -185,6 +186,7 @@ type ProblemDetail struct {
 	SectionDescription string      `json:"section_description,omitempty"`
 	SkillTags          []string    `json:"skill_tags,omitempty"`
 	Tags               []string    `json:"tags,omitempty"`
+	CompanyTags        []string    `json:"company_tags,omitempty"`
 	StepwiseAvailable  bool        `json:"stepwise_available,omitempty"`
 	StepwiseTotal      int         `json:"stepwise_total,omitempty"`
 }

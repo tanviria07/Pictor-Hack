@@ -76,6 +76,7 @@
     "level_3": "Topological sort could also be done via BFS.",
     "level_4": "Topological sort could also be done via BFS."
   },
+  "company_tags": ["Google", "OpenAI"],
   "canonical_solution_summary": "Topological sort could also be done via BFS.",
   "disallowed_full_solution_exposure": true,
   "solution_sentences": [

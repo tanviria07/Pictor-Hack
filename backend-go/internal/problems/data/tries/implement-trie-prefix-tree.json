@@ -97,6 +97,7 @@
     "level_3": "Use the constraints and examples to narrow the intended time complexity.",
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
+  "company_tags": ["Google", "OpenAI"],
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
   "disallowed_full_solution_exposure": true
 }

@@ -95,6 +95,32 @@ func TestGetProblem_ok(t *testing.T) {
 	}
 }
 
+func TestListProblems_includesCompanyTags(t *testing.T) {
+	h, cleanup := newTestHandler(t, nil)
+	defer cleanup()
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
+	rec := httptest.NewRecorder()
+	srv.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/api/problems", nil))
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status %d %s", rec.Code, rec.Body.String())
+	}
+	var rows []map[string]any
+	if err := json.Unmarshal(rec.Body.Bytes(), &rows); err != nil {
+		t.Fatal(err)
+	}
+	for _, row := range rows {
+		if row["id"] != "two-sum" {
+			continue
+		}
+		tags, ok := row["company_tags"].([]any)
+		if !ok || len(tags) == 0 {
+			t.Fatalf("expected company_tags on two-sum, got %#v", row["company_tags"])
+		}
+		return
+	}
+	t.Fatal("two-sum missing from problem summaries")
+}
+
 func TestRun_invalidProblemIDFormat(t *testing.T) {
 	h, cleanup := newTestHandler(t, func(w http.ResponseWriter, r *http.Request) {
 		t.Fatal("runner should not be called")

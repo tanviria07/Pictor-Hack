@@ -6,6 +6,7 @@ const problemSummary = {
     category: "arrays-hashing",
     category_title: "Arrays & Hashing",
     function_name: "twoSum",
+    company_tags: ["Google", "Amazon"],
 };
 const problemDetail = {
     ...problemSummary,
@@ -185,5 +186,16 @@ test.describe("Workspace (mocked API)", () => {
         await page.getByTestId("problem-item-two-sum").click({ timeout: 30_000 });
         await page.getByTestId("run-code-button").click();
         await expect(page.getByTestId("evaluation-banner")).toContainText("Python could not parse");
+    });
+    test("filters by unofficial company practice track", async ({ page }) => {
+        await mockApis(page);
+        await page.goto("/");
+        await expect(page.getByText("Company Practice Tracks")).toBeVisible({
+            timeout: 30_000,
+        });
+        await page.getByRole("button", { name: /Google/ }).click();
+        await expect(page.getByTestId("problem-item-two-sum")).toBeVisible();
+        await page.getByRole("button", { name: /Microsoft/ }).click();
+        await expect(page.getByText("No problems found for this company/filter yet.")).toBeVisible();
     });
 });

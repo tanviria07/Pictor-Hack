@@ -87,6 +87,7 @@
     "level_3": "Use a queue to perform BFS.",
     "level_4": "Use a queue to perform BFS."
   },
+  "company_tags": ["Google", "Microsoft"],
   "canonical_solution_summary": "Use a queue to perform BFS.",
   "disallowed_full_solution_exposure": true
 }

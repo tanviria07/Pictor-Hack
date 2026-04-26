@@ -64,6 +64,7 @@
     "level_3": "Since maximum string size is at most 26, generate and check all possible substrings with length at most 26.",
     "level_4": "Since maximum string size is at most 26, generate and check all possible substrings with length at most 26."
   },
+  "company_tags": ["Google", "Microsoft", "OpenAI"],
   "canonical_solution_summary": "Since maximum string size is at most 26, generate and check all possible substrings with length at most 26.",
   "disallowed_full_solution_exposure": true
 }

@@ -81,6 +81,7 @@
     "level_3": "When you encounter a closing bracket, check if the top of the stack was the opening for it. If yes, pop it from the stack. Otherwise, return false.",
     "level_4": "When you encounter a closing bracket, check if the top of the stack was the opening for it. If yes, pop it from the stack. Otherwise, return false."
   },
+  "company_tags": ["Amazon", "Microsoft"],
   "canonical_solution_summary": "When you encounter a closing bracket, check if the top of the stack was the opening for it. If yes, pop it from the stack. Otherwise, return false.",
   "disallowed_full_solution_exposure": true
 }

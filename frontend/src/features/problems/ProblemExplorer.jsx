@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { filterCategoriesByTrack, filterProblemsByTrack, } from "../../lib/tracks";
 import { DifficultyBadge } from "../../components/DifficultyBadge";
 import { PracticeStatusDot } from "../../components/PracticeStatusDot";
+import { COMPANY_TRACKS, hasCompanyTag } from "./companyTracks";
 function matchesSearch(problem, query) {
     if (!query.trim())
         return true;
@@ -14,6 +15,11 @@ function matchesDifficulty(problem, difficulty) {
     if (!difficulty)
         return true;
     return problem.difficulty.toLowerCase() === difficulty;
+}
+function matchesCategory(problem, category) {
+    if (!category)
+        return true;
+    return problem.category === category;
 }
 function Chevron({ open }) {
     return (<svg className={`ex-chevron ${open ? "ex-chevron--open" : "ex-chevron--closed"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -65,14 +71,42 @@ function trackSolvedCount(problems, progress, categoryIds) {
     }
     return { solved, total };
 }
+function companySolvedCount(problems, progress, companyName) {
+    let solved = 0;
+    let total = 0;
+    for (const problem of problems) {
+        if (!hasCompanyTag(problem, companyName))
+            continue;
+        total++;
+        if (progress[problem.id] === "solved")
+            solved++;
+    }
+    return { solved, total };
+}
 export function ProblemExplorer({ categories, problems, progress, selectedId, onSelectProblem, loading, trackFilter = "all", }) {
     const [search, setSearch] = useState("");
     const [difficulty, setDifficulty] = useState("");
+    const [category, setCategory] = useState("");
+    const [company, setCompany] = useState("");
     const [expanded, setExpanded] = useState({});
+    const trackProblems = useMemo(() => filterProblemsByTrack(problems, trackFilter), [problems, trackFilter]);
+    const companyBaseProblems = useMemo(() => {
+        if (!company)
+            return trackProblems;
+        return trackProblems.filter((problem) => hasCompanyTag(problem, company));
+    }, [company, trackProblems]);
     const displayCategories = useMemo(() => {
-        return filterCategoriesByTrack(categories, problems, trackFilter);
-    }, [categories, problems, trackFilter]);
-    const trackGroups = useMemo(() => groupCategoriesByTrack(displayCategories, trackFilter), [displayCategories, trackFilter]);
+        return filterCategoriesByTrack(categories, companyBaseProblems, trackFilter);
+    }, [categories, companyBaseProblems, trackFilter]);
+    const categoryOptions = useMemo(() => {
+        const activeCategories = new Set(companyBaseProblems.map((problem) => problem.category));
+        return displayCategories.filter((item) => activeCategories.has(item.id));
+    }, [companyBaseProblems, displayCategories]);
+    useEffect(() => {
+        if (category && !categoryOptions.some((item) => item.id === category)) {
+            setCategory("");
+        }
+    }, [category, categoryOptions]);
     useEffect(() => {
         setExpanded((prev) => {
             const next = { ...prev };
@@ -84,12 +118,18 @@ export function ProblemExplorer({ categories, problems, progress, selectedId, on
         });
     }, [displayCategories]);
     const filteredProblems = useMemo(() => {
-        return filterProblemsByTrack(problems, trackFilter).filter((problem) => matchesSearch(problem, search) &&
-            matchesDifficulty(problem, difficulty));
-    }, [problems, search, difficulty, trackFilter]);
+        return companyBaseProblems.filter((problem) => matchesSearch(problem, search) &&
+            matchesDifficulty(problem, difficulty) &&
+            matchesCategory(problem, category));
+    }, [category, companyBaseProblems, search, difficulty]);
+    const visibleCategories = useMemo(() => {
+        const activeCategories = new Set(filteredProblems.map((problem) => problem.category));
+        return displayCategories.filter((item) => activeCategories.has(item.id));
+    }, [displayCategories, filteredProblems]);
+    const trackGroups = useMemo(() => groupCategoriesByTrack(visibleCategories, trackFilter), [visibleCategories, trackFilter]);
     const problemsByCategory = useMemo(() => {
         const categoryMap = new Map();
-        for (const category of displayCategories)
+        for (const category of visibleCategories)
             categoryMap.set(category.id, []);
         for (const problem of filteredProblems) {
             const items = categoryMap.get(problem.category);
@@ -97,9 +137,29 @@ export function ProblemExplorer({ categories, problems, progress, selectedId, on
                 items.push(problem);
         }
         return categoryMap;
-    }, [displayCategories, filteredProblems]);
+    }, [filteredProblems, visibleCategories]);
     return (<div className="ex">
       <div className="ex-toolbar">
+        <div className="company-track-block">
+          <div className="company-track-head">
+            <span className="company-track-title">Company Practice Tracks</span>
+            <span className="company-track-note">Unofficial curated sets</span>
+          </div>
+          <div className="company-card-grid" role="list" aria-label="Company practice tracks">
+            {COMPANY_TRACKS.map((track) => {
+            const { solved, total } = companySolvedCount(trackProblems, progress, track.name);
+            const active = company === track.name;
+            return (<button key={track.name} type="button" className={`company-card${active ? " company-card--active" : ""}`} onClick={() => setCompany((value) => value === track.name ? "" : track.name)} aria-pressed={active}>
+                  <span className="company-card-name">{track.name}</span>
+                  <span className="company-card-desc">{track.description}</span>
+                  <span className="company-card-count">
+                    {solved}/{total} solved
+                  </span>
+                </button>);
+        })}
+          </div>
+        </div>
+
         <label className="sr-only" htmlFor="problem-search">
           Search problems
         </label>
@@ -115,6 +175,17 @@ export function ProblemExplorer({ categories, problems, progress, selectedId, on
             <option value="hard">Hard</option>
           </select>
         </div>
+        <div className="ex-row">
+          <label className="sr-only" htmlFor="problem-category">
+            Category
+          </label>
+          <select id="problem-category" value={category} onChange={(e) => setCategory(e.target.value)} className="ex-select">
+            <option value="">All categories</option>
+            {categoryOptions.map((item) => (<option key={item.id} value={item.id}>
+                {item.title}
+              </option>))}
+          </select>
+        </div>
       </div>
 
       <div className="ex-scroll">
@@ -125,7 +196,10 @@ export function ProblemExplorer({ categories, problems, progress, selectedId, on
               Start the Go API on port 8080, then refresh this page.
             </p>
           </div>)}
-        {!loading && problems.length > 0 && (<div className="ex-tracks">
+        {!loading && problems.length > 0 && filteredProblems.length === 0 && (<div className="ex-empty">
+            <p>No problems found for this company/filter yet.</p>
+          </div>)}
+        {!loading && problems.length > 0 && filteredProblems.length > 0 && (<div className="ex-tracks">
             {trackGroups.map((group) => {
                 const catIds = group.categories.map((c) => c.id);
                 const { solved, total } = trackSolvedCount(filteredProblems, progress, catIds);

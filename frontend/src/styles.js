@@ -339,6 +339,97 @@ textarea:focus-visible {
   gap: 0.5rem;
 }
 
+.company-track-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.company-track-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.company-track-title {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.company-track-note {
+  font-size: 0.625rem;
+  color: var(--text-muted);
+}
+
+.company-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.company-card {
+  appearance: none;
+  display: flex;
+  min-width: 0;
+  min-height: 5.25rem;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.375rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-hairline);
+  background: rgba(255, 255, 255, 0.035);
+  padding: 0.625rem;
+  color: var(--text-secondary);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--t-fast) var(--ease-snappy),
+    border-color var(--t-fast) var(--ease-snappy),
+    transform var(--t-fast) var(--ease-snappy);
+}
+
+.company-card:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.company-card:active {
+  transform: scale(0.99);
+}
+
+.company-card--active {
+  border-color: rgba(10, 132, 255, 0.55);
+  background: rgba(10, 132, 255, 0.14);
+  color: var(--text-primary);
+}
+
+.company-card-name {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: inherit;
+}
+
+.company-card-desc {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 0.6875rem;
+  line-height: 1.35;
+  color: var(--text-muted);
+}
+
+.company-card-count {
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
 .ex-scroll {
   flex: 1;
   min-height: 0;

@@ -92,6 +92,7 @@
     "level_3": "The second train of thought is, without changing the array, can we use additional space somehow? Like maybe a hash map to speed up the search?",
     "level_4": "The second train of thought is, without changing the array, can we use additional space somehow? Like maybe a hash map to speed up the search?"
   },
+  "company_tags": ["Google", "Amazon", "Microsoft"],
   "canonical_solution_summary": "The second train of thought is, without changing the array, can we use additional space somehow? Like maybe a hash map to speed up the search?",
   "disallowed_full_solution_exposure": true,
   "solution_sentences": [

@@ -74,6 +74,7 @@
     "level_3": "Can you minimize additional space usage by reusing memory or modifying the input array to store intermediate results?",
     "level_4": "Can you minimize additional space usage by reusing memory or modifying the input array to store intermediate results?"
   },
+  "company_tags": ["Microsoft", "Google"],
   "canonical_solution_summary": "Can you minimize additional space usage by reusing memory or modifying the input array to store intermediate results?",
   "disallowed_full_solution_exposure": true,
   "solution_sentences": [

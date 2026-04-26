@@ -65,6 +65,7 @@
  * @property {string} title
  * @property {"easy" | "medium" | "hard"} difficulty
  * @property {string} function_name
+ * @property {string[]=} company_tags Curated, unofficial company practice filters.
  *
  * @typedef {ProblemSummary & {
  *   description: string,

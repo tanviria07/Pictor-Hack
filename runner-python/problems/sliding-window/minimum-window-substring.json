@@ -73,6 +73,7 @@
     "level_3": "Once all the characters are covered, move the left pointer and ensure that all the characters are still covered to minimize the subarray size.",
     "level_4": "Continue expanding the right and left pointers until you reach the end of s."
   },
+  "company_tags": ["Google", "OpenAI"],
   "canonical_solution_summary": "Continue expanding the right and left pointers until you reach the end of s.",
   "disallowed_full_solution_exposure": true
 }
