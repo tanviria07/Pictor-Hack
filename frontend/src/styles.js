@@ -801,8 +801,37 @@ textarea:focus-visible {
   display: grid;
   flex: 1;
   min-height: 0;
-  overflow: hidden;
-  grid-template-rows: minmax(260px, 1fr) minmax(180px, 30%) auto;
+  gap: 1rem;
+  overflow-y: auto;
+  padding: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.workspace-left {
+  display: grid;
+  min-width: 0;
+  min-height: 39rem;
+  gap: 1rem;
+  grid-template-rows: minmax(22rem, 52vh) minmax(16rem, auto);
+}
+
+@media (min-width: 1200px) {
+  .main-grid {
+    overflow: hidden;
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .main-grid--with-coach {
+    grid-template-columns: minmax(0, 2fr) minmax(13rem, 1fr);
+  }
+
+  .workspace-left {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    grid-template-rows: minmax(0, 3fr) minmax(15rem, 2fr);
+  }
 }
 
 .code-panel {
@@ -810,7 +839,8 @@ textarea:focus-visible {
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
-  border-bottom: 1px solid var(--border-hairline);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
   background: var(--surface-code);
   box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
 }
@@ -874,6 +904,8 @@ textarea:focus-visible {
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
   background: rgba(0, 0, 0, 0.15);
 }
 
@@ -909,10 +941,17 @@ textarea:focus-visible {
   display: flex;
   flex-direction: column;
   min-height: 13.5rem;
-  max-height: 19rem;
   overflow: hidden;
-  border-top: 1px solid var(--border-hairline);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
   background: rgba(20, 20, 22, 0.96);
+}
+
+@media (min-width: 1200px) {
+  .coach-panel {
+    height: 100%;
+    min-height: 0;
+  }
 }
 
 .coach-panel--collapsed {

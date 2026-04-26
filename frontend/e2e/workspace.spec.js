@@ -117,7 +117,7 @@ test.describe("Workspace (mocked API)", () => {
         await editor.fill("def twoSum(nums, target):\n    return [0, 1]\n");
         await page.getByTestId("run-code-button").click();
         await expect(page.getByText("Looks good.")).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByText("All tests passed")).toBeVisible();
+        await expect(page.getByTestId("evaluation-banner")).toContainText("All tests passed");
         await expect
             .poll(() => getSaveCount(), { timeout: 10_000 })
             .toBeGreaterThan(0);

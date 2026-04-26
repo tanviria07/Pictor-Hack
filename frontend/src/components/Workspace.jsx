@@ -474,19 +474,20 @@ export function Workspace() {
               </button>
             </div>
 
-            <div className="main-grid">
-              <div className="code-panel">
-                <div className="code-panel-head">
-                  <div className="flex-row-gap-sm">
-                    <span className="code-panel-label">Code</span>
-                    <span className="code-panel-badge" title="Plain text editor (Python)">
-                      Text
-                    </span>
+            <div className={`main-grid${ENABLE_VOICE_COACH ? " main-grid--with-coach" : ""}`}>
+              <div className="workspace-left">
+                <div className="code-panel">
+                  <div className="code-panel-head">
+                    <div className="flex-row-gap-sm">
+                      <span className="code-panel-label">Code</span>
+                      <span className="code-panel-badge" title="Plain text editor (Python)">
+                        Text
+                      </span>
+                    </div>
+                    <span className="code-panel-lang">Python 3</span>
                   </div>
-                  <span className="code-panel-lang">Python 3</span>
-                </div>
-                <div className="code-panel-body">
-                  <PythonEditor ref={editorRef} value={code} onChange={setCode} disabled={loading === "run" || loading === "hint"} onRun={loading === "idle" && problemId
+                  <div className="code-panel-body">
+                    <PythonEditor ref={editorRef} value={code} onChange={setCode} disabled={loading === "run" || loading === "hint"} onRun={loading === "idle" && problemId
             ? () => {
                 void onRun();
             }
@@ -494,10 +495,11 @@ export function Workspace() {
             setCursorLine(ln);
             setCursorColumn(col);
         }}/>
+                  </div>
                 </div>
-              </div>
 
-              <EvaluationPanel detail={detail} run={run} stepwise={stepwise} stepwiseCode={stepwiseCode} inlineHint={inlineHint} hintHistory={hintHistory} onInsertSnippet={insertSnippet}/>
+                <EvaluationPanel detail={detail} run={run} stepwise={stepwise} stepwiseCode={stepwiseCode} inlineHint={inlineHint} hintHistory={hintHistory} onInsertSnippet={insertSnippet}/>
+              </div>
               {ENABLE_VOICE_COACH && (<VoiceCoach problemId={problemId} problemDetail={detail} code={code} hints={hintHistory} run={run} stepwise={stepwise}/>)}
             </div>
           </main>
