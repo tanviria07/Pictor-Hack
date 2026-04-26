@@ -5,11 +5,12 @@ import { formatThrownError } from "../lib/errors";
 import { deriveProgress, loadLocalProgress, mergeProgress, setLocalProgress, } from "../lib/progress";
 import { buildStarter } from "../lib/starter";
 import { filterProblemsByTrack } from "../lib/tracks";
+import { ENABLE_VOICE_COACH } from "../lib/config";
+import { VoiceCoach } from "../features/voiceCoach/VoiceCoach";
 import { DifficultyBadge } from "./DifficultyBadge";
 import { EvaluationPanel } from "./EvaluationPanel";
 import { ProblemExplorer } from "./ProblemExplorer";
 import { PythonEditor } from "./PythonEditor";
-import { VoiceCoach } from "./VoiceCoach";
 function SectionTitle({ children }) {
     return <h3 className="sec-title">{children}</h3>;
 }
@@ -497,7 +498,7 @@ export function Workspace() {
               </div>
 
               <EvaluationPanel detail={detail} run={run} stepwise={stepwise} stepwiseCode={stepwiseCode} inlineHint={inlineHint} hintHistory={hintHistory} onInsertSnippet={insertSnippet}/>
-              <VoiceCoach problemId={problemId} problemDetail={detail} code={code} hints={hintHistory} run={run} stepwise={stepwise}/>
+              {ENABLE_VOICE_COACH && (<VoiceCoach problemId={problemId} problemDetail={detail} code={code} hints={hintHistory} run={run} stepwise={stepwise}/>)}
             </div>
           </main>
         </div>

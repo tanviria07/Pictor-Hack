@@ -1,4 +1,4 @@
-import { SYSTEM_PROMPT } from "./coach-prompts";
+import { SYSTEM_PROMPT } from "./prompts";
 const DEFAULT_TIMEOUT_MS = 20000;
 function endpoint(model, apiKey) {
     return `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;

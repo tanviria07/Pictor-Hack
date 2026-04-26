@@ -2,13 +2,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   requestGeminiCoachReply,
   requestGeminiVoiceTurn,
-} from "../lib/gemini-voice";
+} from "./gemini";
 import {
   ENABLE_VOICE_COACH,
   GEMINI_API_KEY,
   GEMINI_MODEL,
-} from "../lib/config";
-import { buildCoachContext } from "../lib/voice-context";
+} from "../../lib/config";
+import { buildCoachContext } from "./context";
 
 const QUICK_ACTIONS = [
   {
