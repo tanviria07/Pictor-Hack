@@ -52,9 +52,14 @@ func BuildHintPromptContext(problemID string) (HintPromptContext, error) {
 	for _, par := range p.Parameters {
 		params = append(params, par.Name)
 	}
-	sig := "def " + p.FunctionName + "(" + strings.Join(params, ", ") + ") -> " + p.ExpectedReturnType
-	if p.ExecutionMode == "class" {
-		sig = "class " + p.ClassName
+	var sig string
+	if p.ProblemType == "" || p.ProblemType == "coding" {
+		sig = "def " + p.FunctionName + "(" + strings.Join(params, ", ") + ") -> " + p.ExpectedReturnType
+		if p.ExecutionMode == "class" {
+			sig = "class " + p.ClassName
+		}
+	} else {
+		sig = "N/A (" + p.ProblemType + ")"
 	}
 
 	tid, _ := TrackMetaForCategory(p.Category)

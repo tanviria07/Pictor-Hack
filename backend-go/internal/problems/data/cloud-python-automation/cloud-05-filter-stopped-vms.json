@@ -1,0 +1,30 @@
+{
+  "id": "cloud-05-filter-stopped-vms",
+  "slug": "cloud-05-filter-stopped-vms",
+  "title": "Filter stopped VMs from resource dictionaries",
+  "difficulty": "easy",
+  "category": "cloud-python-automation",
+  "problem_type": "coding",
+  "description": "Given resource dictionaries, return the names of virtual machines whose type is vm and state is stopped.",
+  "examples": [{"input": "[{\"name\":\"vm1\",\"type\":\"vm\",\"state\":\"stopped\"}, {\"name\":\"db\",\"type\":\"sql\",\"state\":\"running\"}]", "output": "[\"vm1\"]"}],
+  "constraints": ["Preserve input order.", "Only include resources where type is exactly vm and state is exactly stopped."],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "stopped_vms",
+  "starter_code": "def stopped_vms(resources):\n    pass\n",
+  "parameters": [{"name": "resources", "type": "List[Dict[str,Any]]"}],
+  "expected_return_type": "List[str]",
+  "visible_tests": [
+    {"args": [[{"name": "vm1", "type": "vm", "state": "stopped"}, {"name": "vm2", "type": "vm", "state": "running"}]], "expected": ["vm1"]},
+    {"args": [[{"name": "db", "type": "sql", "state": "stopped"}, {"name": "worker", "type": "vm", "state": "stopped"}]], "expected": ["worker"]}
+  ],
+  "hidden_tests": [
+    {"args": [[]], "expected": []},
+    {"args": [[{"name": "web", "type": "vm", "state": "deallocated"}]], "expected": []}
+  ],
+  "hint_plan": {"level_1": "Filter dictionaries by two keys.", "level_2": "Return names, not the whole resource.", "level_3": "Check type and state exactly.", "level_4": "A list comprehension works well here."},
+  "canonical_solution_summary": "Filter resource dicts for type vm and state stopped, returning names.",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": ["python", "resources", "filtering"],
+  "tags": ["cloud", "automation", "coding"]
+}

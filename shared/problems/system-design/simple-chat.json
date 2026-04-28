@@ -1,0 +1,26 @@
+{
+  "id": "sd-simple-chat",
+  "title": "Design a Simple Chat App",
+  "difficulty": "Medium",
+  "category": "sys-design-backend",
+  "description": "Design a real-time chat application where users can send messages to each other one-on-one. Consider how to handle real-time updates and message history.",
+  "problem_type": "system_design",
+  "execution_mode": "system_design",
+  "tags": ["SYSTEM DESIGN", "BACKEND"],
+  "skill_tags": ["WebSockets", "Real-time Communication", "Storage"],
+  "constraints": [
+    "Low latency message delivery.",
+    "Support offline message delivery (when user comes back online).",
+    "Scale to thousands of concurrent users."
+  ],
+  "rubric": {
+    "categories": [
+      "requirements clarification",
+      "API design",
+      "data model",
+      "scalability",
+      "reliability",
+      "communication clarity"
+    ]
+  }
+}

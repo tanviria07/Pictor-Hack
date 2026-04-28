@@ -1,0 +1,26 @@
+{
+  "id": "sd-code-eval-queue",
+  "title": "Design a Background Job Queue for Code Evaluation",
+  "difficulty": "Medium",
+  "category": "sys-design-reliability",
+  "description": "Design the internal background job system for Kitkode that takes submitted code, assigns it to a worker, and ensures the result is eventually stored and returned to the user.",
+  "problem_type": "system_design",
+  "execution_mode": "system_design",
+  "tags": ["SYSTEM DESIGN", "RELIABILITY", "BACKEND"],
+  "skill_tags": ["Task Queues", "Worker Nodes", "Status Polling"],
+  "constraints": [
+    "No lost jobs (durability).",
+    "Fair scheduling among users.",
+    "Support for job timeouts."
+  ],
+  "rubric": {
+    "categories": [
+      "requirements clarification",
+      "data model",
+      "scalability",
+      "reliability",
+      "observability",
+      "tradeoff explanation"
+    ]
+  }
+}

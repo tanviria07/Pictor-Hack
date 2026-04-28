@@ -1,0 +1,30 @@
+{
+  "id": "cloud-04-unhealthy-api-endpoints",
+  "slug": "cloud-04-unhealthy-api-endpoints",
+  "title": "Find unhealthy API endpoints from health-check responses",
+  "difficulty": "easy",
+  "category": "cloud-python-automation",
+  "problem_type": "coding",
+  "description": "Given health-check response dictionaries, return endpoint names that are not healthy.",
+  "examples": [{"input": "[{\"endpoint\":\"/api\",\"status\":200,\"latency_ms\":120}, {\"endpoint\":\"/db\",\"status\":503,\"latency_ms\":20}]", "output": "[\"/db\"]"}],
+  "constraints": ["Healthy means status is 200 and latency_ms is less than or equal to 500.", "Preserve input order."],
+  "execution_mode": "function",
+  "class_name": "",
+  "function_name": "find_unhealthy_endpoints",
+  "starter_code": "def find_unhealthy_endpoints(responses):\n    pass\n",
+  "parameters": [{"name": "responses", "type": "List[Dict[str,Any]]"}],
+  "expected_return_type": "List[str]",
+  "visible_tests": [
+    {"args": [[{"endpoint": "/api", "status": 200, "latency_ms": 120}, {"endpoint": "/db", "status": 503, "latency_ms": 20}]], "expected": ["/db"]},
+    {"args": [[{"endpoint": "/search", "status": 200, "latency_ms": 650}, {"endpoint": "/login", "status": 200, "latency_ms": 80}]], "expected": ["/search"]}
+  ],
+  "hidden_tests": [
+    {"args": [[]], "expected": []},
+    {"args": [[{"endpoint": "/ok", "status": 200, "latency_ms": 500}]], "expected": []}
+  ],
+  "hint_plan": {"level_1": "Check both status and latency.", "level_2": "Append only endpoint values that fail health criteria.", "level_3": "Use <= 500 for healthy latency.", "level_4": "Do not sort; keep the original order."},
+  "canonical_solution_summary": "Filter responses where status is not 200 or latency exceeds 500 ms.",
+  "disallowed_full_solution_exposure": true,
+  "skill_tags": ["python", "health checks", "filtering"],
+  "tags": ["cloud", "automation", "coding"]
+}

@@ -43,11 +43,13 @@ func newTestHandler(t *testing.T, runnerHandler http.HandlerFunc) (*handler.Hand
 	cfg := config.Config{}
 	rc := runner.New(ts.URL)
 	ds := deepseek.New(cfg)
-	runs := service.NewRunService(rc, ds)
+	tsvc := service.NewTraceService(ds)
+	runs := service.NewRunService(rc, ds, tsvc)
 
 	h := &handler.Handler{
 		Runs:         runs,
 		Hints:        service.NewHintService(ds, st),
+		Traces:       tsvc,
 		Sessions:     st,
 		MaxCodeBytes: 1 << 20,
 	}

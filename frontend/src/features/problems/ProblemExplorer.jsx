@@ -56,9 +56,15 @@ function groupCategoriesByTrack(categories, trackFilter) {
             groups.push({
                 trackId: tid,
                 trackTitle: c.track_title ||
-                    (tid === "precode100" ? "PreCode 100" : "NeetCode 150"),
+                    (tid === "precode100"
+                        ? "PreCode 100"
+                        : tid === "cloud-architect-prep"
+                            ? "Cloud Architect Prep"
+                            : "NeetCode 150"),
                 trackDescription: tid === "precode100"
                     ? "Recommended path before DSA: Python fundamentals, problem-solving habits, and OOP."
+                    : tid === "cloud-architect-prep"
+                        ? "Unofficial cloud interview preparation practice, designed around common CSA internship skills."
                     : undefined,
                 categories: [c],
             });
@@ -136,8 +142,11 @@ export function ProblemExplorer({ categories, problems, progress, selectedId, on
     }, [category, companyBaseProblems, search, difficulty]);
     const visibleCategories = useMemo(() => {
         const activeCategories = new Set(filteredProblems.map((problem) => problem.category));
+        if (effectiveTrackFilter === "cloud-architect-prep" && !search && !difficulty && !category) {
+            return displayCategories;
+        }
         return displayCategories.filter((item) => activeCategories.has(item.id));
-    }, [displayCategories, filteredProblems]);
+    }, [category, difficulty, displayCategories, effectiveTrackFilter, filteredProblems, search]);
     const trackGroups = useMemo(() => groupCategoriesByTrack(visibleCategories, effectiveTrackFilter), [visibleCategories, effectiveTrackFilter]);
     const problemsByCategory = useMemo(() => {
         const categoryMap = new Map();
@@ -248,7 +257,7 @@ export function ProblemExplorer({ categories, problems, progress, selectedId, on
                           </span>
                         </button>
                         {category.section_description &&
-                                group.trackId === "precode100" && (<p className="ex-section-desc">
+                                (group.trackId === "precode100" || group.trackId === "cloud-architect-prep") && (<p className="ex-section-desc">
                               {category.section_description}
                             </p>)}
 
@@ -263,6 +272,9 @@ export function ProblemExplorer({ categories, problems, progress, selectedId, on
                                     <span className="ex-prob-title">
                                       {problem.title}
                                     </span>
+                                    {problem.problem_type && (<span className={`problem-type-badge problem-type-badge--${problem.problem_type}`}>
+                                      {problem.problem_type.toUpperCase()}
+                                    </span>)}
                                     {company && (() => {
                                         const tag = companyTagFor(problem, company);
                                         return tag ? (<span className={`company-priority company-priority--${tag.priority}`} title={tag.reason}>

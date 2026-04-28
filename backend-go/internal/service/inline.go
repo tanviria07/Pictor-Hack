@@ -34,7 +34,8 @@ func (s *InlineService) InlineHint(ctx context.Context, req dto.InlineHintReques
 
 	// 3. Use DeepSeek if available.
 	if s.deepseek.Enabled() {
-		raw, err := s.deepseek.InlineHintCompletion(ctx, coach.SystemInlineHint, userMsg)
+		sysPrompt := coach.RoleSystemPrompt(coach.SystemInlineHint, req.Role)
+		raw, err := s.deepseek.InlineHintCompletion(ctx, sysPrompt, userMsg)
 		if err == nil && raw != "" {
 			parsed, perr := deepseek.ParseInlineHintJSON(raw)
 			if perr == nil {

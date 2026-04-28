@@ -1,0 +1,31 @@
+{
+  "id": "cloud-09-identify-failing-service",
+  "slug": "cloud-09-identify-failing-service",
+  "title": "Given sample log events, identify the likely failing service",
+  "difficulty": "medium",
+  "category": "cloud-monitoring-logs",
+  "problem_type": "scenario",
+  "description": "Read a short set of log events and identify the most likely failing service with your reasoning.",
+  "prompt": "Logs:\n10:00 web INFO request /checkout\n10:00 api INFO checkout started\n10:01 payments ERROR timeout calling provider\n10:01 api ERROR checkout failed: payment timeout\n10:01 web ERROR checkout returned 502\n\nWhich service is most likely failing first, and what would you check next?",
+  "examples": [{"input": "A sequence of web, api, and payments logs", "output": "Identify payments as likely first failure and suggest next checks."}],
+  "constraints": ["Mention uncertainty.", "Use timestamps and propagation.", "Suggest next checks."],
+  "function_name": "cloud_text_answer",
+  "execution_mode": "text",
+  "class_name": "",
+  "starter_code": "",
+  "parameters": [],
+  "expected_return_type": "text",
+  "visible_tests": [],
+  "hidden_tests": [],
+  "rubric": {
+    "categories": ["technical accuracy", "clarity", "structure", "tradeoff awareness", "customer communication"],
+    "strong_answer_includes": ["Payments is the likely first failing service", "API and web errors appear downstream", "Check payment provider latency, network, retries, and dependency health", "Mentions correlation IDs or traces"],
+    "common_gaps": ["Blames web because user sees 502", "Ignores event order", "No next diagnostic step"]
+  },
+  "sample_answer": "The payments service is the most likely first failure because it logs a timeout before the API logs checkout failed and before the web layer returns 502. The API and web errors look like downstream symptoms of the payment timeout. I would check traces or correlation IDs for the checkout request, payment provider health, outbound network rules, retry behavior, and recent changes in the payments service. I would keep some uncertainty because one log sample is not proof, but it is the best first place to investigate.",
+  "hint_plan": {"level_1": "Look for the earliest error.", "level_2": "Separate root error from propagated errors.", "level_3": "Mention correlation IDs or traces.", "level_4": "Suggest dependency checks."},
+  "canonical_solution_summary": "Payments likely fails first; API and web report downstream errors.",
+  "disallowed_full_solution_exposure": false,
+  "skill_tags": ["logs", "debugging", "observability"],
+  "tags": ["cloud", "monitoring", "scenario"]
+}

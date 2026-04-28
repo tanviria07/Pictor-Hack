@@ -1,0 +1,31 @@
+{
+  "id": "cloud-06-diagnose-cors-fastapi",
+  "slug": "cloud-06-diagnose-cors-fastapi",
+  "title": "Diagnose a CORS error between React frontend and FastAPI backend",
+  "difficulty": "medium",
+  "category": "cloud-api-debugging",
+  "problem_type": "scenario",
+  "description": "A React app hosted on one domain calls a FastAPI backend on another domain and the browser blocks the request with a CORS error.",
+  "prompt": "Explain the likely cause, what you would check, and how you would fix it without weakening security unnecessarily.",
+  "examples": [{"input": "Frontend: https://club.app. Backend: https://api.club.app. Browser says CORS policy blocked request.", "output": "A diagnosis plan and safe fix."}],
+  "constraints": ["Mention browser enforcement.", "Mention allowed origins.", "Do not recommend allow all origins for production."],
+  "function_name": "cloud_text_answer",
+  "execution_mode": "text",
+  "class_name": "",
+  "starter_code": "",
+  "parameters": [],
+  "expected_return_type": "text",
+  "visible_tests": [],
+  "hidden_tests": [],
+  "rubric": {
+    "categories": ["technical accuracy", "clarity", "structure", "tradeoff awareness", "customer communication"],
+    "strong_answer_includes": ["CORS is enforced by the browser", "FastAPI CORSMiddleware must include the frontend origin", "Check methods, headers, credentials, and preflight OPTIONS", "Use specific origins in production"],
+    "common_gaps": ["Blames React only", "Suggests disabling browser security", "Uses wildcard origins with credentials"]
+  },
+  "sample_answer": "This is likely not the backend being down; it is the browser refusing a cross-origin response because the API did not allow the frontend origin. I would check the request origin, the FastAPI CORS middleware settings, whether OPTIONS preflight succeeds, and whether custom headers or credentials are involved. The fix is to add the exact frontend URL to allow_origins and allow only the needed methods and headers. For production I would avoid a wildcard origin, especially if cookies or auth headers are used.",
+  "hint_plan": {"level_1": "Separate browser policy from server availability.", "level_2": "Check preflight OPTIONS.", "level_3": "Use explicit allowed origins.", "level_4": "Mention credentials and headers."},
+  "canonical_solution_summary": "Configure explicit FastAPI CORS origins and verify preflight, methods, headers, and credentials.",
+  "disallowed_full_solution_exposure": false,
+  "skill_tags": ["fastapi", "cors", "debugging"],
+  "tags": ["cloud", "api", "scenario"]
+}

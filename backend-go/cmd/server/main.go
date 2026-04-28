@@ -37,7 +37,8 @@ func main() {
 
 	rc := runner.New(cfg.RunnerURL)
 	ds := deepseek.New(cfg)
-	runs := service.NewRunService(rc, ds)
+	ts := service.NewTraceService(ds)
+	runs := service.NewRunService(rc, ds, ts)
 
 	inlineSvc := service.NewInlineService(ds)
 
@@ -45,6 +46,7 @@ func main() {
 		Runs:         runs,
 		Hints:        service.NewHintService(ds, st),
 		Inline:       inlineSvc,
+		Traces:       ts,
 		Sessions:     st,
 		MaxCodeBytes: cfg.MaxCodeBytes,
 	}

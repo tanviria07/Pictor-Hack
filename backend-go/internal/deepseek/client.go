@@ -90,6 +90,15 @@ func (c *Client) InlineHintCompletion(ctx context.Context, systemPrompt, userCon
 	})
 }
 
+// TraceJSONCompletion requests JSON-only interview trace output for POST /api/trace.
+func (c *Client) TraceJSONCompletion(ctx context.Context, systemPrompt, userContent string) (string, error) {
+	return c.chatCompletion(ctx, chatParams{
+		System: systemPrompt,
+		User:   userContent,
+		JSON:   true,
+	})
+}
+
 type chatParams struct {
 	System string
 	User   string

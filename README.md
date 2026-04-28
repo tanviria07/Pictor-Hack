@@ -23,7 +23,7 @@ The frontend keeps shared UI separate from feature-owned UI:
 - `frontend/src/features/editor/`: Python editor logic.
 - `frontend/src/features/evaluation/`: run results and feedback UI.
 - `frontend/src/features/hints/`: hint and inline-hint rendering.
-- `frontend/src/features/voiceCoach/`: disabled optional voice coach code.
+- `frontend/src/features/voiceCoach/`: optional text coach UI and prompt context.
 - `frontend/src/lib/`: API clients and utilities.
 
 ## Backend Layout
@@ -109,9 +109,9 @@ Runner defaults are documented in `runner-python/.env.example`:
 Frontend defaults are documented in `frontend/.env.example`:
 
 - `API_BASE=` optional, usually unset in local dev
-- `ENABLE_VOICE_COACH=false`
-- `GEMINI_API_KEY=` optional and only relevant if voice coach is enabled
-- `GEMINI_MODEL=gemini-2.5-flash`
+- `ENABLE_VOICE_COACH=true`
+- `VITE_DEEPSEEK_API_KEY=` optional and only relevant if the coach panel is enabled
+- `VITE_DEEPSEEK_MODEL=deepseek-chat`
 
 ## Evaluation Statuses
 

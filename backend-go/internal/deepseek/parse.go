@@ -37,6 +37,34 @@ func ParseHintJSON(content string) (HintJSON, error) {
 	return out, nil
 }
 
+// TraceJSON is the model output shape for POST /api/trace.
+type TraceJSON struct {
+	AttemptStatus        string `json:"attempt_status"`
+	LikelyBugPattern     string `json:"likely_bug_pattern"`
+	FailedEdgeCaseCategory string `json:"failed_edge_case_category"`
+	ComplexityNote       string `json:"complexity_note"`
+	InterviewRisk        string `json:"interview_risk"`
+	NextRecommendedAction string `json:"next_recommended_action"`
+	FollowUpQuestion    string  `json:"follow_up_question"`
+}
+
+// ParseTraceJSON extracts a TraceJSON from raw model output.
+func ParseTraceJSON(content string) (TraceJSON, error) {
+	content = strings.TrimSpace(content)
+	if content == "" {
+		return TraceJSON{}, fmt.Errorf("empty model output")
+	}
+	content = extractJSONObject(stripMarkdownFence(content))
+	var out TraceJSON
+	if err := json.Unmarshal([]byte(content), &out); err != nil {
+		return TraceJSON{}, fmt.Errorf("parse trace json: %w", err)
+	}
+	if strings.TrimSpace(out.AttemptStatus) == "" && strings.TrimSpace(out.LikelyBugPattern) == "" {
+		return TraceJSON{}, fmt.Errorf("no attempt_status or likely_bug_pattern in json")
+	}
+	return out, nil
+}
+
 // ParseInlineHintJSON extracts an InlineHintJSON from raw model output.
 func ParseInlineHintJSON(content string) (InlineHintJSON, error) {
 	content = strings.TrimSpace(content)

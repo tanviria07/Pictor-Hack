@@ -24,6 +24,7 @@ type Handler struct {
 	Runs         *service.RunService
 	Hints        *service.HintService
 	Inline       *service.InlineService
+	Traces       *service.TraceService
 	Sessions     store.SessionRepository
 	MaxCodeBytes int // max submitted code size; if zero, a default is used in validateRunInput
 }
@@ -245,6 +246,36 @@ func (h *Handler) SaveSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	httpx.JSON(w, http.StatusOK, map[string]bool{"ok": true})
+}
+
+// Trace generates a structured interview trace after a code run.
+func (h *Handler) Trace(w http.ResponseWriter, r *http.Request) {
+	var req dto.TraceRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	req.ProblemID = strings.TrimSpace(req.ProblemID)
+	if req.ProblemID == "" {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "problem_id required")
+		return
+	}
+	if _, err := problems.GetPublic(req.ProblemID); err != nil {
+		if errors.Is(err, problems.ErrNotFound) {
+			httpx.Error(w, http.StatusNotFound, httpx.ErrNotFound, "unknown problem_id")
+			return
+		}
+		log.Println("trace problem lookup:", err)
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "failed to load problem")
+		return
+	}
+	out, err := h.Traces.GenerateTrace(r.Context(), req)
+	if err != nil {
+		log.Println("trace:", err)
+		httpx.ErrorWithDetails(w, http.StatusInternalServerError, httpx.ErrInternal, "Could not generate interview trace.", map[string]string{"reason": err.Error()})
+		return
+	}
+	httpx.JSON(w, http.StatusOK, out)
 }
 
 // GetSession loads stored session for a problem.

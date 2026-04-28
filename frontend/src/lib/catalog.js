@@ -31,6 +31,14 @@ export const CURRICULUM_CATEGORY_ORDER = [
     "intervals",
     "math-geometry",
     "bit-manipulation",
+    "cloud-azure-fundamentals",
+    "cloud-python-automation",
+    "cloud-api-debugging",
+    "cloud-monitoring-logs",
+    "cloud-architecture-scenarios",
+    "cloud-customer-explanation",
+    "cloud-security-basics",
+    "cloud-cost-scaling",
 ];
 function curriculumIndex(id) {
     const i = CURRICULUM_CATEGORY_ORDER.indexOf(id);

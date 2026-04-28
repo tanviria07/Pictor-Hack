@@ -1,0 +1,25 @@
+{
+  "id": "sd-event-rsvp-api",
+  "title": "Design a REST API for Events and RSVPs",
+  "difficulty": "Easy",
+  "category": "sys-design-backend",
+  "description": "Design a RESTful API for a campus event management system where students can create events, list events, and RSVP to events.",
+  "problem_type": "system_design",
+  "execution_mode": "system_design",
+  "tags": ["SYSTEM DESIGN", "BACKEND"],
+  "skill_tags": ["API Design", "Authentication", "Relational Database"],
+  "constraints": [
+    "Standard REST patterns.",
+    "Handle concurrent RSVPs for limited capacity events.",
+    "Secure endpoints."
+  ],
+  "rubric": {
+    "categories": [
+      "requirements clarification",
+      "API design",
+      "data model",
+      "security",
+      "communication clarity"
+    ]
+  }
+}

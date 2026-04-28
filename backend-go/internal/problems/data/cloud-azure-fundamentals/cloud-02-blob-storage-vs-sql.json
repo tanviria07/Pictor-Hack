@@ -1,0 +1,36 @@
+{
+  "id": "cloud-02-blob-storage-vs-sql",
+  "slug": "cloud-02-blob-storage-vs-sql",
+  "title": "Explain Azure Blob Storage vs Azure SQL Database",
+  "difficulty": "easy",
+  "category": "cloud-azure-fundamentals",
+  "problem_type": "explanation",
+  "description": "Explain when to store data in Azure Blob Storage versus Azure SQL Database.",
+  "prompt": "Compare Azure Blob Storage and Azure SQL Database for an app storing uploaded documents and user records.",
+  "examples": [{"input": "Data: PDFs, profile rows, status fields", "output": "Use Blob Storage for files and SQL for relational records."}],
+  "constraints": ["Mention data shape.", "Mention querying or transactions.", "Avoid one-size-fits-all language."],
+  "function_name": "cloud_text_answer",
+  "execution_mode": "text",
+  "class_name": "",
+  "starter_code": "",
+  "parameters": [],
+  "expected_return_type": "text",
+  "visible_tests": [],
+  "hidden_tests": [],
+  "rubric": {
+    "categories": ["technical accuracy", "clarity", "structure", "tradeoff awareness", "customer communication"],
+    "strong_answer_includes": [
+      "Blob Storage is for unstructured objects like files, images, logs, and backups",
+      "Azure SQL is for relational tables, queries, joins, and transactions",
+      "A common design stores files in Blob Storage and metadata in SQL",
+      "Mentions cost, access pattern, or consistency needs"
+    ],
+    "common_gaps": ["Treats Blob Storage like a relational database", "Ignores metadata", "No practical example"]
+  },
+  "sample_answer": "Blob Storage is best for unstructured objects such as PDFs, images, exports, and raw log files. Azure SQL Database is best for structured relational data such as users, permissions, document metadata, and workflow status because it supports SQL queries, constraints, and transactions. For a document app, I would store the file itself in Blob Storage and keep the file URL, owner, status, and audit fields in SQL. That keeps file storage cost-effective while preserving queryable business data.",
+  "hint_plan": {"level_1": "Separate files from records.", "level_2": "Talk about querying and transactions.", "level_3": "Mention metadata.", "level_4": "Give a combined design."},
+  "canonical_solution_summary": "Blob for objects; SQL for relational data and metadata.",
+  "disallowed_full_solution_exposure": false,
+  "skill_tags": ["azure", "storage", "databases"],
+  "tags": ["cloud", "azure", "explanation"]
+}

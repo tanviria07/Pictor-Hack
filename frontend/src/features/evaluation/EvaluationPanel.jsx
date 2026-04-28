@@ -1,10 +1,14 @@
 import { useMemo } from "react";
 import { friendlyEvaluationBanner } from "../../lib/runFeedback";
 import { HintContent } from "../hints/HintContent";
+import { InterviewTracePanel } from "./InterviewTracePanel";
+
 function statusPresentation(run) {
-    const ev = run.evaluation;
-    const total = ev.total_visible_tests + ev.total_hidden_tests;
-    const passed = ev.passed_visible_tests + ev.passed_hidden_tests;
+    const ev = run?.evaluation;
+    if (!ev) return { tone: "neutral", headline: "Evaluated", sub: "", icon: <InfoIcon /> };
+
+    const total = (ev.total_visible_tests || 0) + (ev.total_hidden_tests || 0);
+    const passed = (ev.passed_visible_tests || 0) + (ev.passed_hidden_tests || 0);
     switch (run.status) {
         case "correct":
             return {
@@ -68,14 +72,15 @@ function statusPresentation(run) {
             };
     }
 }
+
 function ResultHero({ run }) {
     const p = statusPresentation(run);
-    const ev = run.evaluation;
-    const total = ev.total_visible_tests + ev.total_hidden_tests;
-    const passed = ev.passed_visible_tests + ev.passed_hidden_tests;
+    const ev = run?.evaluation;
+    if (!ev) return null;
+
+    const total = (ev.total_visible_tests || 0) + (ev.total_hidden_tests || 0);
+    const passed = (ev.passed_visible_tests || 0) + (ev.passed_hidden_tests || 0);
     const pct = total > 0 ? (passed / total) * 100 : 0;
-    // Prefer the specific coaching banner when available (syntax/runtime/internal/incomplete);
-    // otherwise fall back to the status-derived sub.
     const sub = friendlyEvaluationBanner(run) || p.sub;
     return (<div className={`result-hero result-hero--${p.tone}`} data-testid="evaluation-banner" role="status" aria-live="polite">
       <div className="result-hero-main">
@@ -97,6 +102,7 @@ function ResultHero({ run }) {
         </div>)}
     </div>);
 }
+
 function MetricPill({ label, passed, total, hint, }) {
     const ratio = total > 0 ? passed / total : 0;
     const pillTone = total === 0
@@ -116,8 +122,9 @@ function MetricPill({ label, passed, total, hint, }) {
       {hint && <span className="metric-pill-hint">{hint}</span>}
     </div>);
 }
+
 function VisibleTestGrid({ results }) {
-    if (!results.length)
+    if (!results?.length)
         return null;
     return (<EvalSection title="Visible tests" hint={`${results.filter((r) => r.passed).length}/${results.length} passing`}>
       <div className="test-grid">
@@ -130,8 +137,9 @@ function VisibleTestGrid({ results }) {
       </div>
     </EvalSection>);
 }
+
 function HiddenTestStrip({ passed, total, }) {
-    if (total <= 0)
+    if (!total || total <= 0)
         return null;
     const cells = Array.from({ length: total }, (_, i) => i < passed);
     return (<EvalSection title="Hidden tests" hint={`${passed}/${total} passing — inputs withheld`}>
@@ -140,6 +148,7 @@ function HiddenTestStrip({ passed, total, }) {
       </div>
     </EvalSection>);
 }
+
 function ErrorSection({ status, errorType, errorMessage, }) {
     if (!errorType && !errorMessage)
         return null;
@@ -151,6 +160,7 @@ function ErrorSection({ status, errorType, errorMessage, }) {
       </div>
     </EvalSection>);
 }
+
 function InterviewerNotes({ text }) {
     if (!text?.trim())
         return null;
@@ -158,8 +168,9 @@ function InterviewerNotes({ text }) {
       <blockquote className="notes-quote">{text}</blockquote>
     </EvalSection>);
 }
+
 function FocusAreas({ items }) {
-    if (!items.length)
+    if (!items?.length)
         return null;
     return (<EvalSection title="Focus areas">
       <ul className="focus-chips">
@@ -169,9 +180,11 @@ function FocusAreas({ items }) {
       </ul>
     </EvalSection>);
 }
+
 function HintHistory({ hints, onInsertSnippet, stepwise, }) {
-    return (<EvalSection title="Hint history" hint={hints.length > 0 ? `${hints.length} turn${hints.length === 1 ? "" : "s"}` : undefined}>
-      {hints.length === 0 ? (<p className="eval-placeholder">
+    const histLen = hints?.length || 0;
+    return (<EvalSection title="Hint history" hint={histLen > 0 ? `${histLen} turn${histLen === 1 ? "" : "s"}` : undefined}>
+      {histLen === 0 ? (<p className="eval-placeholder">
           {stepwise
                 ? "Each Run Code here checks the next sentence and saves its feedback below."
                 : "After a run, request hints. Each step builds on prior hints (levels 1-4)."}
@@ -183,6 +196,7 @@ function HintHistory({ hints, onInsertSnippet, stepwise, }) {
         </ol>)}
     </EvalSection>);
 }
+
 function EvalSection({ title, hint, tone = "neutral", children, }) {
     return (<section className={`eval-section eval-section--${tone}`}>
       <header className="eval-section-head">
@@ -192,55 +206,130 @@ function EvalSection({ title, hint, tone = "neutral", children, }) {
       <div className="eval-section-body">{children}</div>
     </section>);
 }
-// ---- Stepwise panel (sentence-by-sentence coaching) ----
+
+function RubricPanel() {
+    const categories = [
+        { name: "Requirements Clarification", desc: "Clarifying goals, scope, and non-goals." },
+        { name: "API Design", desc: "Defining clear endpoints or interfaces." },
+        { name: "Data Model", desc: "Choosing appropriate databases and schemas." },
+        { name: "Cloud/Services Selection", desc: "Selecting the right tools for the job." },
+        { name: "Scalability", desc: "Handling load and horizontal growth." },
+        { name: "Reliability", desc: "Dealing with failures and ensuring uptime." },
+        { name: "Observability", desc: "Monitoring, logging, and tracing." },
+        { name: "Security", desc: "Protecting data and access." },
+        { name: "Cost Awareness", desc: "Managing resource spending efficiently." },
+        { name: "Tradeoff Explanation", desc: "Justifying choices and knowing alternatives." },
+        { name: "Communication Clarity", desc: "Structuring the response logically." },
+    ];
+    return (<EvalSection title="System Design Rubric" hint="Evaluation Focus">
+      <ul className="rubric-list">
+        {categories.map((c) => (<li key={c.name} className="rubric-item">
+            <strong>{c.name}:</strong> {c.desc}
+          </li>))}
+      </ul>
+    </EvalSection>);
+}
+
+function RubricFeedback({ feedback, detail }) {
+    const rubric = detail?.rubric;
+    if (!feedback) {
+        return (<>
+          <EvalSection title="Rubric" tone="info">
+            <p className="eval-placeholder">
+              Submit your written answer for rubric-based feedback. There is not one exact answer.
+            </p>
+          </EvalSection>
+          {rubric?.strong_answer_includes?.length ? (<EvalSection title="Strong answer includes">
+            <ul className="rubric-list">
+              {rubric.strong_answer_includes.map((item, index) => (<li key={index} className="rubric-item">{item}</li>))}
+            </ul>
+          </EvalSection>) : null}
+        </>);
+    }
+    const scoreEntries = Object.entries(feedback.scores || {});
+    return (<>
+      <div className={`result-hero result-hero--${feedback.status === "strong" ? "success" : feedback.status === "developing" ? "warning" : "info"}`} role="status" aria-live="polite">
+        <div className="result-hero-main">
+          <div className={`result-hero-icon result-hero-icon--${feedback.status === "strong" ? "success" : "info"}`}>
+            <InfoIcon />
+          </div>
+          <div className="result-hero-copy">
+            <p className="result-hero-headline">Rubric feedback: {feedback.status?.replace("_", " ")}</p>
+            <p className="result-hero-sub">{feedback.note}</p>
+          </div>
+        </div>
+      </div>
+      {scoreEntries.length ? (<EvalSection title="Scores" hint="1-5">
+        <div className="rubric-score-grid">
+          {scoreEntries.map(([label, score]) => (<div key={label} className="rubric-score">
+            <span>{label}</span>
+            <strong>{score}/5</strong>
+          </div>))}
+        </div>
+      </EvalSection>) : null}
+      <EvalSection title="Strengths">
+        <ul className="rubric-list">{(feedback.strengths || []).map((item, index) => (<li key={index} className="rubric-item">{item}</li>))}</ul>
+      </EvalSection>
+      <EvalSection title="Missing points" tone="warning">
+        <ul className="rubric-list">{(feedback.missing_points || []).map((item, index) => (<li key={index} className="rubric-item">{item}</li>))}</ul>
+      </EvalSection>
+      <EvalSection title="Improved sample answer">
+        <p className="notes-body">{feedback.improved_sample_answer}</p>
+      </EvalSection>
+      <EvalSection title="Next practice suggestion" tone="info">
+        <p className="notes-body">{feedback.next_practice_suggestion}</p>
+      </EvalSection>
+    </>);
+}
+
 function StepwisePanel({ stepwise, stepwiseCode, onInsertSnippet, }) {
-    const isFail = stepwise.first_failed_index !== null &&
-        stepwise.first_failed_index !== undefined;
-    const tone = stepwise.is_full_solution
+    const isFail = stepwise?.first_failed_index !== null &&
+        stepwise?.first_failed_index !== undefined;
+    const tone = stepwise?.is_full_solution
         ? "success"
         : isFail
             ? "error"
             : "info";
-    const bannerText = stepwise.is_full_solution
+    const bannerText = stepwise?.is_full_solution
         ? "Full solution correct!"
         : isFail
             ? "Incorrect. Start over."
             : "Correct! Keep going.";
-    const pct = stepwise.total > 0 ? (stepwise.correct_count / stepwise.total) * 100 : 0;
+    const pct = stepwise?.total > 0 ? (stepwise.correct_count / stepwise.total) * 100 : 0;
     return (<div className={`result-hero result-hero--${tone}`} data-testid="stepwise-banner" role="status">
       <div className="result-hero-main">
         <div className={`result-hero-icon result-hero-icon--${tone}`}>
-          {stepwise.is_full_solution ? (<CheckIcon />) : isFail ? (<CrossIcon />) : (<ArrowIcon />)}
+          {stepwise?.is_full_solution ? (<CheckIcon />) : isFail ? (<CrossIcon />) : (<ArrowIcon />)}
         </div>
         <div className="result-hero-copy">
           <p className="result-hero-headline">{bannerText}</p>
           <p className="result-hero-sub">
-            {stepwise.correct_count} of {stepwise.total} sentences
+            {stepwise?.correct_count} of {stepwise?.total} sentences
           </p>
         </div>
       </div>
 
       <div className="result-hero-metrics">
-        <div className="result-hero-bar" role="progressbar" aria-valuemin={0} aria-valuemax={stepwise.total} aria-valuenow={stepwise.correct_count}>
+        <div className="result-hero-bar" role="progressbar" aria-valuemin={0} aria-valuemax={stepwise?.total || 0} aria-valuenow={stepwise?.correct_count || 0}>
           <div className={`result-hero-bar-fill result-hero-bar-fill--${tone}`} style={{ width: `${pct}%` }}/>
         </div>
       </div>
 
-      {!stepwise.is_full_solution && stepwise.next_hint && (<div className="result-hero-extra">
+      {!stepwise?.is_full_solution && stepwise?.next_hint && (<div className="result-hero-extra">
           <HintContent text={stepwise.next_hint} onInsert={onInsertSnippet} className="stepwise-hint" testId="stepwise-hint"/>
         </div>)}
 
-      {stepwise.is_full_solution && (<div className="result-hero-extra stepwise-success">
+      {stepwise?.is_full_solution && (<div className="result-hero-extra stepwise-success">
           {stepwise.final_explanation && (<p className="stepwise-explanation">
               {stepwise.final_explanation}
             </p>)}
-          {stepwiseCode.trim() && (<pre className="stepwise-solution" aria-label="Your correct solution">
+          {stepwiseCode?.trim() && (<pre className="stepwise-solution" aria-label="Your correct solution">
               <code>{stepwiseCode}</code>
             </pre>)}
         </div>)}
     </div>);
 }
-// ---- Empty / idle state ----
+
 function IdleState({ detail, inlineHint, }) {
     if (inlineHint) {
         return (<EvalSection title="Inline hint" tone="info">
@@ -274,10 +363,12 @@ function IdleState({ detail, inlineHint, }) {
       </p>
     </div>);
 }
-// ---- Main component ----
-export function EvaluationPanel({ detail, run, stepwise, stepwiseCode, inlineHint, hintHistory, onInsertSnippet, }) {
+
+export function EvaluationPanel({ detail, run, stepwise, stepwiseCode, inlineHint, hintHistory, rubricFeedback, onInsertSnippet, }) {
     const showIdle = !run && !stepwise;
-    const caseNote = useMemo(() => run?.evaluation.failing_case_summary?.trim()
+    const isSystemDesign = detail?.execution_mode === "system_design";
+    const isNonCoding = detail && (detail.problem_type || "coding") !== "coding";
+    const caseNote = useMemo(() => run?.evaluation?.failing_case_summary?.trim()
         ? run.evaluation.failing_case_summary
         : null, [run]);
     return (<div className="eval-panel">
@@ -285,29 +376,39 @@ export function EvaluationPanel({ detail, run, stepwise, stepwiseCode, inlineHin
         <h3 className="sec-title">Evaluation</h3>
       </div>
       <div className="eval-scroll">
-        {showIdle && <IdleState detail={detail} inlineHint={inlineHint}/>}
+        {isNonCoding && (<RubricFeedback feedback={rubricFeedback} detail={detail}/>)}
 
-        {stepwise && (<>
+        {!isNonCoding && showIdle && (<>
+            {isSystemDesign && <RubricPanel />}
+            <IdleState detail={detail} inlineHint={inlineHint}/>
+          </>)}
+
+        {!isNonCoding && stepwise && (<>
             <StepwisePanel stepwise={stepwise} stepwiseCode={stepwiseCode} onInsertSnippet={onInsertSnippet}/>
             <HintHistory hints={hintHistory} onInsertSnippet={onInsertSnippet} stepwise/>
           </>)}
 
-        {run && !stepwise && (<>
-            <ResultHero run={run}/>
-            <VisibleTestGrid results={run.visible_test_results}/>
-            <HiddenTestStrip passed={run.evaluation.passed_hidden_tests} total={run.evaluation.total_hidden_tests}/>
-            <ErrorSection status={run.status} errorType={run.evaluation.error_type} errorMessage={run.evaluation.error_message}/>
-            {caseNote && (<EvalSection title="Case note">
-                <p className="notes-body">{caseNote}</p>
-              </EvalSection>)}
-            <InterviewerNotes text={run.interviewer_feedback}/>
-            <FocusAreas items={run.evaluation.feedback_targets}/>
+        {!isNonCoding && run && !stepwise && (<>
+            {isSystemDesign ? (<EvalSection title="Design Feedback" tone="success">
+                <InterviewerNotes text={run.interviewer_feedback}/>
+              </EvalSection>) : (<>
+                <ResultHero run={run}/>
+                <VisibleTestGrid results={run.visible_test_results}/>
+                <HiddenTestStrip passed={run.evaluation?.passed_hidden_tests} total={run.evaluation?.total_hidden_tests}/>
+                <ErrorSection status={run.status} errorType={run.evaluation?.error_type} errorMessage={run.evaluation?.error_message}/>
+                {caseNote && (<EvalSection title="Case note">
+                    <p className="notes-body">{caseNote}</p>
+                  </EvalSection>)}
+                <InterviewerNotes text={run.interviewer_feedback}/>
+                <FocusAreas items={run.evaluation?.feedback_targets || []}/>
+                {run.trace && <InterviewTracePanel trace={run.trace}/>}
+              </>)}
             <HintHistory hints={hintHistory} onInsertSnippet={onInsertSnippet} stepwise={false}/>
           </>)}
       </div>
     </div>);
 }
-// ---- Inline SVG icons (no deps) ----
+
 function CheckIcon() {
     return (<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/>

@@ -1,0 +1,30 @@
+{
+  "id": "sd-url-shortener",
+  "title": "Design a URL Shortener",
+  "difficulty": "Easy",
+  "category": "sys-design-fundamentals",
+  "description": "Design a service that takes a long URL and returns a short, unique alias. When a user visits the short URL, they should be redirected to the original long URL.",
+  "problem_type": "system_design",
+  "execution_mode": "system_design",
+  "tags": ["SYSTEM DESIGN", "BACKEND"],
+  "skill_tags": ["API Design", "Database Selection", "Scaling"],
+  "constraints": [
+    "Short URL should be as short as possible.",
+    "The system should be highly available.",
+    "Redirect should have minimal latency."
+  ],
+  "rubric": {
+    "categories": [
+      "requirements clarification",
+      "API design",
+      "data model",
+      "scalability",
+      "reliability",
+      "observability",
+      "security",
+      "cost awareness",
+      "tradeoff explanation",
+      "communication clarity"
+    ]
+  }
+}

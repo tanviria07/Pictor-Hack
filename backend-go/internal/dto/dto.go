@@ -31,6 +31,7 @@ type StructuredEvaluation struct {
 	FailingCaseSummary *string       `json:"failing_case_summary"`
 	LikelyStage        string        `json:"likely_stage"`
 	FeedbackTargets    []string      `json:"feedback_targets"`
+	ComplexityNote     string        `json:"complexity_note,omitempty"`
 	// Also embedded in evaluation JSON by the runner (duplicates top-level visible_test_results).
 	VisibleTestResults []VisibleTestResult `json:"visible_test_results,omitempty"`
 }
@@ -47,6 +48,7 @@ type RunRequest struct {
 	ProblemID string `json:"problem_id"`
 	Language  string `json:"language"`
 	Code      string `json:"code"`
+	Role      string `json:"role,omitempty"`
 }
 
 // RunResponse is returned to the frontend. Evaluation is unmodified from the runner;
@@ -56,6 +58,7 @@ type RunResponse struct {
 	Evaluation          StructuredEvaluation `json:"evaluation"`
 	VisibleTestResults  []VisibleTestResult  `json:"visible_test_results"`
 	InterviewerFeedback string               `json:"interviewer_feedback"`
+	Trace               *InterviewTrace      `json:"trace,omitempty"`
 }
 
 // RunnerEvaluateRequest is the JSON body sent to runner-python (same shape as run).
@@ -71,6 +74,7 @@ type HintRequest struct {
 	Code               string               `json:"code"`
 	Evaluation         StructuredEvaluation `json:"evaluation"`
 	HintLevelRequested *int                 `json:"hint_level_requested,omitempty"`
+	Role               string               `json:"role,omitempty"`
 }
 
 // HintResponse is POST /api/hint response (LLM or fallback).
@@ -81,13 +85,13 @@ type HintResponse struct {
 	HintLevel           int    `json:"hint_level"`
 	InterviewerFeedback string `json:"interviewer_feedback"` // Combined note for legacy clients
 }
-
 // InlineHintRequest is POST /api/inline-hint for real-time line‑by‑line feedback.
 type InlineHintRequest struct {
 	ProblemID    string `json:"problem_id"`
 	Code         string `json:"code"`
 	CursorLine   int    `json:"cursor_line"`
 	CursorColumn int    `json:"cursor_column"`
+	Role         string `json:"role,omitempty"`
 }
 
 // InlineHintResponse is returned by POST /api/inline-hint.
@@ -146,6 +150,13 @@ type CategorySummary struct {
 	SectionDescription string `json:"section_description,omitempty"`
 }
 
+// Rubric describes rubric-based practice for non-coding cloud items.
+type Rubric struct {
+	Categories           []string `json:"categories,omitempty"`
+	StrongAnswerIncludes []string `json:"strong_answer_includes,omitempty"`
+	CommonGaps           []string `json:"common_gaps,omitempty"`
+}
+
 // CompanyTrackTag describes unofficial company-track placement metadata.
 type CompanyTrackTag struct {
 	CompanyID        string `json:"company_id"`
@@ -169,6 +180,7 @@ type ProblemSummary struct {
 	Tags             []string          `json:"tags,omitempty"`
 	CompanyTags      []string          `json:"company_tags,omitempty"`
 	CompanyTrackTags []CompanyTrackTag `json:"company_track_tags,omitempty"`
+	ProblemType      string            `json:"problem_type,omitempty"`
 }
 
 // ProblemDetail is GET /api/problems/:id (no hidden test payloads).
@@ -199,6 +211,10 @@ type ProblemDetail struct {
 	CompanyTrackTags   []CompanyTrackTag `json:"company_track_tags,omitempty"`
 	StepwiseAvailable  bool              `json:"stepwise_available,omitempty"`
 	StepwiseTotal      int               `json:"stepwise_total,omitempty"`
+	ProblemType        string            `json:"problem_type,omitempty"`
+	Prompt             string            `json:"prompt,omitempty"`
+	Rubric             *Rubric           `json:"rubric,omitempty"`
+	SampleAnswer        string            `json:"sample_answer,omitempty"`
 }
 
 // StepwiseValidateRequest is POST /api/validate. The runner splits the code

@@ -1,0 +1,25 @@
+{
+  "id": "sd-instagram-analyzer",
+  "title": "Design an Instagram Data Export Analyzer",
+  "difficulty": "Medium",
+  "category": "sys-design-cloud",
+  "description": "Design a tool that allows users to upload their Instagram 'Data Export' ZIP file and provides insights/visualizations about their activity (e.g., most liked posts, followers over time).",
+  "problem_type": "system_design",
+  "execution_mode": "system_design",
+  "tags": ["SYSTEM DESIGN", "CLOUD", "BACKEND"],
+  "skill_tags": ["Batch Processing", "Data Pipelines", "Privacy"],
+  "constraints": [
+    "Securely handle large user data uploads.",
+    "Process data asynchronously.",
+    "Delete user data after processing."
+  ],
+  "rubric": {
+    "categories": [
+      "requirements clarification",
+      "cloud/services selection",
+      "scalability",
+      "security",
+      "tradeoff explanation"
+    ]
+  }
+}

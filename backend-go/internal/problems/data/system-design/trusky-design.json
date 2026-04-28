@@ -1,0 +1,26 @@
+{
+  "id": "sd-trusky-design",
+  "title": "Design a Weather and Stargazing App like TruSky",
+  "difficulty": "Medium",
+  "category": "sys-design-cloud",
+  "description": "Design a mobile app backend that provides hyper-local weather forecasts and stargazing conditions (visibility, light pollution) based on the user's location.",
+  "problem_type": "system_design",
+  "execution_mode": "system_design",
+  "tags": ["SYSTEM DESIGN", "CLOUD", "BACKEND"],
+  "skill_tags": ["External APIs", "Caching", "Geospatial Queries"],
+  "constraints": [
+    "Integrate with multiple weather data providers.",
+    "Provide location-based recommendations.",
+    "Cache data to reduce API costs."
+  ],
+  "rubric": {
+    "categories": [
+      "requirements clarification",
+      "API design",
+      "cloud/services selection",
+      "observability",
+      "cost awareness",
+      "tradeoff explanation"
+    ]
+  }
+}

@@ -1,19 +1,25 @@
-import { useCallback, useEffect, useMemo, useRef, useState, } from "react";
-import { getHint, getInlineHint, getProblem, listCategories, listProblems, loadSession, runCode, saveSession, validateStepwise, } from "../lib/api";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { getHint, getInlineHint, getProblem, listCategories, listProblems, loadSession, runCode, saveSession, validateStepwise } from "../lib/api";
 import { deriveCategoriesFromProblems } from "../lib/catalog";
 import { formatThrownError } from "../lib/errors";
-import { deriveProgress, loadLocalProgress, mergeProgress, setLocalProgress, } from "../lib/progress";
+import { deriveProgress, loadLocalProgress, mergeProgress, setLocalProgress } from "../lib/progress";
 import { buildStarter } from "../lib/starter";
-import { filterProblemsByTrack } from "../lib/tracks";
+import { filterProblemsByTrack, isCodingProblem, problemTypeOf } from "../lib/tracks";
 import { ENABLE_VOICE_COACH } from "../lib/config";
 import { VoiceCoach } from "../features/voiceCoach/VoiceCoach";
 import { ProblemExplorer } from "../features/problems/ProblemExplorer";
 import { PythonEditor } from "../features/editor/PythonEditor";
+import { DesignEditor } from "../features/editor/DesignEditor";
 import { EvaluationPanel } from "../features/evaluation/EvaluationPanel";
 import { DifficultyBadge } from "./DifficultyBadge";
+import { RoleSelector } from "../features/role/RoleSelector";
+import { DemoButton, DemoBanner } from "../features/recruiterDemo/DemoMode";
+import { DEMO_STEPS, startDemo, getDemoInstructions, getDemoCode, getDemoCorrectedCode, getDemoCloudPrompt } from "../features/recruiterDemo/demoData";
+
 function SectionTitle({ children }) {
     return <h3 className="sec-title">{children}</h3>;
 }
+
 export function Workspace() {
     const [categories, setCategories] = useState([]);
     const [problems, setProblems] = useState([]);
@@ -23,11 +29,11 @@ export function Workspace() {
     const [detail, setDetail] = useState(null);
     const [code, setCode] = useState("");
     const [run, setRun] = useState(null);
-    // Snapshot of the code buffer at the time stepwise validation returned.
-    // Kept separate from `code` so editing after a Full Solution banner does
-    // not mutate the solution shown in the success panel.
     const [stepwiseCode, setStepwiseCode] = useState("");
     const [stepwise, setStepwise] = useState(null);
+    const [role, setRole] = useState("");
+    const [demo, setDemo] = useState(null);
+
     const editorRef = useRef(null);
     const insertSnippet = useCallback((snippet) => {
         editorRef.current?.insertAtCursor(snippet);
@@ -40,11 +46,16 @@ export function Workspace() {
     const [progressById, setProgressById] = useState({});
     const [loading, setLoading] = useState("idle");
     const [err, setErr] = useState(null);
+
+    const isCoding = useMemo(() => !detail || isCodingProblem(detail), [detail]);
+    const problemType = useMemo(() => problemTypeOf(detail), [detail]);
+
     useEffect(() => {
         setProgressById(loadLocalProgress());
     }, []);
+
     useEffect(() => {
-        if (trackFilter === "all" || problems.length === 0)
+        if (trackFilter === "all" || problems.length === 0 || demo)
             return;
         const visibleProblems = filterProblemsByTrack(problems, trackFilter);
         const current = problems.find((p) => p.id === problemId);
@@ -53,7 +64,8 @@ export function Workspace() {
             if (first)
                 setProblemId(first.id);
         }
-    }, [trackFilter, problems, problemId]);
+    }, [trackFilter, problems, problemId, demo]);
+
     useEffect(() => {
         let cancelled = false;
         (async () => {
@@ -78,9 +90,7 @@ export function Workspace() {
                 let categoryList = [];
                 try {
                     const categoriesResponse = await listCategories();
-                    categoryList = Array.isArray(categoriesResponse)
-                        ? categoriesResponse
-                        : [];
+                    categoryList = Array.isArray(categoriesResponse) ? categoriesResponse : [];
                 }
                 catch {
                     categoryList = [];
@@ -101,6 +111,7 @@ export function Workspace() {
             cancelled = true;
         };
     }, []);
+
     useEffect(() => {
         if (!problemId)
             return;
@@ -113,17 +124,25 @@ export function Workspace() {
                 setStepwise(null);
                 setStepwiseCode("");
                 setErr(null);
-                const starter = buildStarter(problemDetail);
-                const session = await loadSession(problemId);
-                if (session?.code) {
-                    setCode(session.code);
-                    setHintHistory(session.hint_history || []);
+
+                if (demo?.problemId === problemId && demo.step === DEMO_STEPS.INITIAL) {
+                  const demoCode = getDemoCode(DEMO_STEPS.LOADED);
+                  setCode(demoCode);
+                  setDemo(prev => ({ ...prev, step: DEMO_STEPS.LOADED }));
+                  setHintHistory([]);
+                } else {
+                  const starter = isCodingProblem(problemDetail) ? buildStarter(problemDetail) : "";
+                  const session = await loadSession(problemId);
+                  if (session?.code) {
+                      setCode(session.code);
+                      setHintHistory(session.hint_history || []);
+                  }
+                  else {
+                      setCode(starter);
+                      setHintHistory([]);
+                  }
                 }
-                else {
-                    setCode(starter);
-                    setHintHistory([]);
-                }
-                const mergedProgress = mergeProgress(loadLocalProgress()[problemId] ?? "not_started", session?.practice_status ?? null);
+                const mergedProgress = mergeProgress(loadLocalProgress()[problemId] ?? "not_started", null);
                 setProgressById((prev) => ({ ...prev, [problemId]: mergedProgress }));
             }
             catch (e) {
@@ -133,13 +152,14 @@ export function Workspace() {
                 setLoading("idle");
             }
         })();
-    }, [problemId]);
-    const starterForCompare = useMemo(() => (detail ? buildStarter(detail) : ""), [detail]);
+    }, [problemId, demo?.problemId, demo?.step]);
+
+    const starterForCompare = useMemo(() => (detail && isCodingProblem(detail) ? buildStarter(detail) : ""), [detail]);
+
     const persist = useCallback(async (nextCode, nextHints, explicitStatus) => {
-        if (!problemId)
+        if (!problemId || demo)
             return;
-        const nextStatus = explicitStatus ??
-            deriveProgress(run, nextCode, starterForCompare, nextHints.length > 0);
+        const nextStatus = explicitStatus ?? deriveProgress(run, nextCode, starterForCompare, nextHints.length > 0);
         setProgressById((prev) => ({ ...prev, [problemId]: nextStatus }));
         setLocalProgress(problemId, nextStatus);
         try {
@@ -153,7 +173,8 @@ export function Workspace() {
         catch {
             /* non-fatal */
         }
-    }, [problemId, run, starterForCompare]);
+    }, [problemId, run, starterForCompare, demo]);
+
     const onRun = useCallback(async () => {
         if (!problemId || !detail)
             return;
@@ -189,10 +210,14 @@ export function Workspace() {
                 problem_id: problemId,
                 language: "python",
                 code,
+                role,
             });
             setRun(response);
             setStepwise(null);
             setStepwiseCode("");
+            if (demo && demo.step === DEMO_STEPS.LOADED) {
+              setDemo(prev => ({ ...prev, step: DEMO_STEPS.AFTER_RUN }));
+            }
             const derivedStatus = deriveProgress(response, code, starterForCompare, hintHistory.length > 0);
             await persist(code, hintHistory, derivedStatus);
         }
@@ -202,7 +227,8 @@ export function Workspace() {
         finally {
             setLoading("idle");
         }
-    }, [code, detail, hintHistory, persist, problemId, starterForCompare]);
+    }, [code, detail, hintHistory, persist, problemId, starterForCompare, role, demo]);
+
     const onHint = useCallback(async () => {
         if (!problemId || !run) {
             setErr("Run your code first so hints can use the latest evaluation.");
@@ -215,6 +241,7 @@ export function Workspace() {
                 problem_id: problemId,
                 code,
                 evaluation: run.evaluation,
+                role,
             });
             const nextHints = [
                 ...hintHistory,
@@ -229,15 +256,14 @@ export function Workspace() {
         finally {
             setLoading("idle");
         }
-    }, [code, hintHistory, persist, problemId, run]);
-    // Fetch inline hint when code or cursor changes (debounced).
+    }, [code, hintHistory, persist, problemId, run, role]);
+
     useEffect(() => {
-        if (!problemId || !detail || loading !== "idle")
+        if (!problemId || !detail || !isCodingProblem(detail) || loading !== "idle")
             return;
         if (debounceTimerRef.current)
             clearTimeout(debounceTimerRef.current);
         debounceTimerRef.current = setTimeout(async () => {
-            // Don't fetch if code is empty or same as starter.
             if (code.trim() === "" || code === buildStarter(detail)) {
                 setInlineHint(null);
                 return;
@@ -248,18 +274,20 @@ export function Workspace() {
                     code,
                     cursor_line: cursorLine,
                     cursor_column: cursorColumn,
+                    role,
                 });
                 setInlineHint(hint);
             }
             catch {
-                // Silently ignore errors for inline hints.
+                setInlineHint(null);
             }
         }, 500);
         return () => {
             if (debounceTimerRef.current)
                 clearTimeout(debounceTimerRef.current);
         };
-    }, [problemId, detail, code, cursorLine, cursorColumn, loading]);
+    }, [problemId, detail, code, cursorLine, cursorColumn, loading, role]);
+
     const onInlineHintRefresh = useCallback(async () => {
         if (!problemId || !detail)
             return;
@@ -269,17 +297,19 @@ export function Workspace() {
                 code,
                 cursor_line: cursorLine,
                 cursor_column: cursorColumn,
+                role,
             });
             setInlineHint(hint);
         }
         catch (e) {
             setErr(formatThrownError(e));
         }
-    }, [problemId, detail, code, cursorLine, cursorColumn]);
+    }, [problemId, detail, code, cursorLine, cursorColumn, role]);
+
     const onReset = useCallback(() => {
         if (!detail)
             return;
-        const starter = buildStarter(detail);
+        const starter = isCodingProblem(detail) ? buildStarter(detail) : "";
         setCode(starter);
         setRun(null);
         setStepwise(null);
@@ -287,13 +317,18 @@ export function Workspace() {
         setHintHistory([]);
         void persist(starter, [], "not_started");
     }, [detail, persist]);
+
     const trackCounts = useMemo(() => {
         let precode = 0;
         let dsa = 0;
         let blind75 = 0;
+        let systemDesign = 0;
+        let cloud = 0;
         let precodeSolved = 0;
         let dsaSolved = 0;
         let blind75Solved = 0;
+        let systemDesignSolved = 0;
+        let cloudSolved = 0;
         for (const problem of problems) {
             const track = problem.track_id || "dsa";
             const solved = progressById[problem.id] === "solved";
@@ -301,6 +336,16 @@ export function Workspace() {
                 precode++;
                 if (solved)
                     precodeSolved++;
+            }
+            else if (track === "system_design") {
+                systemDesign++;
+                if (solved)
+                    systemDesignSolved++;
+            }
+            else if (track === "cloud-architect-prep") {
+                cloud++;
+                if (solved)
+                    cloudSolved++;
             }
             else {
                 dsa++;
@@ -315,18 +360,23 @@ export function Workspace() {
         }
         return {
             all: problems.length,
-            allSolved: precodeSolved + dsaSolved,
+            allSolved: precodeSolved + dsaSolved + systemDesignSolved + cloudSolved,
             precode,
             precodeSolved,
             blind75,
             blind75Solved,
             dsa,
             dsaSolved,
+            systemDesign,
+            systemDesignSolved,
+            cloud,
+            cloudSolved,
         };
     }, [problems, progressById]);
+
     const title = useMemo(() => detail?.title ?? "Practice", [detail]);
     const signature = useMemo(() => {
-        if (!detail)
+        if (!detail || !isCodingProblem(detail))
             return "";
         if (detail.execution_mode === "class") {
             return `class ${detail.class_name || detail.function_name}`;
@@ -335,6 +385,29 @@ export function Workspace() {
             .map((parameter) => parameter.name)
             .join(", ")}) -> ${detail.expected_return_type}`;
     }, [detail]);
+
+    const toggleDemo = () => {
+      if (demo) {
+        setDemo(null);
+        setRole("");
+        setTrackFilter("all");
+      } else {
+        const d = startDemo();
+        setDemo(d);
+        setProblemId(d.problemId);
+        setRole("swe_intern");
+      }
+    };
+
+    const handleDemoAction = () => {
+      if (demo.step === DEMO_STEPS.AFTER_RUN) {
+        setDemo(prev => ({ ...prev, step: DEMO_STEPS.AFTER_TRACE }));
+      } else if (demo.step === DEMO_STEPS.AFTER_TRACE) {
+        setCode(getDemoCorrectedCode());
+        setDemo(prev => ({ ...prev, step: DEMO_STEPS.CORRECTED }));
+      }
+    };
+
     return (<div className="ws">
       <header className="ws-header">
         <div className="ws-header-top">
@@ -348,7 +421,9 @@ export function Workspace() {
                 ? "Blind 75"
                 : trackFilter === "dsa"
                     ? "NeetCode-style"
-                    : "Full curriculum"}
+                    : trackFilter === "system_design"
+                        ? "System Design Prep"
+                        : "Full curriculum"}
               </span>
             </div>
             <p className="ws-header-desc">
@@ -358,51 +433,78 @@ export function Workspace() {
                 ? "A focused 75-problem interview set pulled from the existing NeetCode-style catalog."
                 : trackFilter === "dsa"
                     ? "Classic DSA interview set. You write the solution; we run tests and give structured feedback."
-                    : "Pick a track below, or browse everything."}
+                    : trackFilter === "system_design"
+                        ? "Intern-level system design and cloud architecture practice for SWE and Cloud Solutions Architect roles."
+                        : trackFilter === "cloud-architect-prep"
+                            ? "Cloud architecture, debugging, automation, and customer explanation practice for CSA internships."
+                            : "Pick a track below, or browse everything."}
             </p>
           </div>
-          {detail && (<div className="ws-header-meta">
-              <div className="ws-meta-row">
-                {detail.track_title && (<span className="track-pill">{detail.track_title}</span>)}
-                <DifficultyBadge difficulty={detail.difficulty} trackId={detail.track_id}/>
+          <div className="ws-header-meta">
+              <div className="ws-meta-row" style={{gap: '1rem'}}>
+                <DemoButton active={!!demo} onToggle={toggleDemo} />
+                <RoleSelector value={role} onChange={setRole} disabled={loading === 'run'} />
+                {detail && (
+                  <>
+                    {detail.track_title && (<span className="track-pill">{detail.track_title}</span>)}
+                    <DifficultyBadge difficulty={detail.difficulty} trackId={detail.track_id}/>
+                  </>
+                )}
               </div>
-              <span className="ws-meta-cat">{detail.category_title}</span>
-            </div>)}
+              {detail && <span className="ws-meta-cat">{detail.category_title}</span>}
+            </div>
         </div>
         <div className="track-tabs" role="tablist" aria-label="Problem track">
           <button type="button" role="tab" aria-selected={trackFilter === "precode100"} className={`track-tab${trackFilter === "precode100" ? " track-tab--active" : ""}`} onClick={() => setTrackFilter("precode100")}>
             <span className="track-tab-title">PreCode 100</span>
             <span className="track-tab-sub">
-              Foundations &middot; {trackCounts.precodeSolved}/
-              {trackCounts.precode} solved
+              Foundations &middot; {trackCounts.precodeSolved}/{trackCounts.precode} solved
             </span>
           </button>
           <button type="button" role="tab" aria-selected={trackFilter === "blind75"} className={`track-tab${trackFilter === "blind75" ? " track-tab--active" : ""}`} onClick={() => setTrackFilter("blind75")}>
             <span className="track-tab-title">Blind 75</span>
             <span className="track-tab-sub">
-              Core interview set &middot; {trackCounts.blind75Solved}/
-              {trackCounts.blind75} solved
+              Core interview set &middot; {trackCounts.blind75Solved}/{trackCounts.blind75} solved
             </span>
           </button>
           <button type="button" role="tab" aria-selected={trackFilter === "dsa"} className={`track-tab${trackFilter === "dsa" ? " track-tab--active" : ""}`} onClick={() => setTrackFilter("dsa")}>
             <span className="track-tab-title">NeetCode 150</span>
             <span className="track-tab-sub">
-              DSA interviews &middot; {trackCounts.dsaSolved}/{trackCounts.dsa}{" "}
-              solved
+              DSA interviews &middot; {trackCounts.dsaSolved}/{trackCounts.dsa} solved
+            </span>
+          </button>
+          <button type="button" role="tab" aria-selected={trackFilter === "system_design"} className={`track-tab${trackFilter === "system_design" ? " track-tab--active" : ""}`} onClick={() => setTrackFilter("system_design")}>
+            <span className="track-tab-title">System Design</span>
+            <span className="track-tab-sub">
+              Architecture &middot; {trackCounts.systemDesignSolved}/{trackCounts.systemDesign} solved
+            </span>
+          </button>
+          <button type="button" role="tab" aria-selected={trackFilter === "cloud-architect-prep"} className={`track-tab${trackFilter === "cloud-architect-prep" ? " track-tab--active" : ""}`} onClick={() => setTrackFilter("cloud-architect-prep")}>
+            <span className="track-tab-title">Cloud Architect Prep</span>
+            <span className="track-tab-sub">
+              CSA skills &middot; {trackCounts.cloudSolved}/{trackCounts.cloud} solved
             </span>
           </button>
           <button type="button" role="tab" aria-selected={trackFilter === "all"} className={`track-tab track-tab--all${trackFilter === "all" ? " track-tab--active" : ""}`} onClick={() => setTrackFilter("all")}>
             <span className="track-tab-title">All</span>
             <span className="track-tab-sub">
-              Browse both &middot; {trackCounts.allSolved}/{trackCounts.all}
+              Browse all &middot; {trackCounts.allSolved}/{trackCounts.all}
             </span>
           </button>
         </div>
       </header>
 
-      {err && (<div className="ws-alert" role="alert">
-          {err}
-        </div>)}
+      {err && (<div className="ws-alert" role="alert">{err}</div>)}
+
+      {demo && (
+        <DemoBanner
+          step={demo.step}
+          instructions={getDemoInstructions(demo.step)}
+          onAction={demo.step !== DEMO_STEPS.LOADED && demo.step !== DEMO_STEPS.CORRECTED ? handleDemoAction : undefined}
+          actionLabel={demo.step === DEMO_STEPS.AFTER_RUN ? "See AI Trace" : demo.step === DEMO_STEPS.AFTER_TRACE ? "Apply Optimized" : undefined}
+          cloudPrompt={demo.step === DEMO_STEPS.CORRECTED ? getDemoCloudPrompt() : undefined}
+        />
+      )}
 
       <div className="ws-body">
         <ProblemExplorer categories={categories} problems={problems} progress={progressById} selectedId={problemId} onSelectProblem={setProblemId} loading={catalogLoading} trackFilter={trackFilter}/>
@@ -410,9 +512,7 @@ export function Workspace() {
         <div className="ws-center">
           <aside className="pp">
             <div className="pp-head">
-              <h1 className="pp-title">
-                {loading === "load" && !detail ? "Loading..." : title}
-              </h1>
+              <h1 className="pp-title">{loading === "load" && !detail ? "Loading..." : title}</h1>
               {detail && (<div className="u-mt-sm">
                   <div className="pp-meta">
                     {detail.track_title && (<span className="track-pill">{detail.track_title}</span>)}
@@ -420,15 +520,19 @@ export function Workspace() {
                     <code className="pp-sig">{signature}</code>
                   </div>
                   {detail.skill_tags && detail.skill_tags.length > 0 && (<div className="pp-tags">
-                      {detail.skill_tags.map((tag) => (<span key={tag} className="pp-tag">
-                          {tag}
-                        </span>))}
+                      {detail.skill_tags.map((tag) => {
+                const tagClass = tag.toLowerCase().replace(/\s+/g, "-");
+                return (<span key={tag} className={`pp-tag pp-tag--${tagClass}`}>
+                            {tag}
+                          </span>);
+            })}
                     </div>)}
                 </div>)}
             </div>
             <div className="pp-body">
               {detail && (<>
                   <p className="pp-block pp-desc">{detail.description}</p>
+                  {isCoding && detail.examples && detail.examples.length > 0 && (
                   <div className="pp-block">
                     <SectionTitle>Examples</SectionTitle>
                     <ul className="pp-examples">
@@ -445,12 +549,15 @@ export function Workspace() {
                         </li>))}
                     </ul>
                   </div>
+                  )}
+                  {detail.constraints && detail.constraints.length > 0 && (
                   <div className="pp-block">
                     <SectionTitle>Constraints</SectionTitle>
                     <ul className="pp-constraints">
                       {detail.constraints.map((constraint, index) => (<li key={index}>{constraint}</li>))}
                     </ul>
                   </div>
+                  )}
                 </>)}
               {loading === "load" && !detail && (<p className="pp-loading">Loading problem...</p>)}
             </div>
@@ -459,7 +566,7 @@ export function Workspace() {
           <main className="main-col">
             <div className="main-toolbar">
               <button type="button" data-testid="run-code-button" onClick={() => void onRun()} disabled={loading !== "idle" || !problemId} className="btn-run">
-                {loading === "run" ? "Running..." : "Run Code"}
+                {loading === "run" ? (isCoding ? "Running..." : "Evaluating...") : (problemType === "system_design" ? "Evaluate Design" : (isCoding ? "Run Code" : "Submit Answer"))}
               </button>
               <button type="button" onClick={() => void onHint()} disabled={loading !== "idle" || !run || !!detail?.stepwise_available} className="btn-hint" title={detail?.stepwise_available
             ? "This problem uses stepwise validation — hints come from Run Code."
@@ -479,31 +586,46 @@ export function Workspace() {
                 <div className="code-panel">
                   <div className="code-panel-head">
                     <div className="flex-row-gap-sm">
-                      <span className="code-panel-label">Code</span>
-                      <span className="code-panel-badge" title="Plain text editor (Python)">
-                        Text
+                      <span className="code-panel-label">
+                        {problemType === "system_design" ? "Design Response" : (isCoding ? "Code" : "Text Response")}
+                      </span>
+                      <span className="code-panel-badge" title={isCoding ? "Plain text editor (Python)" : "Rubric-scored written answer"}>
+                        {isCoding ? "Text" : problemType.toUpperCase()}
                       </span>
                     </div>
-                    <span className="code-panel-lang">Python 3</span>
+                    <span className="code-panel-lang">
+                      {problemType === "system_design" ? "System Design" : (isCoding ? "Python 3" : "Rubric")}
+                    </span>
                   </div>
                   <div className="code-panel-body">
-                    <PythonEditor ref={editorRef} value={code} onChange={setCode} disabled={loading === "run" || loading === "hint"} onRun={loading === "idle" && problemId
-            ? () => {
-                void onRun();
-            }
-            : undefined} onCursorChange={(ln, col) => {
-            setCursorLine(ln);
-            setCursorColumn(col);
-        }}/>
+                    {!isCoding ? (<DesignEditor value={code} onChange={setCode} disabled={loading === "run" || loading === "hint"} onRun={loading === "idle" && problemId
+                ? () => {
+                    void onRun();
+                }
+                : undefined}/>) : (<PythonEditor ref={editorRef} value={code} onChange={setCode} disabled={loading === "run" || loading === "hint"} onRun={loading === "idle" && problemId
+                ? () => {
+                    void onRun();
+                }
+                : undefined} onCursorChange={(ln, col) => {
+                setCursorLine(ln);
+                setCursorColumn(col);
+            }}/>)}
                   </div>
                 </div>
 
-                <EvaluationPanel detail={detail} run={run} stepwise={stepwise} stepwiseCode={stepwiseCode} inlineHint={inlineHint} hintHistory={hintHistory} onInsertSnippet={insertSnippet}/>
+                <EvaluationPanel detail={detail} run={run} stepwise={stepwise} stepwiseCode={stepwiseCode} inlineHint={inlineHint} hintHistory={hintHistory} rubricFeedback={null} onInsertSnippet={insertSnippet}/>
               </div>
-              {ENABLE_VOICE_COACH && (<VoiceCoach problemId={problemId} problemDetail={detail} code={code} hints={hintHistory} run={run} stepwise={stepwise}/>)}
+              {ENABLE_VOICE_COACH && (<VoiceCoach problemId={problemId} problemDetail={detail} code={code} role={role} hints={hintHistory} run={run} stepwise={stepwise} rubricFeedback={null}/>)}
             </div>
           </main>
         </div>
+      </div>
+      <div className="ws-disclaimer" style={{fontSize: "10px", padding: "4px 1rem", color: "var(--text-muted)", textAlign: "center", borderTop: "1px solid var(--border-hairline)"}}>
+        {trackFilter === "cloud-architect-prep"
+            ? "Unofficial cloud interview preparation practice, designed around common CSA internship skills."
+            : trackFilter === "system_design"
+                ? "Unofficial intern-level system design practice focused on architecture thinking, tradeoffs, and communication."
+                : "Kitkode: Local interview practice for Python and System Design."}
       </div>
     </div>);
 }

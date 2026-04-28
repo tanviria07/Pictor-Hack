@@ -47,7 +47,8 @@ func (s *HintService) Hint(ctx context.Context, req dto.HintRequest) (*dto.HintR
 		sys = coach.SystemHintPreCode
 	}
 	if s.deepseek.Enabled() {
-		raw, err := s.deepseek.HintJSONCompletion(ctx, sys, userMsg)
+		sysPrompt := coach.RoleSystemPrompt(sys, req.Role)
+		raw, err := s.deepseek.HintJSONCompletion(ctx, sysPrompt, userMsg)
 		if err == nil && raw != "" {
 			parsed, perr := deepseek.ParseHintJSON(raw)
 			if perr == nil {
@@ -103,8 +104,9 @@ func hintLevel(req dto.HintRequest, sess *dto.SessionState) int {
 
 func truncateCodeHint(s string, n int) string {
 	s = strings.ReplaceAll(s, "\r", "")
-	if len(s) <= n {
+	runes := []rune(s)
+	if len(runes) <= n {
 		return s
 	}
-	return s[:n] + "â€¦"
+	return string(runes[:n]) + "..."
 }

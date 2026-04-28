@@ -1,0 +1,53 @@
+{
+  "id": "cloud-01-app-service-vs-functions",
+  "slug": "cloud-01-app-service-vs-functions",
+  "title": "Explain Azure App Service vs Azure Functions",
+  "difficulty": "easy",
+  "category": "cloud-azure-fundamentals",
+  "problem_type": "explanation",
+  "description": "Explain the difference between Azure App Service and Azure Functions for a teammate choosing where to host a small backend.",
+  "prompt": "Compare Azure App Service and Azure Functions. Include when you would choose each, how they scale, and one tradeoff.",
+  "examples": [
+    {
+      "input": "Audience: junior developer",
+      "output": "A clear comparison with a practical recommendation."
+    }
+  ],
+  "constraints": [
+    "Do not claim there is one universal best choice.",
+    "Use simple language and at least one concrete use case."
+  ],
+  "function_name": "cloud_text_answer",
+  "execution_mode": "text",
+  "class_name": "",
+  "starter_code": "",
+  "parameters": [],
+  "expected_return_type": "text",
+  "visible_tests": [],
+  "hidden_tests": [],
+  "rubric": {
+    "categories": ["technical accuracy", "clarity", "structure", "tradeoff awareness", "customer communication"],
+    "strong_answer_includes": [
+      "App Service hosts long-running web apps and APIs",
+      "Functions runs event-driven or scheduled serverless code",
+      "Scaling and pricing differ by workload pattern",
+      "Mentions operational simplicity, cold starts, or deployment model"
+    ],
+    "common_gaps": [
+      "Says Functions always replaces web hosting",
+      "Misses event-driven use cases",
+      "No recommendation criteria"
+    ]
+  },
+  "sample_answer": "Azure App Service is a good fit when you have a web app or API that should be available all the time with predictable hosting settings. Azure Functions is better for small pieces of code that run on an event, such as a queue message, timer, or uploaded file. Functions can be cheaper for spiky workloads, but may introduce cold starts and different debugging patterns. I would choose App Service for a normal FastAPI backend and Functions for background automation or lightweight event handlers.",
+  "hint_plan": {
+    "level_1": "Start by naming the workload each service is best at.",
+    "level_2": "Include scaling and cost behavior.",
+    "level_3": "Mention at least one tradeoff.",
+    "level_4": "End with a recommendation rule."
+  },
+  "canonical_solution_summary": "App Service for hosted web apps/APIs; Functions for event-driven serverless tasks.",
+  "disallowed_full_solution_exposure": false,
+  "skill_tags": ["azure", "serverless", "customer explanation"],
+  "tags": ["cloud", "azure", "explanation"]
+}

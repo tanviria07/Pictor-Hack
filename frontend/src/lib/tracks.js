@@ -107,3 +107,11 @@ export function filterCategoriesByTrack(categories, problems, trackFilter) {
     }
     return base.filter((category) => (category.track_id || "dsa") === trackFilter);
 }
+
+export function problemTypeOf(problem) {
+    return (problem?.problem_type || "coding").toLowerCase();
+}
+
+export function isCodingProblem(problem) {
+    return problemTypeOf(problem) === "coding";
+}
