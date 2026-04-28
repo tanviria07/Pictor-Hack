@@ -85,6 +85,7 @@ type HintResponse struct {
 	HintLevel           int    `json:"hint_level"`
 	InterviewerFeedback string `json:"interviewer_feedback"` // Combined note for legacy clients
 }
+
 // InlineHintRequest is POST /api/inline-hint for real-time line‑by‑line feedback.
 type InlineHintRequest struct {
 	ProblemID    string `json:"problem_id"`
@@ -125,6 +126,93 @@ type SessionState struct {
 	HintHistory    []string       `json:"hint_history"`
 	PracticeStatus PracticeStatus `json:"practice_status"`
 	UpdatedAt      string         `json:"updated_at"`
+}
+
+type AuthRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type AuthUser struct {
+	ID        int64  `json:"id"`
+	Email     string `json:"email"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+}
+
+type AuthResponse struct {
+	User AuthUser `json:"user"`
+}
+
+type UserProgress struct {
+	UserID        int64  `json:"-"`
+	ProblemID     string `json:"problem_id"`
+	Track         string `json:"track"`
+	Category      string `json:"category"`
+	Status        string `json:"status"`
+	AttemptCount  int    `json:"attempt_count"`
+	BestStatus    string `json:"best_status"`
+	LastCode      string `json:"last_code,omitempty"`
+	LastAttemptAt string `json:"last_attempt_at,omitempty"`
+	SolvedAt      string `json:"solved_at,omitempty"`
+	HintCount     int    `json:"hint_count"`
+	RoleMode      string `json:"role_mode,omitempty"`
+}
+
+type UserAttempt struct {
+	ID            int64  `json:"id"`
+	UserID        int64  `json:"-"`
+	ProblemID     string `json:"problem_id"`
+	SubmittedCode string `json:"submitted_code,omitempty"`
+	Status        string `json:"status"`
+	PassedVisible int    `json:"passed_visible"`
+	TotalVisible  int    `json:"total_visible"`
+	PassedHidden  int    `json:"passed_hidden"`
+	TotalHidden   int    `json:"total_hidden"`
+	RuntimeError  string `json:"runtime_error,omitempty"`
+	CreatedAt     string `json:"created_at"`
+	ProblemTitle  string `json:"problem_title,omitempty"`
+	Category      string `json:"category,omitempty"`
+	Track         string `json:"track,omitempty"`
+}
+
+type ProgressBucket struct {
+	ID     string `json:"id"`
+	Title  string `json:"title"`
+	Solved int    `json:"solved"`
+	Total  int    `json:"total"`
+}
+
+type WeakArea struct {
+	Category               string `json:"category"`
+	WrongOrPartialAttempts int    `json:"wrong_or_partial_attempts"`
+}
+
+type RecommendedProblem struct {
+	ID         string `json:"id"`
+	Title      string `json:"title"`
+	Track      string `json:"track"`
+	Category   string `json:"category"`
+	Difficulty string `json:"difficulty"`
+	Reason     string `json:"reason"`
+}
+
+type RoleModeActivity struct {
+	Role         string `json:"role"`
+	AttemptCount int    `json:"attempt_count"`
+}
+
+type DashboardResponse struct {
+	SolvedCount          int                  `json:"solved_count"`
+	TotalProblems        int                  `json:"total_problems"`
+	ProgressByTrack      []ProgressBucket     `json:"progress_by_track"`
+	ProgressByCategory   []ProgressBucket     `json:"progress_by_category"`
+	RecentAttempts       []UserAttempt        `json:"recent_attempts"`
+	WeakAreas            []WeakArea           `json:"weak_areas"`
+	RecommendedProblems  []RecommendedProblem `json:"recommended_problems"`
+	RoleModeSummary      []RoleModeActivity   `json:"role_mode_summary"`
+	PracticeStreakDays   int                  `json:"practice_streak_days"`
+	PracticeActivityDays int                  `json:"practice_activity_days"`
 }
 
 // Example is embedded problem content.
@@ -214,7 +302,7 @@ type ProblemDetail struct {
 	ProblemType        string            `json:"problem_type,omitempty"`
 	Prompt             string            `json:"prompt,omitempty"`
 	Rubric             *Rubric           `json:"rubric,omitempty"`
-	SampleAnswer        string            `json:"sample_answer,omitempty"`
+	SampleAnswer       string            `json:"sample_answer,omitempty"`
 }
 
 // StepwiseValidateRequest is POST /api/validate. The runner splits the code

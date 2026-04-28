@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getHint, getInlineHint, getProblem, listCategories, listProblems, loadSession, runCode, saveSession, validateStepwise } from "../lib/api";
+import { getHint, getInlineHint, getMyProgress, getProblem, listCategories, listProblems, loadMySession, loadSession, runCode, saveMySession, saveSession, validateStepwise } from "../lib/api";
 import { deriveCategoriesFromProblems } from "../lib/catalog";
 import { formatThrownError } from "../lib/errors";
 import { deriveProgress, loadLocalProgress, mergeProgress, setLocalProgress } from "../lib/progress";
@@ -20,7 +20,7 @@ function SectionTitle({ children }) {
     return <h3 className="sec-title">{children}</h3>;
 }
 
-export function Workspace() {
+export function Workspace({ user, onAuth, onDashboard, onLogout }) {
     const [categories, setCategories] = useState([]);
     const [problems, setProblems] = useState([]);
     const [catalogLoading, setCatalogLoading] = useState(true);
@@ -53,6 +53,21 @@ export function Workspace() {
     useEffect(() => {
         setProgressById(loadLocalProgress());
     }, []);
+
+    useEffect(() => {
+        if (!user)
+            return;
+        let cancelled = false;
+        (async () => {
+            const remote = await getMyProgress();
+            if (!cancelled && remote) {
+                setProgressById((prev) => ({ ...prev, ...remote }));
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, [user]);
 
     useEffect(() => {
         if (trackFilter === "all" || problems.length === 0 || demo)
@@ -132,7 +147,7 @@ export function Workspace() {
                   setHintHistory([]);
                 } else {
                   const starter = isCodingProblem(problemDetail) ? buildStarter(problemDetail) : "";
-                  const session = await loadSession(problemId);
+                  const session = user ? await loadMySession(problemId) : await loadSession(problemId);
                   if (session?.code) {
                       setCode(session.code);
                       setHintHistory(session.hint_history || []);
@@ -152,7 +167,7 @@ export function Workspace() {
                 setLoading("idle");
             }
         })();
-    }, [problemId, demo?.problemId, demo?.step]);
+    }, [problemId, demo?.problemId, demo?.step, user]);
 
     const starterForCompare = useMemo(() => (detail && isCodingProblem(detail) ? buildStarter(detail) : ""), [detail]);
 
@@ -162,18 +177,22 @@ export function Workspace() {
         const nextStatus = explicitStatus ?? deriveProgress(run, nextCode, starterForCompare, nextHints.length > 0);
         setProgressById((prev) => ({ ...prev, [problemId]: nextStatus }));
         setLocalProgress(problemId, nextStatus);
-        try {
-            await saveSession({
+        const payload = {
                 problem_id: problemId,
                 code: nextCode,
                 hint_history: nextHints,
                 practice_status: nextStatus,
-            });
+            };
+        try {
+            if (user)
+                await saveMySession(payload);
+            else
+                await saveSession(payload);
         }
         catch {
             /* non-fatal */
         }
-    }, [problemId, run, starterForCompare, demo]);
+    }, [problemId, run, starterForCompare, demo, user]);
 
     const onRun = useCallback(async () => {
         if (!problemId || !detail)
@@ -442,8 +461,10 @@ export function Workspace() {
           </div>
           <div className="ws-header-meta">
               <div className="ws-meta-row" style={{gap: '1rem'}}>
+                <button type="button" className="btn-dashboard" onClick={onDashboard}>Dashboard</button>
                 <DemoButton active={!!demo} onToggle={toggleDemo} />
                 <RoleSelector value={role} onChange={setRole} disabled={loading === 'run'} />
+                {user ? (<div className="user-menu"><span>{user.email}</span><button type="button" onClick={onLogout}>Log out</button></div>) : (<div className="user-menu"><button type="button" onClick={() => onAuth?.("login")}>Log in</button><button type="button" onClick={() => onAuth?.("signup")}>Sign up</button></div>)}
                 {detail && (
                   <>
                     {detail.track_title && (<span className="track-pill">{detail.track_title}</span>)}
@@ -495,6 +516,7 @@ export function Workspace() {
       </header>
 
       {err && (<div className="ws-alert" role="alert">{err}</div>)}
+      {!user && (<div className="save-notice">Log in to save progress across sessions.</div>)}
 
       {demo && (
         <DemoBanner

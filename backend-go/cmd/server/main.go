@@ -48,6 +48,8 @@ func main() {
 		Inline:       inlineSvc,
 		Traces:       ts,
 		Sessions:     st,
+		Users:        st,
+		Dashboard:    service.NewDashboardService(st),
 		MaxCodeBytes: cfg.MaxCodeBytes,
 	}
 

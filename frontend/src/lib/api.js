@@ -21,6 +21,7 @@ async function j(path, init) {
         ...init,
         signal: withTimeout(init?.signal, 25_000),
         headers,
+        credentials: "include",
     });
     if (!r.ok) {
         const t = await r.text();
@@ -65,7 +66,7 @@ export async function saveSession(body) {
 export async function loadSession(problemId) {
     try {
         const url = `${base()}/api/session/${encodeURIComponent(problemId)}`;
-        const r = await fetch(url, { signal: withTimeout(undefined, 25_000) });
+        const r = await fetch(url, { signal: withTimeout(undefined, 25_000), credentials: "include" });
         if (r.status === 404)
             return null;
         if (!r.ok) {
@@ -76,4 +77,59 @@ export async function loadSession(problemId) {
     catch {
         return null;
     }
+}
+
+export async function signup(body) {
+    return j("/api/auth/signup", { method: "POST", body: JSON.stringify(body) });
+}
+export async function login(body) {
+    return j("/api/auth/login", { method: "POST", body: JSON.stringify(body) });
+}
+export async function logout() {
+    return j("/api/auth/logout", { method: "POST" });
+}
+export async function getMe() {
+    try {
+        return await j("/api/auth/me");
+    }
+    catch {
+        return null;
+    }
+}
+export async function getMyDashboard() {
+    return j("/api/me/dashboard");
+}
+export async function getMyProgress() {
+    try {
+        return await j("/api/me/progress");
+    }
+    catch {
+        return null;
+    }
+}
+export async function saveMySession(body) {
+    return j("/api/me/session/save", { method: "POST", body: JSON.stringify(body) });
+}
+export async function loadMySession(problemId) {
+    try {
+        const url = `${base()}/api/me/session/${encodeURIComponent(problemId)}`;
+        const r = await fetch(url, { signal: withTimeout(undefined, 25_000), credentials: "include" });
+        if (r.status === 404 || r.status === 401)
+            return null;
+        if (!r.ok)
+            return null;
+        return r.json();
+    }
+    catch {
+        return null;
+    }
+}
+export async function exportMyProgress() {
+    return j("/api/me/export");
+}
+export async function resetMyProgress() {
+    return j("/api/me/reset-progress", { method: "POST" });
+}
+export async function deleteMyAccount() {
+    return j("/api/me/account", { method: "DELETE" });
 }
