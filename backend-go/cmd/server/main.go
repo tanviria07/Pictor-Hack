@@ -47,6 +47,7 @@ func main() {
 		Hints:        service.NewHintService(ds, st),
 		Inline:       inlineSvc,
 		Traces:       ts,
+		Coach:        ds,
 		Sessions:     st,
 		Users:        st,
 		Dashboard:    service.NewDashboardService(st),

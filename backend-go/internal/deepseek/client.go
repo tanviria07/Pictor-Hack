@@ -52,6 +52,8 @@ type chatRequest struct {
 	Messages       []chatMessage   `json:"messages"`
 	ResponseFormat *responseFormat `json:"response_format,omitempty"`
 	Temperature    *float64        `json:"temperature,omitempty"`
+	MaxTokens      int             `json:"max_tokens,omitempty"`
+	TopP           float64         `json:"top_p,omitempty"`
 }
 
 type chatResponse struct {
@@ -69,6 +71,18 @@ func (c *Client) CoachFeedback(systemPrompt, userContent string) (string, error)
 		System: systemPrompt,
 		User:   userContent,
 		JSON:   false,
+	})
+}
+
+// CoachTurn requests a short interactive Jose coach response.
+func (c *Client) CoachTurn(ctx context.Context, systemPrompt, userContent string) (string, error) {
+	return c.chatCompletion(ctx, chatParams{
+		System:      systemPrompt,
+		User:        userContent,
+		JSON:        false,
+		Temperature: 0.7,
+		MaxTokens:   220,
+		TopP:        0.9,
 	})
 }
 
@@ -100,9 +114,12 @@ func (c *Client) TraceJSONCompletion(ctx context.Context, systemPrompt, userCont
 }
 
 type chatParams struct {
-	System string
-	User   string
-	JSON   bool
+	System      string
+	User        string
+	JSON        bool
+	Temperature float64
+	MaxTokens   int
+	TopP        float64
 }
 
 func (c *Client) chatCompletion(ctx context.Context, p chatParams) (string, error) {
@@ -115,6 +132,15 @@ func (c *Client) chatCompletion(ctx context.Context, p chatParams) (string, erro
 			{Role: "system", Content: p.System},
 			{Role: "user", Content: p.User},
 		},
+	}
+	if p.Temperature > 0 {
+		reqBody.Temperature = &p.Temperature
+	}
+	if p.MaxTokens > 0 {
+		reqBody.MaxTokens = p.MaxTokens
+	}
+	if p.TopP > 0 {
+		reqBody.TopP = p.TopP
 	}
 	if p.JSON {
 		reqBody.ResponseFormat = &responseFormat{Type: "json_object"}

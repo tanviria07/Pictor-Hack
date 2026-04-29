@@ -13,8 +13,8 @@ type SessionRepository interface {
 }
 
 type UserRepository interface {
-	CreateUser(ctx context.Context, email, passwordHash string) (*dto.AuthUser, error)
-	GetUserByEmail(ctx context.Context, email string) (*dto.AuthUser, string, error)
+	CreateUser(ctx context.Context, email, username, passwordHash string) (*dto.AuthUser, error)
+	GetUserByLogin(ctx context.Context, identifier string) (*dto.AuthUser, string, error)
 	GetUserByID(ctx context.Context, userID int64) (*dto.AuthUser, error)
 	CreateAuthSession(ctx context.Context, userID int64, tokenHash string, expiresAt string) error
 	GetUserIDBySessionHash(ctx context.Context, tokenHash string) (int64, error)

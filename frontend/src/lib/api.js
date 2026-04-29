@@ -59,6 +59,9 @@ export async function getInlineHint(body) {
 export async function getTrace(body) {
     return j("/api/trace", { method: "POST", body: JSON.stringify(body) });
 }
+export async function getCoachReply(body, signal) {
+    return j("/api/coach", { method: "POST", body: JSON.stringify(body), signal });
+}
 export async function saveSession(body) {
     return j("/api/session/save", { method: "POST", body: JSON.stringify(body) });
 }

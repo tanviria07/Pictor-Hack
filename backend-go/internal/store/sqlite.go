@@ -65,6 +65,7 @@ func migrateUsers(s *Store) error {
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   email TEXT NOT NULL UNIQUE,
+  username TEXT NOT NULL DEFAULT '',
   password_hash TEXT NOT NULL,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
@@ -123,6 +124,19 @@ CREATE TABLE IF NOT EXISTS user_design_answers (
   UNIQUE(user_id, problem_id),
   FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );`)
+	if err != nil {
+		return err
+	}
+	_, err = s.db.Exec(`ALTER TABLE users ADD COLUMN username TEXT NOT NULL DEFAULT ''`)
+	if err != nil {
+		msg := strings.ToLower(err.Error())
+		if !strings.Contains(msg, "duplicate column") {
+			return err
+		}
+	}
+	_, err = s.db.Exec(`
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email_lower ON users(lower(email));
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username_lower ON users(lower(username)) WHERE username != '';`)
 	return err
 }
 
@@ -187,9 +201,9 @@ func (s *Store) GetSession(_ context.Context, problemID string) (*dto.SessionSta
 	}, nil
 }
 
-func (s *Store) CreateUser(_ context.Context, email, passwordHash string) (*dto.AuthUser, error) {
+func (s *Store) CreateUser(_ context.Context, email, username, passwordHash string) (*dto.AuthUser, error) {
 	now := time.Now().UTC().Format(time.RFC3339)
-	res, err := s.db.Exec(`INSERT INTO users(email, password_hash, created_at, updated_at) VALUES(?,?,?,?)`, email, passwordHash, now, now)
+	res, err := s.db.Exec(`INSERT INTO users(email, username, password_hash, created_at, updated_at) VALUES(?,?,?,?,?)`, email, username, passwordHash, now, now)
 	if err != nil {
 		return nil, err
 	}
@@ -197,23 +211,23 @@ func (s *Store) CreateUser(_ context.Context, email, passwordHash string) (*dto.
 	if err != nil {
 		return nil, err
 	}
-	return &dto.AuthUser{ID: id, Email: email, CreatedAt: now, UpdatedAt: now}, nil
+	return &dto.AuthUser{ID: id, Email: email, Username: username, CreatedAt: now, UpdatedAt: now}, nil
 }
 
-func (s *Store) GetUserByEmail(_ context.Context, email string) (*dto.AuthUser, string, error) {
-	row := s.db.QueryRow(`SELECT id, email, password_hash, created_at, updated_at FROM users WHERE lower(email)=lower(?)`, email)
+func (s *Store) GetUserByLogin(_ context.Context, identifier string) (*dto.AuthUser, string, error) {
+	row := s.db.QueryRow(`SELECT id, email, username, password_hash, created_at, updated_at FROM users WHERE lower(email)=lower(?) OR lower(username)=lower(?)`, identifier, identifier)
 	var u dto.AuthUser
 	var hash string
-	if err := row.Scan(&u.ID, &u.Email, &hash, &u.CreatedAt, &u.UpdatedAt); err != nil {
+	if err := row.Scan(&u.ID, &u.Email, &u.Username, &hash, &u.CreatedAt, &u.UpdatedAt); err != nil {
 		return nil, "", err
 	}
 	return &u, hash, nil
 }
 
 func (s *Store) GetUserByID(_ context.Context, userID int64) (*dto.AuthUser, error) {
-	row := s.db.QueryRow(`SELECT id, email, created_at, updated_at FROM users WHERE id=?`, userID)
+	row := s.db.QueryRow(`SELECT id, email, username, created_at, updated_at FROM users WHERE id=?`, userID)
 	var u dto.AuthUser
-	if err := row.Scan(&u.ID, &u.Email, &u.CreatedAt, &u.UpdatedAt); err != nil {
+	if err := row.Scan(&u.ID, &u.Email, &u.Username, &u.CreatedAt, &u.UpdatedAt); err != nil {
 		return nil, err
 	}
 	return &u, nil

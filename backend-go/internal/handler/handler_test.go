@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 
 	"pictorhack/backend/internal/config"
@@ -51,6 +52,8 @@ func newTestHandler(t *testing.T, runnerHandler http.HandlerFunc) (*handler.Hand
 		Hints:        service.NewHintService(ds, st),
 		Traces:       tsvc,
 		Sessions:     st,
+		Users:        st,
+		Dashboard:    service.NewDashboardService(st),
 		MaxCodeBytes: 1 << 20,
 	}
 	return h, func() { _ = st.Close() }
@@ -230,6 +233,75 @@ func TestRun_runnerUnavailable(t *testing.T) {
 	_ = json.Unmarshal(rec.Body.Bytes(), &body)
 	if body["code"] != "runner_unavailable" {
 		t.Fatalf("code: %v", body)
+	}
+}
+
+func TestPasswordAuthLocalMVPFlow(t *testing.T) {
+	h, cleanup := newTestHandler(t, nil)
+	defer cleanup()
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
+
+	postJSON := func(path string, body map[string]any, cookies []*http.Cookie) *httptest.ResponseRecorder {
+		t.Helper()
+		b, _ := json.Marshal(body)
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodPost, path, bytes.NewReader(b))
+		req.Header.Set("Content-Type", "application/json")
+		for _, c := range cookies {
+			req.AddCookie(c)
+		}
+		srv.ServeHTTP(rec, req)
+		return rec
+	}
+
+	missing := postJSON("/api/auth/signup", map[string]any{"email": "", "username": "", "password": ""}, nil)
+	if missing.Code != http.StatusBadRequest {
+		t.Fatalf("missing fields status %d %s", missing.Code, missing.Body.String())
+	}
+
+	signup := postJSON("/api/auth/signup", map[string]any{"email": "local@example.com", "username": "local_user", "password": "password123"}, nil)
+	if signup.Code != http.StatusOK {
+		t.Fatalf("signup status %d %s", signup.Code, signup.Body.String())
+	}
+	if len(signup.Result().Cookies()) == 0 {
+		t.Fatal("signup should issue a session cookie")
+	}
+	sessionCookie := signup.Result().Cookies()[0]
+
+	duplicate := postJSON("/api/auth/signup", map[string]any{"email": "local@example.com", "username": "other_user", "password": "password123"}, nil)
+	if duplicate.Code != http.StatusConflict {
+		t.Fatalf("duplicate status %d %s", duplicate.Code, duplicate.Body.String())
+	}
+
+	wrongPassword := postJSON("/api/auth/login", map[string]any{"identifier": "local_user", "password": "wrongpass"}, nil)
+	if wrongPassword.Code != http.StatusUnauthorized || !strings.Contains(wrongPassword.Body.String(), "wrong password") {
+		t.Fatalf("wrong password response %d %s", wrongPassword.Code, wrongPassword.Body.String())
+	}
+
+	notFound := postJSON("/api/auth/login", map[string]any{"identifier": "missing_user", "password": "password123"}, nil)
+	if notFound.Code != http.StatusUnauthorized || !strings.Contains(notFound.Body.String(), "user not found") {
+		t.Fatalf("not found response %d %s", notFound.Code, notFound.Body.String())
+	}
+
+	me := httptest.NewRecorder()
+	meReq := httptest.NewRequest(http.MethodGet, "/api/auth/me", nil)
+	meReq.AddCookie(sessionCookie)
+	srv.ServeHTTP(me, meReq)
+	if me.Code != http.StatusOK || !strings.Contains(me.Body.String(), "local_user") {
+		t.Fatalf("me response %d %s", me.Code, me.Body.String())
+	}
+
+	logout := postJSON("/api/auth/logout", map[string]any{}, []*http.Cookie{sessionCookie})
+	if logout.Code != http.StatusOK {
+		t.Fatalf("logout status %d %s", logout.Code, logout.Body.String())
+	}
+
+	protected := httptest.NewRecorder()
+	protectedReq := httptest.NewRequest(http.MethodGet, "/api/me/dashboard", nil)
+	protectedReq.AddCookie(sessionCookie)
+	srv.ServeHTTP(protected, protectedReq)
+	if protected.Code != http.StatusUnauthorized {
+		t.Fatalf("dashboard should require a valid session, got %d %s", protected.Code, protected.Body.String())
 	}
 }
 

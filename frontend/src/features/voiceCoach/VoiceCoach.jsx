@@ -1,9 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { requestDeepSeekCoachReply } from "./deepseek";
-import {
-  COACH_API_KEY,
-  DEEPSEEK_MODEL,
-} from "../../lib/config";
 import { buildCoachContext } from "./context";
 
 const QUICK_ACTIONS = [
@@ -68,7 +64,7 @@ export function VoiceCoach({
     [code, hints, problemDetail, run?.evaluation, stepwise, rubricFeedback, role],
   );
   const status = describeRunnerResult(run, stepwise);
-  const disabled = !COACH_API_KEY || !problemId || isThinking;
+  const disabled = !problemId || isThinking;
 
   const submitCoachTurn = useCallback(
     async (text, source = "user") => {
@@ -85,8 +81,6 @@ export function VoiceCoach({
 
       try {
         const reply = await requestDeepSeekCoachReply({
-          apiKey: COACH_API_KEY,
-          model: DEEPSEEK_MODEL,
           context,
           role,
           transcript:
@@ -178,15 +172,10 @@ export function VoiceCoach({
           </div>
 
           <div ref={threadRef} className="coach-thread" aria-live="polite">
-            {!COACH_API_KEY && (
-              <p className="coach-note">
-                Add VITE_DEEPSEEK_API_KEY to frontend/.env to enable text coaching.
-              </p>
-            )}
-            {COACH_API_KEY && !problemId && (
+            {!problemId && (
               <p className="coach-note">Select a problem to start coaching.</p>
             )}
-            {COACH_API_KEY && problemId && turns.length === 0 && !error && (
+            {problemId && turns.length === 0 && !error && (
               <p className="coach-note">
                 Ask for text coaching grounded in this problem, your code, and the
                 latest runner result. Jose can coach, but the Python runner remains
@@ -218,7 +207,7 @@ export function VoiceCoach({
               type="text"
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
-              disabled={!COACH_API_KEY || !problemId || isThinking}
+              disabled={!problemId || isThinking}
               placeholder="Ask about your approach, bug, edge case, or complexity"
             />
             <button type="submit" disabled={disabled || draft.trim() === ""}>

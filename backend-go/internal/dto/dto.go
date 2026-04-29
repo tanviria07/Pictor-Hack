@@ -129,19 +129,33 @@ type SessionState struct {
 }
 
 type AuthRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email      string `json:"email,omitempty"`
+	Username   string `json:"username,omitempty"`
+	Identifier string `json:"identifier,omitempty"`
+	Password   string `json:"password"`
 }
 
 type AuthUser struct {
 	ID        int64  `json:"id"`
 	Email     string `json:"email"`
+	Username  string `json:"username"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 }
 
 type AuthResponse struct {
 	User AuthUser `json:"user"`
+}
+
+type CoachRequest struct {
+	SystemPrompt string `json:"system_prompt"`
+	Context      string `json:"context"`
+	Role         string `json:"role,omitempty"`
+	Transcript   string `json:"transcript"`
+}
+
+type CoachResponse struct {
+	Reply string `json:"reply"`
 }
 
 type UserProgress struct {

@@ -3,6 +3,7 @@
 package handler
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -24,10 +25,14 @@ import (
 
 // Handler wires HTTP handlers to services.
 type Handler struct {
-	Runs         *service.RunService
-	Hints        *service.HintService
-	Inline       *service.InlineService
-	Traces       *service.TraceService
+	Runs   *service.RunService
+	Hints  *service.HintService
+	Inline *service.InlineService
+	Traces *service.TraceService
+	Coach  interface {
+		Enabled() bool
+		CoachTurn(ctx context.Context, systemPrompt, userContent string) (string, error)
+	}
 	Sessions     store.SessionRepository
 	Users        store.UserRepository
 	Dashboard    *service.DashboardService
@@ -248,6 +253,53 @@ func (h *Handler) InlineHint(w http.ResponseWriter, r *http.Request) {
 	httpx.JSON(w, http.StatusOK, out)
 }
 
+func (h *Handler) CoachTurn(w http.ResponseWriter, r *http.Request) {
+	var req dto.CoachRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	req.SystemPrompt = strings.TrimSpace(req.SystemPrompt)
+	req.Context = strings.TrimSpace(req.Context)
+	req.Transcript = strings.TrimSpace(req.Transcript)
+	if req.SystemPrompt == "" || req.Context == "" || req.Transcript == "" {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "coach prompt, context, and message are required")
+		return
+	}
+	if len(req.SystemPrompt) > 6000 || len(req.Context) > 12000 || len(req.Transcript) > 2000 {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "coach request is too large")
+		return
+	}
+	if h.Coach == nil || !h.Coach.Enabled() {
+		httpx.JSON(w, http.StatusOK, dto.CoachResponse{Reply: localCoachReply(req)})
+		return
+	}
+	userContent := req.Context + "\n\nUser said: " + req.Transcript
+	reply, err := h.Coach.CoachTurn(r.Context(), req.SystemPrompt, userContent)
+	if err != nil {
+		log.Println("coach:", err)
+		httpx.JSON(w, http.StatusOK, dto.CoachResponse{Reply: localCoachReply(req)})
+		return
+	}
+	httpx.JSON(w, http.StatusOK, dto.CoachResponse{Reply: reply})
+}
+
+func localCoachReply(req dto.CoachRequest) string {
+	msg := strings.ToLower(req.Transcript)
+	switch {
+	case strings.Contains(msg, "complex"):
+		return "Anchor your answer in the latest runner result, then describe the time and space cost of the approach you actually wrote."
+	case strings.Contains(msg, "bug") || strings.Contains(msg, "wrong"):
+		return "Use the runner status first: compare your function name, return value, and the smallest visible failing case before changing the whole approach."
+	case strings.Contains(msg, "edge"):
+		return "Try one tiny edge case by hand, then check whether your code handles the empty, single-item, or boundary input for this problem."
+	case strings.Contains(msg, "hint") || strings.Contains(msg, "stuck"):
+		return "What approach comes to mind? Start with the simplest direct solution, then use the runner feedback to narrow the next change."
+	default:
+		return "Talk me through your current approach, then make one small change and run the Python evaluator again."
+	}
+}
+
 func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	h.authWithPassword(w, r, true)
 }
@@ -267,8 +319,26 @@ func (h *Handler) authWithPassword(w http.ResponseWriter, r *http.Request, creat
 		return
 	}
 	email := strings.ToLower(strings.TrimSpace(req.Email))
-	if !validEmail(email) || len(req.Password) < 8 || len(req.Password) > 256 {
-		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "valid email and password with at least 8 characters required")
+	username := strings.ToLower(strings.TrimSpace(req.Username))
+	identifier := strings.ToLower(strings.TrimSpace(req.Identifier))
+	if create && (email == "" || username == "" || req.Password == "") {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "email, username, and password are required")
+		return
+	}
+	if !create && (identifier == "" || req.Password == "") {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "email or username and password are required")
+		return
+	}
+	if create && !validEmail(email) {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "enter a valid email address")
+		return
+	}
+	if create && !validUsername(username) {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "username must be 3 to 32 characters and use letters, numbers, underscores, or hyphens")
+		return
+	}
+	if len(req.Password) < 8 || len(req.Password) > 256 {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "password must be at least 8 characters")
 		return
 	}
 	var user *dto.AuthUser
@@ -278,16 +348,24 @@ func (h *Handler) authWithPassword(w http.ResponseWriter, r *http.Request, creat
 			httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not hash password")
 			return
 		}
-		u, err := h.Users.CreateUser(r.Context(), email, hash)
+		u, err := h.Users.CreateUser(r.Context(), email, username, hash)
 		if err != nil {
-			httpx.Error(w, http.StatusConflict, httpx.ErrBadRequest, "account already exists")
+			httpx.Error(w, http.StatusConflict, httpx.ErrBadRequest, "an account with that email or username already exists")
 			return
 		}
 		user = u
 	} else {
-		u, hash, err := h.Users.GetUserByEmail(r.Context(), email)
-		if err != nil || !auth.VerifyPassword(hash, req.Password) {
-			httpx.Error(w, http.StatusUnauthorized, httpx.ErrBadRequest, "invalid email or password")
+		u, hash, err := h.Users.GetUserByLogin(r.Context(), identifier)
+		if errors.Is(err, sql.ErrNoRows) {
+			httpx.Error(w, http.StatusUnauthorized, httpx.ErrBadRequest, "user not found")
+			return
+		}
+		if err != nil {
+			httpx.Error(w, http.StatusUnauthorized, httpx.ErrBadRequest, "could not log in")
+			return
+		}
+		if !auth.VerifyPassword(hash, req.Password) {
+			httpx.Error(w, http.StatusUnauthorized, httpx.ErrBadRequest, "wrong password")
 			return
 		}
 		user = u
@@ -459,6 +537,19 @@ func (h *Handler) DeleteMyAccount(w http.ResponseWriter, r *http.Request) {
 
 func validEmail(email string) bool {
 	return len(email) <= 254 && strings.Contains(email, "@") && strings.Contains(email, ".") && !strings.ContainsAny(email, " \t\r\n")
+}
+
+func validUsername(username string) bool {
+	if len(username) < 3 || len(username) > 32 {
+		return false
+	}
+	for _, ch := range username {
+		if (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_' || ch == '-' {
+			continue
+		}
+		return false
+	}
+	return true
 }
 
 func sessionToken(r *http.Request) string {

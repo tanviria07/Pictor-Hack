@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getHint, getInlineHint, getMyProgress, getProblem, listCategories, listProblems, loadMySession, loadSession, runCode, saveMySession, saveSession, validateStepwise } from "../lib/api";
+import { getHint, getInlineHint, getMyProgress, getProblem, listCategories, listProblems, loadMySession, runCode, saveMySession, validateStepwise } from "../lib/api";
 import { deriveCategoriesFromProblems } from "../lib/catalog";
 import { formatThrownError } from "../lib/errors";
 import { deriveProgress, loadLocalProgress, mergeProgress, setLocalProgress } from "../lib/progress";
@@ -147,7 +147,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                   setHintHistory([]);
                 } else {
                   const starter = isCodingProblem(problemDetail) ? buildStarter(problemDetail) : "";
-                  const session = user ? await loadMySession(problemId) : await loadSession(problemId);
+                  const session = user ? await loadMySession(problemId) : null;
                   if (session?.code) {
                       setCode(session.code);
                       setHintHistory(session.hint_history || []);
@@ -186,8 +186,6 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
         try {
             if (user)
                 await saveMySession(payload);
-            else
-                await saveSession(payload);
         }
         catch {
             /* non-fatal */
@@ -464,7 +462,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                 <button type="button" className="btn-dashboard" onClick={onDashboard}>Dashboard</button>
                 <DemoButton active={!!demo} onToggle={toggleDemo} />
                 <RoleSelector value={role} onChange={setRole} disabled={loading === 'run'} />
-                {user ? (<div className="user-menu"><span>{user.email}</span><button type="button" onClick={onLogout}>Log out</button></div>) : (<div className="user-menu"><button type="button" onClick={() => onAuth?.("login")}>Log in</button><button type="button" onClick={() => onAuth?.("signup")}>Sign up</button></div>)}
+                {user ? (<div className="user-menu"><span>{user.username || user.email}</span><button type="button" onClick={onLogout}>Log out</button></div>) : (<div className="user-menu"><button type="button" onClick={() => onAuth?.("login")}>Log in</button><button type="button" onClick={() => onAuth?.("signup")}>Sign up</button></div>)}
                 {detail && (
                   <>
                     {detail.track_title && (<span className="track-pill">{detail.track_title}</span>)}

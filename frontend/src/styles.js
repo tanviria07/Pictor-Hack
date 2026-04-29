@@ -301,6 +301,13 @@ textarea:focus-visible {
   font-size: 1rem;
 }
 
+.auth-copy {
+  margin: 0.75rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
 .auth-close,
 .auth-switch {
   border: 0;

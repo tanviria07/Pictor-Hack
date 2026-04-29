@@ -99,6 +99,11 @@ Backend defaults are documented in `backend-go/.env.example`:
 - `DEEPSEEK_API_KEY=` optional
 - `DEEPSEEK_API_URL=https://api.deepseek.com`
 - `DEEPSEEK_MODEL=deepseek-chat`
+- `ENABLE_GOOGLE_AUTH=false`
+- `ENABLE_EMAIL_VERIFICATION=false`
+- `ENABLE_MAGIC_LINK=false`
+
+Local MVP authentication uses SQLite-backed email/username + password accounts with backend-managed session cookies. Google OAuth, magic-link sign-in, and email verification are disabled by default; no emails are sent in local MVP mode.
 
 Runner defaults are documented in `runner-python/.env.example`:
 
@@ -109,9 +114,10 @@ Runner defaults are documented in `runner-python/.env.example`:
 Frontend defaults are documented in `frontend/.env.example`:
 
 - `API_BASE=` optional, usually unset in local dev
-- `ENABLE_VOICE_COACH=true`
-- `VITE_DEEPSEEK_API_KEY=` optional and only relevant if the coach panel is enabled
-- `VITE_DEEPSEEK_MODEL=deepseek-chat`
+- `ENABLE_VOICE_COACH=false`
+- `ENABLE_GOOGLE_AUTH=false`
+- `ENABLE_EMAIL_VERIFICATION=false`
+- `ENABLE_MAGIC_LINK=false`
 
 ## Evaluation Statuses
 

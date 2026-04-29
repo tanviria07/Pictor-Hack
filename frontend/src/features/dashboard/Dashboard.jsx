@@ -59,7 +59,7 @@ export function Dashboard({ user, onBack, onLogout }) {
       <header className="dash-header">
         <div>
           <h1>Dashboard</h1>
-          <p>{user?.email}</p>
+          <p>{user?.username || user?.email}</p>
         </div>
         <div className="dash-actions">
           <button className="btn-hint" onClick={onBack}>Practice</button>

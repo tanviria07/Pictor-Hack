@@ -4,6 +4,8 @@ import { formatThrownError } from "../../lib/errors";
 
 export function AuthModal({ mode, onClose, onAuthed }) {
     const [activeMode, setActiveMode] = useState(mode || "login");
+    const [username, setUsername] = useState("");
+    const [identifier, setIdentifier] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -14,8 +16,8 @@ export function AuthModal({ mode, onClose, onAuthed }) {
         setError("");
         try {
             const response = activeMode === "signup"
-                ? await signup({ email, password })
-                : await login({ email, password });
+                ? await signup({ email, username, password })
+                : await login({ identifier, password });
             onAuthed(response.user);
         }
         catch (err) {
@@ -31,8 +33,16 @@ export function AuthModal({ mode, onClose, onAuthed }) {
           <h2>{activeMode === "signup" ? "Create account" : "Log in"}</h2>
           <button type="button" className="auth-close" onClick={onClose}>Close</button>
         </div>
-        <label className="auth-label" htmlFor="auth-email">Email</label>
-        <input id="auth-email" className="auth-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required />
+        <p className="auth-copy">Use a local Kitkode account. No email verification or magic link is required.</p>
+        {activeMode === "signup" ? (<>
+          <label className="auth-label" htmlFor="auth-email">Email</label>
+          <input id="auth-email" className="auth-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required />
+          <label className="auth-label" htmlFor="auth-username">Username</label>
+          <input id="auth-username" className="auth-input" type="text" value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" minLength={3} maxLength={32} required />
+        </>) : (<>
+          <label className="auth-label" htmlFor="auth-identifier">Email or username</label>
+          <input id="auth-identifier" className="auth-input" type="text" value={identifier} onChange={(e) => setIdentifier(e.target.value)} autoComplete="username" required />
+        </>)}
         <label className="auth-label" htmlFor="auth-password">Password</label>
         <input id="auth-password" className="auth-input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete={activeMode === "signup" ? "new-password" : "current-password"} minLength={8} required />
         {error && <p className="auth-error">{error}</p>}

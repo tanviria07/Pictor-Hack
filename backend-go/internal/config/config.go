@@ -10,13 +10,16 @@ import (
 
 // Config holds all runtime configuration for the API server.
 type Config struct {
-	HTTPAddr      string // e.g. ":8080"
-	DatabasePath  string
-	RunnerURL     string
-	CORSOrigins   []string
-	DeepSeekKey   string
-	DeepSeekURL   string
-	DeepSeekModel string
+	HTTPAddr                string // e.g. ":8080"
+	DatabasePath            string
+	RunnerURL               string
+	CORSOrigins             []string
+	DeepSeekKey             string
+	DeepSeekURL             string
+	DeepSeekModel           string
+	EnableGoogleAuth        bool
+	EnableEmailVerification bool
+	EnableMagicLink         bool
 
 	MaxCodeBytes       int
 	RateLimitPerMinute int
@@ -24,6 +27,8 @@ type Config struct {
 
 // Load reads environment variables with sensible defaults.
 func Load() Config {
+	loadLocalEnv()
+
 	port := os.Getenv("PORT")
 	addr := ":8080"
 	if port != "" {
@@ -76,16 +81,61 @@ func Load() Config {
 		}
 	}
 
+	dsKey := os.Getenv("DEEPSEEK_API_KEY")
+	if dsKey == "" {
+		// Legacy local installs sometimes put this in frontend/.env. Keep the
+		// browser bundle keyless while allowing the backend to use that value.
+		dsKey = os.Getenv("VITE_DEEPSEEK_API_KEY")
+	}
+
 	return Config{
-		HTTPAddr:      addr,
-		DatabasePath:  db,
-		RunnerURL:     runner,
-		CORSOrigins:   origins,
-		DeepSeekKey:   os.Getenv("DEEPSEEK_API_KEY"),
-		DeepSeekURL:   dsURL,
-		DeepSeekModel: dsModel,
+		HTTPAddr:                addr,
+		DatabasePath:            db,
+		RunnerURL:               runner,
+		CORSOrigins:             origins,
+		DeepSeekKey:             dsKey,
+		DeepSeekURL:             dsURL,
+		DeepSeekModel:           dsModel,
+		EnableGoogleAuth:        envBool("ENABLE_GOOGLE_AUTH", false),
+		EnableEmailVerification: envBool("ENABLE_EMAIL_VERIFICATION", false),
+		EnableMagicLink:         envBool("ENABLE_MAGIC_LINK", false),
 
 		MaxCodeBytes:       maxCode,
 		RateLimitPerMinute: rpm,
 	}
+}
+
+func loadLocalEnv() {
+	for _, path := range []string{".env", "../.env", "../frontend/.env"} {
+		b, err := os.ReadFile(path)
+		if err != nil {
+			continue
+		}
+		for _, line := range strings.Split(string(b), "\n") {
+			line = strings.TrimSpace(line)
+			if line == "" || strings.HasPrefix(line, "#") {
+				continue
+			}
+			key, value, ok := strings.Cut(line, "=")
+			if !ok {
+				continue
+			}
+			key = strings.TrimSpace(key)
+			value = strings.Trim(strings.TrimSpace(value), `"'`)
+			if key == "" {
+				continue
+			}
+			if _, exists := os.LookupEnv(key); !exists {
+				_ = os.Setenv(key, value)
+			}
+		}
+	}
+}
+
+func envBool(name string, fallback bool) bool {
+	value := strings.ToLower(strings.TrimSpace(os.Getenv(name)))
+	if value == "" {
+		return fallback
+	}
+	return value == "1" || value == "true" || value == "yes" || value == "on"
 }
