@@ -20,6 +20,10 @@ type Config struct {
 	EnableGoogleAuth        bool
 	EnableEmailVerification bool
 	EnableMagicLink         bool
+	EmailProvider           string
+	EmailFrom               string
+	EmailAPIKey             string
+	EmailTokenSecret        string
 
 	MaxCodeBytes       int
 	RateLimitPerMinute int
@@ -97,12 +101,24 @@ func Load() Config {
 		DeepSeekURL:             dsURL,
 		DeepSeekModel:           dsModel,
 		EnableGoogleAuth:        envBool("ENABLE_GOOGLE_AUTH", false),
-		EnableEmailVerification: envBool("ENABLE_EMAIL_VERIFICATION", false),
+		EnableEmailVerification: envBool("ENABLE_EMAIL_VERIFICATION", true),
 		EnableMagicLink:         envBool("ENABLE_MAGIC_LINK", false),
+		EmailProvider:           envDefault("EMAIL_PROVIDER", "dummy"),
+		EmailFrom:               envDefault("EMAIL_FROM", "noreply@kitkode.local"),
+		EmailAPIKey:             os.Getenv("EMAIL_API_KEY"),
+		EmailTokenSecret:        envDefault("EMAIL_TOKEN_SECRET", envDefault("SESSION_SECRET", "kitkode-local-email-token-secret")),
 
 		MaxCodeBytes:       maxCode,
 		RateLimitPerMinute: rpm,
 	}
+}
+
+func envDefault(name, fallback string) string {
+	value := strings.TrimSpace(os.Getenv(name))
+	if value == "" {
+		return fallback
+	}
+	return value
 }
 
 func loadLocalEnv() {

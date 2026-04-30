@@ -2,6 +2,7 @@ package handler_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -9,7 +10,9 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
+	"pictorhack/backend/internal/auth"
 	"pictorhack/backend/internal/config"
 	"pictorhack/backend/internal/deepseek"
 	"pictorhack/backend/internal/handler"
@@ -19,6 +22,15 @@ import (
 	"pictorhack/backend/internal/service"
 	"pictorhack/backend/internal/store"
 )
+
+type captureEmailSender struct {
+	messages []handler.EmailMessage
+}
+
+func (s *captureEmailSender) Send(_ context.Context, msg handler.EmailMessage) error {
+	s.messages = append(s.messages, msg)
+	return nil
+}
 
 func TestMain(m *testing.M) {
 	if err := problems.Init(); err != nil {
@@ -53,6 +65,8 @@ func newTestHandler(t *testing.T, runnerHandler http.HandlerFunc) (*handler.Hand
 		Traces:       tsvc,
 		Sessions:     st,
 		Users:        st,
+		EmailSender:  &captureEmailSender{},
+		TokenSecret:  "test-email-token-secret",
 		Dashboard:    service.NewDashboardService(st),
 		MaxCodeBytes: 1 << 20,
 	}
@@ -239,6 +253,7 @@ func TestRun_runnerUnavailable(t *testing.T) {
 func TestPasswordAuthLocalMVPFlow(t *testing.T) {
 	h, cleanup := newTestHandler(t, nil)
 	defer cleanup()
+	emailer := h.EmailSender.(*captureEmailSender)
 	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
 
 	postJSON := func(path string, body map[string]any, cookies []*http.Cookie) *httptest.ResponseRecorder {
@@ -260,13 +275,41 @@ func TestPasswordAuthLocalMVPFlow(t *testing.T) {
 	}
 
 	signup := postJSON("/api/auth/signup", map[string]any{"email": "local@example.com", "username": "local_user", "password": "password123"}, nil)
-	if signup.Code != http.StatusOK {
+	if signup.Code != http.StatusAccepted {
 		t.Fatalf("signup status %d %s", signup.Code, signup.Body.String())
 	}
-	if len(signup.Result().Cookies()) == 0 {
-		t.Fatal("signup should issue a session cookie")
+	if len(signup.Result().Cookies()) != 0 {
+		t.Fatal("signup should not issue a session cookie before email verification")
 	}
-	sessionCookie := signup.Result().Cookies()[0]
+	if !strings.Contains(signup.Body.String(), "pending_verification") {
+		t.Fatalf("signup should return pending_verification, got %s", signup.Body.String())
+	}
+	if len(emailer.messages) != 1 {
+		t.Fatalf("expected one verification email, got %d", len(emailer.messages))
+	}
+	otp := firstSixDigitCode(emailer.messages[0].Text)
+	if otp == "" {
+		t.Fatalf("verification email missing otp: %q", emailer.messages[0].Text)
+	}
+
+	loginBeforeVerify := postJSON("/api/auth/login", map[string]any{"identifier": "local_user", "password": "password123"}, nil)
+	if loginBeforeVerify.Code != http.StatusForbidden || !strings.Contains(loginBeforeVerify.Body.String(), "email verification required") {
+		t.Fatalf("unverified login response %d %s", loginBeforeVerify.Code, loginBeforeVerify.Body.String())
+	}
+
+	resend := postJSON("/api/auth/resend-otp", map[string]any{"email": "local@example.com"}, nil)
+	if resend.Code != http.StatusTooManyRequests {
+		t.Fatalf("immediate resend should be rate limited, got %d %s", resend.Code, resend.Body.String())
+	}
+
+	verify := postJSON("/api/auth/verify-email", map[string]any{"email": "local@example.com", "otp": otp}, nil)
+	if verify.Code != http.StatusOK {
+		t.Fatalf("verify status %d %s", verify.Code, verify.Body.String())
+	}
+	if len(verify.Result().Cookies()) == 0 {
+		t.Fatal("verify should issue a session cookie")
+	}
+	sessionCookie := verify.Result().Cookies()[0]
 
 	duplicate := postJSON("/api/auth/signup", map[string]any{"email": "local@example.com", "username": "other_user", "password": "password123"}, nil)
 	if duplicate.Code != http.StatusConflict {
@@ -302,6 +345,84 @@ func TestPasswordAuthLocalMVPFlow(t *testing.T) {
 	srv.ServeHTTP(protected, protectedReq)
 	if protected.Code != http.StatusUnauthorized {
 		t.Fatalf("dashboard should require a valid session, got %d %s", protected.Code, protected.Body.String())
+	}
+}
+
+func firstSixDigitCode(s string) string {
+	for i := 0; i+6 <= len(s); i++ {
+		candidate := s[i : i+6]
+		ok := true
+		for _, ch := range candidate {
+			if ch < '0' || ch > '9' {
+				ok = false
+				break
+			}
+		}
+		if ok {
+			return candidate
+		}
+	}
+	return ""
+}
+
+func TestEmailVerificationExpiredOTP(t *testing.T) {
+	h, cleanup := newTestHandler(t, nil)
+	defer cleanup()
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
+
+	hash, err := auth.HashPassword("password123")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := h.Users.CreateUser(context.Background(), "expired@example.com", "expired_user", hash); err != nil {
+		t.Fatal(err)
+	}
+	otpHash, err := auth.HashEmailToken(h.TokenSecret, auth.EmailVerificationPurpose, "expired@example.com", "123456")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := h.Users.CreateEmailVerification(context.Background(), "expired@example.com", auth.EmailVerificationPurpose, otpHash, time.Now().UTC().Add(-time.Minute).Format(time.RFC3339)); err != nil {
+		t.Fatal(err)
+	}
+	body, _ := json.Marshal(map[string]any{"email": "expired@example.com", "otp": "123456"})
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodPost, "/api/auth/verify-email", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	srv.ServeHTTP(rec, req)
+	if rec.Code != http.StatusBadRequest || !strings.Contains(rec.Body.String(), "expired") {
+		t.Fatalf("expired otp response %d %s", rec.Code, rec.Body.String())
+	}
+}
+
+func TestPasswordResetExpiredToken(t *testing.T) {
+	h, cleanup := newTestHandler(t, nil)
+	defer cleanup()
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
+
+	hash, err := auth.HashPassword("password123")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := h.Users.CreateUser(context.Background(), "reset@example.com", "reset_user", hash); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := h.Users.MarkEmailVerified(context.Background(), "reset@example.com"); err != nil {
+		t.Fatal(err)
+	}
+	tokenHash, err := auth.HashEmailToken(h.TokenSecret, auth.PasswordResetPurpose, "", "expired-reset-token")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := h.Users.CreateEmailVerification(context.Background(), "reset@example.com", auth.PasswordResetPurpose, tokenHash, time.Now().UTC().Add(-time.Minute).Format(time.RFC3339)); err != nil {
+		t.Fatal(err)
+	}
+	body, _ := json.Marshal(map[string]any{"token": "expired-reset-token", "new_password": "newpassword123"})
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodPost, "/api/auth/reset-password", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	srv.ServeHTTP(rec, req)
+	if rec.Code != http.StatusBadRequest || !strings.Contains(rec.Body.String(), "expired") {
+		t.Fatalf("expired reset response %d %s", rec.Code, rec.Body.String())
 	}
 }
 

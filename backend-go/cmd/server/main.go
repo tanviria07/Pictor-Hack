@@ -50,6 +50,8 @@ func main() {
 		Coach:        ds,
 		Sessions:     st,
 		Users:        st,
+		EmailSender:  handler.NewEmailSenderFromEnv(cfg.EmailProvider, cfg.EmailFrom, cfg.EmailAPIKey),
+		TokenSecret:  cfg.EmailTokenSecret,
 		Dashboard:    service.NewDashboardService(st),
 		MaxCodeBytes: cfg.MaxCodeBytes,
 	}

@@ -67,9 +67,21 @@ CREATE TABLE IF NOT EXISTS users (
   email TEXT NOT NULL UNIQUE,
   username TEXT NOT NULL DEFAULT '',
   password_hash TEXT NOT NULL,
+  email_verified INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS email_verifications (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email TEXT NOT NULL,
+  purpose TEXT NOT NULL DEFAULT 'email_verification',
+  token_hash TEXT NOT NULL UNIQUE,
+  attempts INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_email_verifications_email_purpose_created ON email_verifications(lower(email), purpose, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_email_verifications_token ON email_verifications(token_hash);
 CREATE TABLE IF NOT EXISTS auth_sessions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,
@@ -128,6 +140,27 @@ CREATE TABLE IF NOT EXISTS user_design_answers (
 		return err
 	}
 	_, err = s.db.Exec(`ALTER TABLE users ADD COLUMN username TEXT NOT NULL DEFAULT ''`)
+	if err != nil {
+		msg := strings.ToLower(err.Error())
+		if !strings.Contains(msg, "duplicate column") {
+			return err
+		}
+	}
+	_, err = s.db.Exec(`ALTER TABLE users ADD COLUMN email_verified INTEGER NOT NULL DEFAULT 0`)
+	if err != nil {
+		msg := strings.ToLower(err.Error())
+		if !strings.Contains(msg, "duplicate column") {
+			return err
+		}
+	}
+	_, err = s.db.Exec(`ALTER TABLE users ADD COLUMN updated_at TEXT NOT NULL DEFAULT ''`)
+	if err != nil {
+		msg := strings.ToLower(err.Error())
+		if !strings.Contains(msg, "duplicate column") {
+			return err
+		}
+	}
+	_, err = s.db.Exec(`ALTER TABLE email_verifications ADD COLUMN purpose TEXT NOT NULL DEFAULT 'email_verification'`)
 	if err != nil {
 		msg := strings.ToLower(err.Error())
 		if !strings.Contains(msg, "duplicate column") {
@@ -211,26 +244,99 @@ func (s *Store) CreateUser(_ context.Context, email, username, passwordHash stri
 	if err != nil {
 		return nil, err
 	}
-	return &dto.AuthUser{ID: id, Email: email, Username: username, CreatedAt: now, UpdatedAt: now}, nil
+	return &dto.AuthUser{ID: id, Email: email, Username: username, EmailVerified: false, CreatedAt: now, UpdatedAt: now}, nil
 }
 
 func (s *Store) GetUserByLogin(_ context.Context, identifier string) (*dto.AuthUser, string, error) {
-	row := s.db.QueryRow(`SELECT id, email, username, password_hash, created_at, updated_at FROM users WHERE lower(email)=lower(?) OR lower(username)=lower(?)`, identifier, identifier)
+	row := s.db.QueryRow(`SELECT id, email, username, password_hash, email_verified, created_at, updated_at FROM users WHERE lower(email)=lower(?) OR lower(username)=lower(?)`, identifier, identifier)
 	var u dto.AuthUser
 	var hash string
-	if err := row.Scan(&u.ID, &u.Email, &u.Username, &hash, &u.CreatedAt, &u.UpdatedAt); err != nil {
+	if err := row.Scan(&u.ID, &u.Email, &u.Username, &hash, &u.EmailVerified, &u.CreatedAt, &u.UpdatedAt); err != nil {
+		return nil, "", err
+	}
+	return &u, hash, nil
+}
+
+func (s *Store) GetUserByEmail(_ context.Context, email string) (*dto.AuthUser, string, error) {
+	row := s.db.QueryRow(`SELECT id, email, username, password_hash, email_verified, created_at, updated_at FROM users WHERE lower(email)=lower(?)`, email)
+	var u dto.AuthUser
+	var hash string
+	if err := row.Scan(&u.ID, &u.Email, &u.Username, &hash, &u.EmailVerified, &u.CreatedAt, &u.UpdatedAt); err != nil {
 		return nil, "", err
 	}
 	return &u, hash, nil
 }
 
 func (s *Store) GetUserByID(_ context.Context, userID int64) (*dto.AuthUser, error) {
-	row := s.db.QueryRow(`SELECT id, email, username, created_at, updated_at FROM users WHERE id=?`, userID)
+	row := s.db.QueryRow(`SELECT id, email, username, email_verified, created_at, updated_at FROM users WHERE id=?`, userID)
 	var u dto.AuthUser
-	if err := row.Scan(&u.ID, &u.Email, &u.Username, &u.CreatedAt, &u.UpdatedAt); err != nil {
+	if err := row.Scan(&u.ID, &u.Email, &u.Username, &u.EmailVerified, &u.CreatedAt, &u.UpdatedAt); err != nil {
 		return nil, err
 	}
 	return &u, nil
+}
+
+func (s *Store) MarkEmailVerified(ctx context.Context, email string) (*dto.AuthUser, error) {
+	now := time.Now().UTC().Format(time.RFC3339)
+	res, err := s.db.Exec(`UPDATE users SET email_verified=1, updated_at=? WHERE lower(email)=lower(?)`, now, email)
+	if err != nil {
+		return nil, err
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return nil, sql.ErrNoRows
+	}
+	u, _, err := s.GetUserByEmail(ctx, email)
+	return u, err
+}
+
+func (s *Store) UpdatePasswordByEmail(_ context.Context, email, passwordHash string) error {
+	now := time.Now().UTC().Format(time.RFC3339)
+	res, err := s.db.Exec(`UPDATE users SET password_hash=?, updated_at=? WHERE lower(email)=lower(?)`, passwordHash, now, email)
+	if err != nil {
+		return err
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
+}
+
+func (s *Store) CreateEmailVerification(_ context.Context, email, purpose, tokenHash, expiresAt string) error {
+	now := time.Now().UTC().Format(time.RFC3339)
+	_, err := s.db.Exec(`INSERT INTO email_verifications(email, purpose, token_hash, attempts, created_at, expires_at) VALUES(?,?,?,?,?,?)`, email, purpose, tokenHash, 0, now, expiresAt)
+	return err
+}
+
+func (s *Store) LatestEmailVerification(_ context.Context, email, purpose string) (*EmailVerification, error) {
+	row := s.db.QueryRow(`SELECT id, email, purpose, token_hash, attempts, created_at, expires_at FROM email_verifications WHERE lower(email)=lower(?) AND purpose=? ORDER BY created_at DESC LIMIT 1`, email, purpose)
+	return scanEmailVerification(row)
+}
+
+func (s *Store) GetEmailVerificationByHash(_ context.Context, purpose, tokenHash string) (*EmailVerification, error) {
+	row := s.db.QueryRow(`SELECT id, email, purpose, token_hash, attempts, created_at, expires_at FROM email_verifications WHERE purpose=? AND token_hash=?`, purpose, tokenHash)
+	return scanEmailVerification(row)
+}
+
+func (s *Store) IncrementEmailVerificationAttempts(_ context.Context, id int64) error {
+	_, err := s.db.Exec(`UPDATE email_verifications SET attempts=attempts+1 WHERE id=?`, id)
+	return err
+}
+
+func (s *Store) DeleteEmailVerifications(_ context.Context, email, purpose string) error {
+	_, err := s.db.Exec(`DELETE FROM email_verifications WHERE lower(email)=lower(?) AND purpose=?`, email, purpose)
+	return err
+}
+
+type rowScanner interface {
+	Scan(dest ...any) error
+}
+
+func scanEmailVerification(row rowScanner) (*EmailVerification, error) {
+	var ev EmailVerification
+	if err := row.Scan(&ev.ID, &ev.Email, &ev.Purpose, &ev.TokenHash, &ev.Attempts, &ev.CreatedAt, &ev.ExpiresAt); err != nil {
+		return nil, err
+	}
+	return &ev, nil
 }
 
 func (s *Store) CreateAuthSession(_ context.Context, userID int64, tokenHash string, expiresAt string) error {

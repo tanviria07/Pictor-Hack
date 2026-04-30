@@ -60,6 +60,55 @@
  * @property {string[]} hint_history
  * @property {string} updated_at
  *
+ * @typedef {Object} AuthUser
+ * @property {number} id
+ * @property {string} email
+ * @property {string} username
+ * @property {boolean} email_verified
+ * @property {string} created_at
+ * @property {string} updated_at
+ *
+ * @typedef {Object} AuthResponse
+ * @property {AuthUser} user
+ *
+ * @typedef {Object} SignupRequest
+ * @property {string} email
+ * @property {string} username
+ * @property {string} password
+ *
+ * @typedef {Object} PendingVerificationResponse
+ * @property {"pending_verification"} status
+ * @property {string} email
+ * @property {string} expires_at
+ *
+ * @typedef {Object} LoginRequest
+ * @property {string} identifier Email or username.
+ * @property {string} password
+ *
+ * @typedef {Object} VerifyEmailRequest
+ * @property {string} email
+ * @property {string} otp Six numeric digits.
+ *
+ * @typedef {AuthResponse} VerifyEmailResponse
+ *
+ * @typedef {Object} ResendOTPRequest
+ * @property {string} email
+ *
+ * @typedef {PendingVerificationResponse} ResendOTPResponse
+ *
+ * @typedef {Object} ForgotPasswordRequest
+ * @property {string} email
+ *
+ * @typedef {Object} ForgotPasswordResponse
+ * @property {boolean} ok
+ *
+ * @typedef {Object} ResetPasswordRequest
+ * @property {string} token
+ * @property {string} new_password
+ *
+ * @typedef {Object} ResetPasswordResponse
+ * @property {boolean} ok
+ *
  * @typedef {Object} ProblemSummary
  * @property {string} id
  * @property {string} title

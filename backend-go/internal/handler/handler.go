@@ -8,8 +8,10 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
+	"net"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -33,10 +35,13 @@ type Handler struct {
 		Enabled() bool
 		CoachTurn(ctx context.Context, systemPrompt, userContent string) (string, error)
 	}
-	Sessions     store.SessionRepository
-	Users        store.UserRepository
-	Dashboard    *service.DashboardService
-	MaxCodeBytes int // max submitted code size; if zero, a default is used in validateRunInput
+	Sessions      store.SessionRepository
+	Users         store.UserRepository
+	EmailSender   EmailSender
+	TokenSecret   string
+	Dashboard     *service.DashboardService
+	MaxCodeBytes  int // max submitted code size; if zero, a default is used in validateRunInput
+	signupLimiter *windowLimiter
 }
 
 const authCookieName = "kitkode_session"
@@ -301,11 +306,63 @@ func localCoachReply(req dto.CoachRequest) string {
 }
 
 func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
-	h.authWithPassword(w, r, true)
+	h.signupWithVerification(w, r)
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	h.authWithPassword(w, r, false)
+}
+
+func (h *Handler) signupWithVerification(w http.ResponseWriter, r *http.Request) {
+	if h.Users == nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "auth unavailable")
+		return
+	}
+	if !h.signupAllowed(clientIP(r)) {
+		w.Header().Set("Retry-After", "3600")
+		httpx.Error(w, http.StatusTooManyRequests, httpx.ErrRateLimited, "too many signup attempts from this network")
+		return
+	}
+	var req dto.AuthRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	email := strings.ToLower(strings.TrimSpace(req.Email))
+	username := strings.ToLower(strings.TrimSpace(req.Username))
+	if email == "" || username == "" || req.Password == "" {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "email, username, and password are required")
+		return
+	}
+	if !validEmail(email) {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "enter a valid email address")
+		return
+	}
+	if !validUsername(username) {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "username must be 3 to 32 characters and use letters, numbers, underscores, or hyphens")
+		return
+	}
+	if len(req.Password) < 8 || len(req.Password) > 256 {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "password must be at least 8 characters")
+		return
+	}
+	hash, err := auth.HashPassword(req.Password)
+	if err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not hash password")
+		return
+	}
+	if _, err := h.Users.CreateUser(r.Context(), email, username, hash); err != nil {
+		httpx.Error(w, http.StatusConflict, httpx.ErrBadRequest, "an account with that email or username already exists")
+		return
+	}
+	expiresAt, err := h.createAndSendOTP(r.Context(), email)
+	if err != nil {
+		log.Println("send verification otp:", err)
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not send verification email")
+		return
+	}
+	// Signup creates the account but does not issue a session until the OTP is verified.
+	httpx.JSON(w, http.StatusAccepted, dto.PendingVerificationResponse{Status: "pending_verification", Email: email, ExpiresAt: expiresAt})
 }
 
 func (h *Handler) authWithPassword(w http.ResponseWriter, r *http.Request, create bool) {
@@ -368,6 +425,10 @@ func (h *Handler) authWithPassword(w http.ResponseWriter, r *http.Request, creat
 			httpx.Error(w, http.StatusUnauthorized, httpx.ErrBadRequest, "wrong password")
 			return
 		}
+		if !u.EmailVerified {
+			httpx.Error(w, http.StatusForbidden, httpx.ErrBadRequest, "email verification required")
+			return
+		}
 		user = u
 	}
 	if err := h.issueSession(w, r, user.ID); err != nil {
@@ -375,6 +436,301 @@ func (h *Handler) authWithPassword(w http.ResponseWriter, r *http.Request, creat
 		return
 	}
 	httpx.JSON(w, http.StatusOK, dto.AuthResponse{User: *user})
+}
+
+func (h *Handler) VerifyEmail(w http.ResponseWriter, r *http.Request) {
+	if h.Users == nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "auth unavailable")
+		return
+	}
+	var req dto.VerifyEmailRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	email := strings.ToLower(strings.TrimSpace(req.Email))
+	otp := strings.TrimSpace(req.OTP)
+	if !validEmail(email) || len(otp) != 6 {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "email and 6-digit otp are required")
+		return
+	}
+	ev, err := h.Users.LatestEmailVerification(r.Context(), email, auth.EmailVerificationPurpose)
+	if errors.Is(err, sql.ErrNoRows) {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "verification code not found")
+		return
+	}
+	if err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not verify email")
+		return
+	}
+	if ev.Attempts >= 5 {
+		httpx.Error(w, http.StatusTooManyRequests, httpx.ErrRateLimited, "too many verification attempts")
+		return
+	}
+	if expired(ev.ExpiresAt) {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "verification code expired")
+		return
+	}
+	got, err := auth.HashEmailToken(h.emailTokenSecret(), auth.EmailVerificationPurpose, email, otp)
+	if err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not verify email")
+		return
+	}
+	if !auth.ConstantTimeTokenEqual(got, ev.TokenHash) {
+		_ = h.Users.IncrementEmailVerificationAttempts(r.Context(), ev.ID)
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid verification code")
+		return
+	}
+	user, err := h.Users.MarkEmailVerified(r.Context(), email)
+	if err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not verify email")
+		return
+	}
+	_ = h.Users.DeleteEmailVerifications(r.Context(), email, auth.EmailVerificationPurpose)
+	if err := h.issueSession(w, r, user.ID); err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not create session")
+		return
+	}
+	httpx.JSON(w, http.StatusOK, dto.AuthResponse{User: *user})
+}
+
+func (h *Handler) ResendOTP(w http.ResponseWriter, r *http.Request) {
+	if h.Users == nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "auth unavailable")
+		return
+	}
+	var req dto.ResendOTPRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	email := strings.ToLower(strings.TrimSpace(req.Email))
+	if !validEmail(email) {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "enter a valid email address")
+		return
+	}
+	u, _, err := h.Users.GetUserByEmail(r.Context(), email)
+	if errors.Is(err, sql.ErrNoRows) {
+		httpx.JSON(w, http.StatusOK, map[string]bool{"ok": true})
+		return
+	} else if err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not resend verification code")
+		return
+	}
+	if u.EmailVerified {
+		httpx.JSON(w, http.StatusOK, map[string]bool{"ok": true})
+		return
+	}
+	if ev, err := h.Users.LatestEmailVerification(r.Context(), email, auth.EmailVerificationPurpose); err == nil && within(ev.CreatedAt, time.Minute) {
+		w.Header().Set("Retry-After", "60")
+		httpx.Error(w, http.StatusTooManyRequests, httpx.ErrRateLimited, "wait before requesting another verification code")
+		return
+	}
+	expiresAt, err := h.createAndSendOTP(r.Context(), email)
+	if err != nil {
+		log.Println("resend verification otp:", err)
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not resend verification code")
+		return
+	}
+	httpx.JSON(w, http.StatusOK, dto.PendingVerificationResponse{Status: "pending_verification", Email: email, ExpiresAt: expiresAt})
+}
+
+func (h *Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
+	if h.Users == nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "auth unavailable")
+		return
+	}
+	var req dto.ForgotPasswordRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	email := strings.ToLower(strings.TrimSpace(req.Email))
+	if !validEmail(email) {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "enter a valid email address")
+		return
+	}
+	u, _, err := h.Users.GetUserByEmail(r.Context(), email)
+	if errors.Is(err, sql.ErrNoRows) {
+		httpx.JSON(w, http.StatusOK, map[string]bool{"ok": true})
+		return
+	}
+	if err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not start password reset")
+		return
+	}
+	if !u.EmailVerified {
+		httpx.JSON(w, http.StatusOK, map[string]bool{"ok": true})
+		return
+	}
+	token, err := auth.NewPasswordResetToken()
+	if err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not start password reset")
+		return
+	}
+	hash, err := auth.HashEmailToken(h.emailTokenSecret(), auth.PasswordResetPurpose, "", token)
+	if err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not start password reset")
+		return
+	}
+	_ = h.Users.DeleteEmailVerifications(r.Context(), email, auth.PasswordResetPurpose)
+	expires := time.Now().UTC().Add(30 * time.Minute)
+	if err := h.Users.CreateEmailVerification(r.Context(), email, auth.PasswordResetPurpose, hash, expires.Format(time.RFC3339)); err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not start password reset")
+		return
+	}
+	if err := h.emailSender().Send(r.Context(), passwordResetEmail(email, token)); err != nil {
+		log.Println("password reset email:", err)
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not send password reset email")
+		return
+	}
+	httpx.JSON(w, http.StatusOK, map[string]bool{"ok": true})
+}
+
+func (h *Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
+	if h.Users == nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "auth unavailable")
+		return
+	}
+	var req dto.ResetPasswordRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	token := strings.TrimSpace(req.Token)
+	if token == "" || len(req.NewPassword) < 8 || len(req.NewPassword) > 256 {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "token and a password of at least 8 characters are required")
+		return
+	}
+	// Password reset tokens are looked up by HMAC hash and expire after 30 minutes.
+	ev, err := h.findPasswordReset(r.Context(), token)
+	if errors.Is(err, sql.ErrNoRows) {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid or expired reset token")
+		return
+	}
+	if err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not reset password")
+		return
+	}
+	if expired(ev.ExpiresAt) {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid or expired reset token")
+		return
+	}
+	hash, err := auth.HashPassword(req.NewPassword)
+	if err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not reset password")
+		return
+	}
+	if err := h.Users.UpdatePasswordByEmail(r.Context(), ev.Email, hash); err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not reset password")
+		return
+	}
+	_ = h.Users.DeleteEmailVerifications(r.Context(), ev.Email, auth.PasswordResetPurpose)
+	httpx.JSON(w, http.StatusOK, map[string]bool{"ok": true})
+}
+
+func (h *Handler) createAndSendOTP(ctx context.Context, email string) (string, error) {
+	otp, err := auth.NewOTP()
+	if err != nil {
+		return "", err
+	}
+	hash, err := auth.HashEmailToken(h.emailTokenSecret(), auth.EmailVerificationPurpose, email, otp)
+	if err != nil {
+		return "", err
+	}
+	_ = h.Users.DeleteEmailVerifications(ctx, email, auth.EmailVerificationPurpose)
+	expires := time.Now().UTC().Add(10 * time.Minute)
+	if err := h.Users.CreateEmailVerification(ctx, email, auth.EmailVerificationPurpose, hash, expires.Format(time.RFC3339)); err != nil {
+		return "", err
+	}
+	if err := h.emailSender().Send(ctx, verificationEmail(email, otp)); err != nil {
+		return "", err
+	}
+	return expires.Format(time.RFC3339), nil
+}
+
+func (h *Handler) findPasswordReset(ctx context.Context, token string) (*store.EmailVerification, error) {
+	hash, err := auth.HashEmailToken(h.emailTokenSecret(), auth.PasswordResetPurpose, "", token)
+	if err != nil {
+		return nil, err
+	}
+	return h.Users.GetEmailVerificationByHash(ctx, auth.PasswordResetPurpose, hash)
+}
+
+func (h *Handler) emailSender() EmailSender {
+	if h.EmailSender != nil {
+		return h.EmailSender
+	}
+	return NewEmailSenderFromEnv("dummy", "noreply@kitkode.local", "")
+}
+
+func (h *Handler) emailTokenSecret() string {
+	if strings.TrimSpace(h.TokenSecret) != "" {
+		return h.TokenSecret
+	}
+	return "kitkode-local-email-token-secret"
+}
+
+func expired(ts string) bool {
+	t, err := time.Parse(time.RFC3339, ts)
+	return err != nil || !time.Now().UTC().Before(t)
+}
+
+func within(ts string, d time.Duration) bool {
+	t, err := time.Parse(time.RFC3339, ts)
+	return err == nil && time.Since(t) < d
+}
+
+func clientIP(r *http.Request) string {
+	if xff := strings.TrimSpace(r.Header.Get("X-Forwarded-For")); xff != "" {
+		if first, _, ok := strings.Cut(xff, ","); ok {
+			return strings.TrimSpace(first)
+		}
+		return xff
+	}
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return r.RemoteAddr
+	}
+	return ip
+}
+
+func (h *Handler) signupAllowed(ip string) bool {
+	if h.signupLimiter == nil {
+		h.signupLimiter = newWindowLimiter(5, time.Hour)
+	}
+	return h.signupLimiter.allow(ip)
+}
+
+type windowLimiter struct {
+	mu     sync.Mutex
+	limit  int
+	window time.Duration
+	hits   map[string][]time.Time
+}
+
+func newWindowLimiter(limit int, window time.Duration) *windowLimiter {
+	return &windowLimiter{limit: limit, window: window, hits: map[string][]time.Time{}}
+}
+
+func (l *windowLimiter) allow(key string) bool {
+	now := time.Now()
+	cutoff := now.Add(-l.window)
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	items := l.hits[key]
+	kept := items[:0]
+	for _, t := range items {
+		if t.After(cutoff) {
+			kept = append(kept, t)
+		}
+	}
+	if len(kept) >= l.limit {
+		l.hits[key] = kept
+		return false
+	}
+	l.hits[key] = append(kept, now)
+	return true
 }
 
 func (h *Handler) issueSession(w http.ResponseWriter, r *http.Request, userID int64) error {

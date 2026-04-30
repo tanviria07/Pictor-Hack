@@ -136,15 +136,40 @@ type AuthRequest struct {
 }
 
 type AuthUser struct {
-	ID        int64  `json:"id"`
-	Email     string `json:"email"`
-	Username  string `json:"username"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	ID            int64  `json:"id"`
+	Email         string `json:"email"`
+	Username      string `json:"username"`
+	EmailVerified bool   `json:"email_verified"`
+	CreatedAt     string `json:"created_at"`
+	UpdatedAt     string `json:"updated_at"`
 }
 
 type AuthResponse struct {
 	User AuthUser `json:"user"`
+}
+
+type PendingVerificationResponse struct {
+	Status    string `json:"status"`
+	Email     string `json:"email"`
+	ExpiresAt string `json:"expires_at"`
+}
+
+type VerifyEmailRequest struct {
+	Email string `json:"email"`
+	OTP   string `json:"otp"`
+}
+
+type ResendOTPRequest struct {
+	Email string `json:"email"`
+}
+
+type ForgotPasswordRequest struct {
+	Email string `json:"email"`
+}
+
+type ResetPasswordRequest struct {
+	Token       string `json:"token"`
+	NewPassword string `json:"new_password"`
 }
 
 type CoachRequest struct {

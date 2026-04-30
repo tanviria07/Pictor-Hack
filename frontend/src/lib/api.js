@@ -85,6 +85,18 @@ export async function loadSession(problemId) {
 export async function signup(body) {
     return j("/api/auth/signup", { method: "POST", body: JSON.stringify(body) });
 }
+export async function verifyEmail(body) {
+    return j("/api/auth/verify-email", { method: "POST", body: JSON.stringify(body) });
+}
+export async function resendOtp(body) {
+    return j("/api/auth/resend-otp", { method: "POST", body: JSON.stringify(body) });
+}
+export async function forgotPassword(body) {
+    return j("/api/auth/forgot-password", { method: "POST", body: JSON.stringify(body) });
+}
+export async function resetPassword(body) {
+    return j("/api/auth/reset-password", { method: "POST", body: JSON.stringify(body) });
+}
 export async function login(body) {
     return j("/api/auth/login", { method: "POST", body: JSON.stringify(body) });
 }
