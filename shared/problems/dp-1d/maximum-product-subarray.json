@@ -97,5 +97,9 @@
     "Update the overall result with the current maximum if it's larger.",
     "After the loop, return the overall maximum product."
   ],
-  "final_explanation": "This solution uses dynamic programming to track both the maximum and minimum products ending at each position, since negative numbers can turn a minimum into a maximum when multiplied. By iterating through the array and updating these values while keeping an overall result, it efficiently finds the maximum product subarray in O(n) time with O(1) extra space."
+  "final_explanation": "This solution uses dynamic programming to track both the maximum and minimum products ending at each position, since negative numbers can turn a minimum into a maximum when multiplied. By iterating through the array and updating these values while keeping an overall result, it efficiently finds the maximum product subarray in O(n) time with O(1) extra space.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

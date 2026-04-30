@@ -6,8 +6,16 @@
   "description": "Design a rate limiting service that can be used across multiple APIs to prevent abuse and ensure fair usage among all users.",
   "problem_type": "system_design",
   "execution_mode": "system_design",
-  "tags": ["SYSTEM DESIGN", "SECURITY", "BACKEND"],
-  "skill_tags": ["Algorithms", "Distributed Caching", "Middleware"],
+  "tags": [
+    "SYSTEM DESIGN",
+    "SECURITY",
+    "BACKEND"
+  ],
+  "skill_tags": [
+    "Algorithms",
+    "Distributed Caching",
+    "Middleware"
+  ],
   "constraints": [
     "Low overhead on API calls.",
     "Support multiple rate limiting strategies (e.g., token bucket).",
@@ -22,5 +30,10 @@
       "security",
       "tradeoff explanation"
     ]
-  }
+  },
+  "recommended_for_roles": [
+    "cloud_solutions_architect",
+    "backend_engineer",
+    ""
+  ]
 }

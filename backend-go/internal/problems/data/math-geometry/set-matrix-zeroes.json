@@ -124,5 +124,9 @@
     "level_4": "We can use the first cell of every row and column as a flag. This flag would determine whether a row or column has been set to zero."
   },
   "canonical_solution_summary": "We can use the first cell of every row and column as a flag. This flag would determine whether a row or column has been set to zero.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

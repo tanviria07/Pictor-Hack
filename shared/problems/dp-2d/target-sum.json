@@ -100,5 +100,9 @@
     "After processing all numbers, return the count for the new target sum.",
     ""
   ],
-  "final_explanation": "This solution transforms the problem into finding subsets that sum to a specific value by converting '+' and '-' assignments into a partition of the total sum. It uses dynamic programming to count ways to achieve each possible sum efficiently, avoiding exponential recursion by iterating through numbers and updating counts in reverse order to prevent double-counting."
+  "final_explanation": "This solution transforms the problem into finding subsets that sum to a specific value by converting '+' and '-' assignments into a partition of the total sum. It uses dynamic programming to count ways to achieve each possible sum efficiently, avoiding exponential recursion by iterating through numbers and updating counts in reverse order to prevent double-counting.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

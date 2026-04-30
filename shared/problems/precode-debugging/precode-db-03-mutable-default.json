@@ -64,7 +64,7 @@
   ],
   "hint_plan": {
     "level_1": "A default argument like `[]` is created once and reused across calls.",
-    "level_2": "That shared list makes later calls see leftover items\u2014classic Python gotcha.",
+    "level_2": "That shared list makes later calls see leftover items—classic Python gotcha.",
     "level_3": "Use `items=None` and set `items = []` inside the function when needed.",
     "level_4": "Or build a fresh list each time before appending."
   },
@@ -76,5 +76,9 @@
   "tags": [
     "precode",
     "debugging"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

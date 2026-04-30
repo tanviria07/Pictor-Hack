@@ -135,5 +135,9 @@
     "Add the neighbor to the stack to explore its neighbors later.",
     "After the DFS, check if all nodes were visited; if yes, the graph is connected and a valid tree."
   ],
-  "final_explanation": "The solution first verifies the edge count condition (n-1 edges) to rule out cycles or disconnected graphs efficiently. Then, it builds an adjacency list to represent the undirected graph and performs a DFS from node 0 to check connectivity. If all nodes are visited, the graph is connected and, combined with the edge count, confirms it's a valid tree."
+  "final_explanation": "The solution first verifies the edge count condition (n-1 edges) to rule out cycles or disconnected graphs efficiently. Then, it builds an adjacency list to represent the undirected graph and performs a DFS from node 0 to check connectivity. If all nodes are visited, the graph is connected and, combined with the edge count, confirms it's a valid tree.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

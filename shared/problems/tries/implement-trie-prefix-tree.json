@@ -116,5 +116,9 @@
       "reason": "graph, tree, DP, and optimization-heavy reasoning",
       "recommended_order": 29
     }
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

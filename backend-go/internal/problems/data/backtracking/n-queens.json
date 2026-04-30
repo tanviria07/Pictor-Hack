@@ -136,5 +136,9 @@
     "",
     ""
   ],
-  "final_explanation": "This solution uses backtracking to place queens row by row, ensuring no two queens attack each other by checking columns and diagonals. A helper function validates each placement, and the board is updated recursively to explore all possibilities. When a full valid board is found, it's converted to the required string format and added to the results."
+  "final_explanation": "This solution uses backtracking to place queens row by row, ensuring no two queens attack each other by checking columns and diagonals. A helper function validates each placement, and the board is updated recursively to explore all possibilities. When a full valid board is found, it's converted to the required string format and added to the results.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

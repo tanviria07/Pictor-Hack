@@ -13,6 +13,7 @@ import { DesignEditor } from "../features/editor/DesignEditor";
 import { EvaluationPanel } from "../features/evaluation/EvaluationPanel";
 import { DifficultyBadge } from "./DifficultyBadge";
 import { RoleSelector } from "../features/role/RoleSelector";
+import { filterProblemsByRole, learningPathForRole } from "../lib/roles";
 import { DemoButton, DemoBanner } from "../features/recruiterDemo/DemoMode";
 import { DEMO_STEPS, startDemo, getDemoInstructions, getDemoCode, getDemoCorrectedCode, getDemoCloudPrompt } from "../features/recruiterDemo/demoData";
 
@@ -69,17 +70,20 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
         };
     }, [user]);
 
+    const roleProblems = useMemo(() => filterProblemsByRole(problems, role), [problems, role]);
+    const learningPath = useMemo(() => learningPathForRole(role), [role]);
+
     useEffect(() => {
-        if (trackFilter === "all" || problems.length === 0 || demo)
+        if (problems.length === 0 || demo)
             return;
-        const visibleProblems = filterProblemsByTrack(problems, trackFilter);
+        const visibleProblems = filterProblemsByTrack(roleProblems, trackFilter);
         const current = problems.find((p) => p.id === problemId);
         if (!current || !visibleProblems.some((problem) => problem.id === current.id)) {
             const first = visibleProblems[0];
             if (first)
                 setProblemId(first.id);
         }
-    }, [trackFilter, problems, problemId, demo]);
+    }, [trackFilter, problems, roleProblems, problemId, demo]);
 
     useEffect(() => {
         let cancelled = false;
@@ -346,7 +350,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
         let blind75Solved = 0;
         let systemDesignSolved = 0;
         let cloudSolved = 0;
-        for (const problem of problems) {
+        for (const problem of roleProblems) {
             const track = problem.track_id || "dsa";
             const solved = progressById[problem.id] === "solved";
             if (track === "precode100") {
@@ -376,7 +380,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
             }
         }
         return {
-            all: problems.length,
+            all: roleProblems.length,
             allSolved: precodeSolved + dsaSolved + systemDesignSolved + cloudSolved,
             precode,
             precodeSolved,
@@ -389,7 +393,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
             cloud,
             cloudSolved,
         };
-    }, [problems, progressById]);
+    }, [roleProblems, progressById]);
 
     const title = useMemo(() => detail?.title ?? "Practice", [detail]);
     const signature = useMemo(() => {
@@ -454,7 +458,9 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                         ? "Intern-level system design and cloud architecture practice for SWE and Cloud Solutions Architect roles."
                         : trackFilter === "cloud-architect-prep"
                             ? "Cloud architecture, debugging, automation, and customer explanation practice for CSA internships."
-                            : "Pick a track below, or browse everything."}
+            : learningPath
+                ? `${learningPath.name}: ${learningPath.target_problems} target problems in a role-specific order.`
+                : "Pick a track below, or browse everything."}
             </p>
           </div>
           <div className="ws-header-meta">
@@ -527,7 +533,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
       )}
 
       <div className="ws-body">
-        <ProblemExplorer categories={categories} problems={problems} progress={progressById} selectedId={problemId} onSelectProblem={setProblemId} loading={catalogLoading} trackFilter={trackFilter}/>
+        <ProblemExplorer categories={categories} problems={roleProblems} progress={progressById} selectedId={problemId} onSelectProblem={setProblemId} loading={catalogLoading} trackFilter={trackFilter} role={role}/>
 
         <div className="ws-center">
           <aside className="pp">

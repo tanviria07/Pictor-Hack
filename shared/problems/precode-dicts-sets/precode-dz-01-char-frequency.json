@@ -53,9 +53,9 @@
   ],
   "hint_plan": {
     "level_1": "Count letters as you scan the string.",
-    "level_2": "A dict maps key \u2192 count; start each key at 0 or use .get.",
+    "level_2": "A dict maps key → count; start each key at 0 or use .get.",
     "level_3": "For each character: `counts[ch] = counts.get(ch, 0) + 1`.",
-    "level_4": "Empty string \u2192 empty dict."
+    "level_4": "Empty string → empty dict."
   },
   "canonical_solution_summary": "freq",
   "disallowed_full_solution_exposure": true,
@@ -66,5 +66,9 @@
   "tags": [
     "precode",
     "dicts-sets"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

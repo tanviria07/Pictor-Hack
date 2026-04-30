@@ -6,8 +6,15 @@
   "description": "Design a simple, highly available portfolio website for a student that hosts their resume for download and showcases their projects with images and descriptions.",
   "problem_type": "system_design",
   "execution_mode": "system_design",
-  "tags": ["SYSTEM DESIGN", "CLOUD"],
-  "skill_tags": ["Static Site Hosting", "CDN", "Cost Optimization"],
+  "tags": [
+    "SYSTEM DESIGN",
+    "CLOUD"
+  ],
+  "skill_tags": [
+    "Static Site Hosting",
+    "CDN",
+    "Cost Optimization"
+  ],
   "constraints": [
     "Low cost (ideally free tier).",
     "Fast global load times.",
@@ -21,5 +28,10 @@
       "security",
       "cost awareness"
     ]
-  }
+  },
+  "recommended_for_roles": [
+    "cloud_solutions_architect",
+    "backend_engineer",
+    ""
+  ]
 }

@@ -4,7 +4,7 @@
   "title": "Letter Grade",
   "difficulty": "easy",
   "category": "precode-control-flow",
-  "description": "Map a score from 0\u2013100 to a letter grade: A\u226590, B\u226580, C\u226570, D\u226560, else F.",
+  "description": "Map a score from 0–100 to a letter grade: A≥90, B≥80, C≥70, D≥60, else F.",
   "examples": [
     {
       "input": "92",
@@ -84,5 +84,9 @@
   "tags": [
     "precode",
     "control-flow"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

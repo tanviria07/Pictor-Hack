@@ -58,5 +58,9 @@
     "Inside the function, use `return 7` (not `print`)."
   ],
   "final_explanation": "`answer` is a zero-argument function that returns the integer 7. We use `return` (not `print`) because the tests check the value handed back to the caller, not what is printed.",
-  "curated": true
+  "curated": true,
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

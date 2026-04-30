@@ -85,5 +85,9 @@
   ],
   "company_tags": [
     "Google"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

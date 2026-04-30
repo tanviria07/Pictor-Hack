@@ -6,8 +6,15 @@
   "description": "Design a real-time chat application where users can send messages to each other one-on-one. Consider how to handle real-time updates and message history.",
   "problem_type": "system_design",
   "execution_mode": "system_design",
-  "tags": ["SYSTEM DESIGN", "BACKEND"],
-  "skill_tags": ["WebSockets", "Real-time Communication", "Storage"],
+  "tags": [
+    "SYSTEM DESIGN",
+    "BACKEND"
+  ],
+  "skill_tags": [
+    "WebSockets",
+    "Real-time Communication",
+    "Storage"
+  ],
   "constraints": [
     "Low latency message delivery.",
     "Support offline message delivery (when user comes back online).",
@@ -22,5 +29,10 @@
       "reliability",
       "communication clarity"
     ]
-  }
+  },
+  "recommended_for_roles": [
+    "cloud_solutions_architect",
+    "backend_engineer",
+    ""
+  ]
 }

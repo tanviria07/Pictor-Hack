@@ -150,5 +150,9 @@
     "After processing, if all courses are in the order, return it; otherwise, return an empty list.",
     ""
   ],
-  "final_explanation": "This solution uses Kahn's algorithm for topological sorting with BFS. It builds a directed graph from prerequisites and tracks indegrees to find courses with no dependencies first, then processes them to gradually reduce dependencies of others. If all courses are processed, a valid order exists; otherwise, a cycle is detected, and an empty list is returned."
+  "final_explanation": "This solution uses Kahn's algorithm for topological sorting with BFS. It builds a directed graph from prerequisites and tracks indegrees to find courses with no dependencies first, then processes them to gradually reduce dependencies of others. If all courses are processed, a valid order exists; otherwise, a cycle is detected, and an empty list is returned.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

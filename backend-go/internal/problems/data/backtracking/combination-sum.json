@@ -141,5 +141,9 @@
     "Start the backtracking process from the beginning with an empty combination and the full target.",
     "Return the list of all found combinations."
   ],
-  "final_explanation": "This solution uses backtracking to explore all possible combinations of candidates that sum to the target. By recursively adding candidates and adjusting the remaining target, it builds combinations and backtracks when the sum exceeds the target or a valid combination is found. The start index ensures we avoid duplicate combinations by only considering candidates from the current position onward, allowing unlimited reuse of numbers."
+  "final_explanation": "This solution uses backtracking to explore all possible combinations of candidates that sum to the target. By recursively adding candidates and adjusting the remaining target, it builds combinations and backtracks when the sum exceeds the target or a valid combination is found. The start index ensures we avoid duplicate combinations by only considering candidates from the current position onward, allowing unlimited reuse of numbers.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

@@ -1,0 +1,74 @@
+{
+  "swe_intern": {
+    "name": "SWE Interview Mastery",
+    "order": [
+      "precode-python-basics",
+      "precode-control-flow",
+      "precode-core-data-structures",
+      "precode-strings-lists",
+      "precode-dicts-sets",
+      "precode-problem-solving",
+      "precode-recursion",
+      "precode-debugging",
+      "arrays-hashing",
+      "two-pointers",
+      "sliding-window",
+      "stack",
+      "binary-search",
+      "linked-list",
+      "trees",
+      "tries",
+      "heap-priority-queue",
+      "backtracking",
+      "graphs",
+      "advanced-graphs",
+      "dp-1d",
+      "dp-2d",
+      "greedy",
+      "intervals",
+      "math-geometry",
+      "bit-manipulation"
+    ],
+    "target_problems": 150
+  },
+  "backend_engineer": {
+    "name": "Backend Engineering Bootcamp",
+    "order": [
+      "sys-design-backend",
+      "sys-design-fundamentals",
+      "sys-design-reliability",
+      "cloud-api-debugging",
+      "cloud-python-automation",
+      "cloud-monitoring-logs",
+      "sys-design-security-cost",
+      "sys-design-communication"
+    ],
+    "target_problems": 40
+  },
+  "cloud_solutions_architect": {
+    "name": "Cloud Architecture Foundations",
+    "order": [
+      "cloud-azure-fundamentals",
+      "cloud-architecture-scenarios",
+      "cloud-cost-scaling",
+      "cloud-monitoring-logs",
+      "cloud-api-debugging",
+      "cloud-customer-explanation",
+      "sys-design-cloud",
+      "sys-design-security-cost",
+      "sys-design-communication"
+    ],
+    "target_problems": 30
+  },
+  "ai_infrastructure": {
+    "name": "AI Infra & ML Systems",
+    "order": [
+      "sys-design-reliability",
+      "cloud-monitoring-logs",
+      "cloud-api-debugging",
+      "sys-design-backend",
+      "sys-design-fundamentals"
+    ],
+    "target_problems": 25
+  }
+}

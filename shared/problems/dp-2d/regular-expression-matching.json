@@ -114,5 +114,9 @@
     "If they match, the result depends on the match of the previous prefixes.",
     "Finally, return the value in the bottom-right cell of the DP table, which indicates if the whole string matches the whole pattern."
   ],
-  "final_explanation": "This solution uses dynamic programming to build a table where each cell dp[i][j] represents whether the first i characters of s match the first j characters of p. It handles '.' as a wildcard and '*' by considering both zero occurrences (skipping the preceding element) and one or more occurrences (if the preceding element matches). The base cases ensure empty strings are handled correctly, and the final answer is derived from the full lengths of both strings."
+  "final_explanation": "This solution uses dynamic programming to build a table where each cell dp[i][j] represents whether the first i characters of s match the first j characters of p. It handles '.' as a wildcard and '*' by considering both zero occurrences (skipping the preceding element) and one or more occurrences (if the preceding element matches). The base cases ensure empty strings are handled correctly, and the final answer is derived from the full lengths of both strings.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

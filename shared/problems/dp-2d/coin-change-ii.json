@@ -100,5 +100,9 @@
     "Update the number of combinations for the current amount by adding combinations from the amount minus the current coin.",
     "Return the number of combinations for the target amount from the list."
   ],
-  "final_explanation": "This solution uses dynamic programming to count combinations without overcounting by processing coins in a specific order. It builds a dp array where each index represents the number of ways to make that amount using the coins considered so far. By iterating coins first and then amounts, it ensures each combination is counted once, leveraging the fact that coins can be used infinitely."
+  "final_explanation": "This solution uses dynamic programming to count combinations without overcounting by processing coins in a specific order. It builds a dp array where each index represents the number of ways to make that amount using the coins considered so far. By iterating coins first and then amounts, it ensures each combination is counted once, leveraging the fact that coins can be used infinitely.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

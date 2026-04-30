@@ -4,7 +4,7 @@
   "title": "Bar Histogram String",
   "difficulty": "medium",
   "category": "precode-dicts-sets",
-  "description": "Given `counts` mapping character keys to positive integers, return one line per key: `key:` + that many `#` characters. Sort keys **lexicographically**. Join lines with a single newline `\\n`. Empty dict \u2192 empty string.",
+  "description": "Given `counts` mapping character keys to positive integers, return one line per key: `key:` + that many `#` characters. Sort keys **lexicographically**. Join lines with a single newline `\\n`. Empty dict → empty string.",
   "examples": [
     {
       "input": "{'a':2,'b':1}",
@@ -66,5 +66,9 @@
   "tags": [
     "precode",
     "dicts-sets"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

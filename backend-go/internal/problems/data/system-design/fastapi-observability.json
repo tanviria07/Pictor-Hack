@@ -6,8 +6,16 @@
   "description": "Design an observability stack for a Python FastAPI backend to track request latency, error rates, and system health in a production environment.",
   "problem_type": "system_design",
   "execution_mode": "system_design",
-  "tags": ["SYSTEM DESIGN", "OBSERVABILITY", "CLOUD"],
-  "skill_tags": ["Structured Logging", "Metrics", "Tracing"],
+  "tags": [
+    "SYSTEM DESIGN",
+    "OBSERVABILITY",
+    "CLOUD"
+  ],
+  "skill_tags": [
+    "Structured Logging",
+    "Metrics",
+    "Tracing"
+  ],
   "constraints": [
     "Minimize performance impact on the application.",
     "Centralized dashboarding.",
@@ -22,5 +30,11 @@
       "cost awareness",
       "tradeoff explanation"
     ]
-  }
+  },
+  "recommended_for_roles": [
+    "cloud_solutions_architect",
+    "backend_engineer",
+    "ai_infrastructure",
+    ""
+  ]
 }

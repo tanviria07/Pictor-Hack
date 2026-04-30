@@ -89,5 +89,9 @@
     "After filling the table, return the value at the bottom-right corner, which gives the total distinct subsequences.",
     ""
   ],
-  "final_explanation": "This solution uses dynamic programming to count distinct subsequences by building a table where dp[i][j] represents the number of ways to form t[0:j] from s[0:i]. The base case handles empty t, and recurrence combines matches and skips. The final answer is efficiently computed in O(m*n) time and space."
+  "final_explanation": "This solution uses dynamic programming to count distinct subsequences by building a table where dp[i][j] represents the number of ways to form t[0:j] from s[0:i]. The base case handles empty t, and recurrence combines matches and skips. The final answer is efficiently computed in O(m*n) time and space.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

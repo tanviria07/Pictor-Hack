@@ -79,5 +79,9 @@
   "tags": [
     "precode",
     "dicts-sets"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

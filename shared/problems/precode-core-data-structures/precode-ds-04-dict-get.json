@@ -4,7 +4,7 @@
   "title": "Dictionary Get",
   "difficulty": "easy",
   "category": "precode-core-data-structures",
-  "description": "Return `d.get(k, default)` \u2014 the value for `k` if present, otherwise `default`.",
+  "description": "Return `d.get(k, default)` — the value for `k` if present, otherwise `default`.",
   "examples": [
     {
       "input": "d={'a':1}, k='a', default=0",
@@ -78,5 +78,9 @@
   "tags": [
     "precode",
     "data-structures"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

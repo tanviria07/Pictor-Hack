@@ -68,10 +68,10 @@
     }
   ],
   "hint_plan": {
-    "level_1": "Distinct values in both lists mean: set(a) \u2229 set(b).",
+    "level_1": "Distinct values in both lists mean: set(a) ∩ set(b).",
     "level_2": "len(set(a) & set(b)) or manual membership checks.",
     "level_3": "Duplicates in one list do not increase the count.",
-    "level_4": "Empty intersection \u2192 0."
+    "level_4": "Empty intersection → 0."
   },
   "canonical_solution_summary": "intersection",
   "disallowed_full_solution_exposure": true,
@@ -81,5 +81,9 @@
   "tags": [
     "precode",
     "dicts-sets"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

@@ -71,5 +71,9 @@
     "Place that extracted bit into the correct reversed position in the result.",
     "After the loop, return the final reversed integer."
   ],
-  "final_explanation": "The solution works by iterating through each bit of the input integer from least significant to most significant. For each bit, it extracts it using bitwise operations and then places it into the reversed position in a new integer. After processing all 32 bits, the new integer holds the reversed bits, which is returned as the result."
+  "final_explanation": "The solution works by iterating through each bit of the input integer from least significant to most significant. For each bit, it extracts it using bitwise operations and then places it into the reversed position in a new integer. After processing all 32 bits, the new integer holds the reversed bits, which is returned as the result.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

@@ -66,7 +66,7 @@
   ],
   "hint_plan": {
     "level_1": "`.reverse()` reverses the list **in place** and returns `None`.",
-    "level_2": "The caller\u2019s list is modified, which breaks the \u201ccopy\u201d requirement.",
+    "level_2": "The caller’s list is modified, which breaks the “copy” requirement.",
     "level_3": "Work on a copy: `nums[::-1]` or `list(reversed(nums))`.",
     "level_4": ""
   },
@@ -79,5 +79,9 @@
   "tags": [
     "precode",
     "debugging"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

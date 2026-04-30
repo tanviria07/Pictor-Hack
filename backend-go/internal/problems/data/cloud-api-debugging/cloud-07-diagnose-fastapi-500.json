@@ -7,8 +7,17 @@
   "problem_type": "scenario",
   "description": "A FastAPI app works locally but returns HTTP 500 after cloud deployment.",
   "prompt": "Give a practical debugging plan for a 500 error after deployment. Include likely causes, logs to inspect, and a safe remediation path.",
-  "examples": [{"input": "Local works. Cloud endpoint returns 500.", "output": "A structured debugging checklist."}],
-  "constraints": ["Do not guess a single exact root cause.", "Use logs and configuration checks.", "Mention rollback or safe deployment if needed."],
+  "examples": [
+    {
+      "input": "Local works. Cloud endpoint returns 500.",
+      "output": "A structured debugging checklist."
+    }
+  ],
+  "constraints": [
+    "Do not guess a single exact root cause.",
+    "Use logs and configuration checks.",
+    "Mention rollback or safe deployment if needed."
+  ],
   "function_name": "cloud_text_answer",
   "execution_mode": "text",
   "class_name": "",
@@ -18,14 +27,47 @@
   "visible_tests": [],
   "hidden_tests": [],
   "rubric": {
-    "categories": ["technical accuracy", "clarity", "structure", "tradeoff awareness", "customer communication"],
-    "strong_answer_includes": ["Inspect application logs and platform logs", "Check environment variables, secrets, database connectivity, and startup command", "Reproduce with a minimal request and correlation time", "Rollback or disable risky change if users are impacted"],
-    "common_gaps": ["Only says redeploy", "Ignores environment differences", "No customer impact handling"]
+    "categories": [
+      "technical accuracy",
+      "clarity",
+      "structure",
+      "tradeoff awareness",
+      "customer communication"
+    ],
+    "strong_answer_includes": [
+      "Inspect application logs and platform logs",
+      "Check environment variables, secrets, database connectivity, and startup command",
+      "Reproduce with a minimal request and correlation time",
+      "Rollback or disable risky change if users are impacted"
+    ],
+    "common_gaps": [
+      "Only says redeploy",
+      "Ignores environment differences",
+      "No customer impact handling"
+    ]
   },
   "sample_answer": "A 500 means the server hit an unhandled error, so I would start with the cloud app logs around the failing request time rather than guessing. I would check environment variables, secrets, connection strings, database/network access, package versions, and the startup command because those often differ from local. I would also hit a simple health endpoint to separate startup issues from route-specific bugs. If users are affected, I would roll back to the last working deployment or temporarily disable the failing feature while fixing the root cause.",
-  "hint_plan": {"level_1": "Start with logs.", "level_2": "Compare local and cloud configuration.", "level_3": "Check dependencies and external services.", "level_4": "Mention user impact and rollback."},
+  "hint_plan": {
+    "level_1": "Start with logs.",
+    "level_2": "Compare local and cloud configuration.",
+    "level_3": "Check dependencies and external services.",
+    "level_4": "Mention user impact and rollback."
+  },
   "canonical_solution_summary": "Use logs, config comparison, dependency checks, and safe rollback to diagnose a deployed 500.",
   "disallowed_full_solution_exposure": false,
-  "skill_tags": ["fastapi", "deployment", "debugging"],
-  "tags": ["cloud", "api", "scenario"]
+  "skill_tags": [
+    "fastapi",
+    "deployment",
+    "debugging"
+  ],
+  "tags": [
+    "cloud",
+    "api",
+    "scenario"
+  ],
+  "recommended_for_roles": [
+    "cloud_solutions_architect",
+    "backend_engineer",
+    ""
+  ]
 }

@@ -108,5 +108,9 @@
     "Return the final maximum money from the helper function after processing all houses.",
     "In the main function, call the helper twice: once excluding the last house and once excluding the first house, then return the maximum of these two results."
   ],
-  "final_explanation": "The key insight is that because the houses are in a circle, the first and last houses cannot both be robbed. This reduces the problem to two linear cases: rob houses from the first to the second-to-last, or from the second to the last. Use a dynamic programming approach similar to the original House Robber problem for each linear case, and take the maximum result."
+  "final_explanation": "The key insight is that because the houses are in a circle, the first and last houses cannot both be robbed. This reduces the problem to two linear cases: rob houses from the first to the second-to-last, or from the second to the last. Use a dynamic programming approach similar to the original House Robber problem for each linear case, and take the maximum result.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

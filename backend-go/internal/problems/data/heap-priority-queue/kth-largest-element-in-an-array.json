@@ -86,5 +86,9 @@
   ],
   "company_tags": [
     "Amazon"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

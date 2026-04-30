@@ -109,5 +109,9 @@
   "company_tags": [
     "Microsoft",
     "OpenAI"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

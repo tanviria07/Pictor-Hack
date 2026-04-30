@@ -81,5 +81,9 @@
     "level_4": "Use DFS (Depth First Search) to traverse the tree, and constantly keep track of the current path maximum."
   },
   "canonical_solution_summary": "Use DFS (Depth First Search) to traverse the tree, and constantly keep track of the current path maximum.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

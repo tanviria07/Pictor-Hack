@@ -53,6 +53,7 @@ type rawProblem struct {
 	Tags                     []string              `json:"tags,omitempty"`
 	CompanyTags              []string              `json:"company_tags,omitempty"`
 	CompanyTrackTags         []dto.CompanyTrackTag `json:"company_track_tags,omitempty"`
+	RecommendedRoles         []string              `json:"recommended_for_roles,omitempty"`
 	SolutionSentences        []string              `json:"solution_sentences,omitempty"`
 	HintsPerSentence         []string              `json:"hints_per_sentence,omitempty"`
 	FinalExplanation         string                `json:"final_explanation,omitempty"`
@@ -263,6 +264,7 @@ func ListSummaries(categoryFilter, difficultyFilter string) []dto.ProblemSummary
 			Tags:             append([]string(nil), p.Tags...),
 			CompanyTags:      append([]string(nil), p.CompanyTags...),
 			CompanyTrackTags: append([]dto.CompanyTrackTag(nil), p.CompanyTrackTags...),
+			RecommendedRoles: append([]string(nil), p.RecommendedRoles...),
 			ProblemType:      p.ProblemType,
 		})
 	}
@@ -306,6 +308,7 @@ func GetPublic(id string) (*dto.ProblemDetail, error) {
 		Tags:               append([]string(nil), p.Tags...),
 		CompanyTags:        append([]string(nil), p.CompanyTags...),
 		CompanyTrackTags:   append([]dto.CompanyTrackTag(nil), p.CompanyTrackTags...),
+		RecommendedRoles:   append([]string(nil), p.RecommendedRoles...),
 		StepwiseAvailable:  len(p.SolutionSentences) > 0,
 		StepwiseTotal:      len(p.SolutionSentences),
 		ProblemType:        p.ProblemType,

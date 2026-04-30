@@ -90,5 +90,9 @@
     "If the number is within range, return the reversed integer.",
     ""
   ],
-  "final_explanation": "The solution handles negative numbers by storing the sign separately and working with the absolute value. It reverses digits by iteratively extracting the last digit and building the new number, then restores the sign and checks for overflow. This ensures compliance with the 32-bit integer constraint without using 64-bit storage."
+  "final_explanation": "The solution handles negative numbers by storing the sign separately and working with the absolute value. It reverses digits by iteratively extracting the last digit and building the new number, then restores the sign and checks for overflow. This ensures compliance with the 32-bit integer constraint without using 64-bit storage.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

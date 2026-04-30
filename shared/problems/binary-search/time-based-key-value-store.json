@@ -157,5 +157,9 @@
     "",
     ""
   ],
-  "final_explanation": "The solution uses a dictionary to map each key to a list of (timestamp, value) pairs, ensuring timestamps are appended in increasing order due to problem constraints. For get, binary search efficiently finds the largest timestamp <= target by iterating through the sorted list, updating the result when a valid timestamp is found. This approach leverages sorted insertion and binary search to achieve optimal time complexity for both operations."
+  "final_explanation": "The solution uses a dictionary to map each key to a list of (timestamp, value) pairs, ensuring timestamps are appended in increasing order due to problem constraints. For get, binary search efficiently finds the largest timestamp <= target by iterating through the sorted list, updating the result when a valid timestamp is found. This approach leverages sorted insertion and binary search to achieve optimal time complexity for both operations.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

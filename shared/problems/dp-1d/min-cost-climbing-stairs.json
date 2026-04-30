@@ -86,5 +86,9 @@
     "For each step, compute the minimum cost to reach the top from that step.",
     "Return the minimum cost starting from either step 0 or step 1."
   ],
-  "final_explanation": "This solution uses dynamic programming to compute the minimum cost from each step to the top, working backwards. By storing results in a DP array and considering the cost of the current step plus the minimum of the next one or two steps, it efficiently finds the optimal path. Finally, the answer is the cheaper of starting at index 0 or 1."
+  "final_explanation": "This solution uses dynamic programming to compute the minimum cost from each step to the top, working backwards. By storing results in a DP array and considering the cost of the current step plus the minimum of the next one or two steps, it efficiently finds the optimal path. Finally, the answer is the cheaper of starting at index 0 or 1.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

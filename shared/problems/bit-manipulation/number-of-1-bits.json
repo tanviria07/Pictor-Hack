@@ -81,5 +81,9 @@
     "Shift the integer to the right by one bit to process the next bit.",
     "After the loop ends, return the total count of set bits."
   ],
-  "final_explanation": "This solution counts set bits by repeatedly checking the least significant bit of the integer and shifting it right until it becomes zero. Each time the least significant bit is 1, it increments a counter, effectively tallying all the 1s in the binary representation. This approach efficiently processes each bit without converting the integer to a string."
+  "final_explanation": "This solution counts set bits by repeatedly checking the least significant bit of the integer and shifting it right until it becomes zero. Each time the least significant bit is 1, it increments a counter, effectively tallying all the 1s in the binary representation. This approach efficiently processes each bit without converting the integer to a string.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

@@ -6,8 +6,15 @@
   "description": "Design a secure authentication system for a university mobile app that integrates with the university's Single Sign-On (SSO) and supports mobile sessions.",
   "problem_type": "system_design",
   "execution_mode": "system_design",
-  "tags": ["SYSTEM DESIGN", "SECURITY"],
-  "skill_tags": ["OAuth2/OIDC", "JWT", "Session Management"],
+  "tags": [
+    "SYSTEM DESIGN",
+    "SECURITY"
+  ],
+  "skill_tags": [
+    "OAuth2/OIDC",
+    "JWT",
+    "Session Management"
+  ],
   "constraints": [
     "Secure token storage on mobile.",
     "Integration with existing LDAP/SSO.",
@@ -21,5 +28,10 @@
       "tradeoff explanation",
       "communication clarity"
     ]
-  }
+  },
+  "recommended_for_roles": [
+    "cloud_solutions_architect",
+    "backend_engineer",
+    ""
+  ]
 }

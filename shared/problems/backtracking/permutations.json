@@ -145,5 +145,9 @@
     "Start the recursion with an empty path and all numbers available.",
     "Finally, return the collected result list."
   ],
-  "final_explanation": "This solution uses backtracking to generate all permutations by recursively building each permutation and exploring all choices. It maintains a current path and a list of remaining numbers, adding each number to the path and recursing on the rest, then backtracking to try alternatives. This ensures all distinct permutations are collected efficiently."
+  "final_explanation": "This solution uses backtracking to generate all permutations by recursively building each permutation and exploring all choices. It maintains a current path and a list of remaining numbers, adding each number to the path and recursing on the rest, then backtracking to try alternatives. This ensures all distinct permutations are collected efficiently.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

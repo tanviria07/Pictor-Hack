@@ -86,5 +86,9 @@
     "If all checks pass, return True indicating the hand can be rearranged.",
     ""
   ],
-  "final_explanation": "The solution uses a greedy approach: sort unique card values and for each smallest available card, try to form a group of consecutive cards of size groupSize. It checks counts using a Counter and subtracts used cards, ensuring all groups can be formed without running out of consecutive cards. This efficiently determines if rearrangement is possible by verifying divisibility and consecutive availability."
+  "final_explanation": "The solution uses a greedy approach: sort unique card values and for each smallest available card, try to form a group of consecutive cards of size groupSize. It checks counts using a Counter and subtracts used cards, ensuring all groups can be formed without running out of consecutive cards. This efficiently determines if rearrangement is possible by verifying divisibility and consecutive availability.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

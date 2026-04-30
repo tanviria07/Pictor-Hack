@@ -114,6 +114,7 @@
  * @property {string} title
  * @property {"easy" | "medium" | "hard"} difficulty
  * @property {string} function_name
+ * @property {string[]=} recommended_for_roles Empty string means the default no-role view; concrete role IDs opt into role-specific paths.
  * @property {string[]=} company_tags Curated, unofficial company practice filters.
  * @property {Array<{ company_id: string, priority: "core" | "high" | "medium" | "bonus", reason: string, recommended_order: number }>=} company_track_tags Rich unofficial company-track metadata.
  *

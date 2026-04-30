@@ -91,5 +91,9 @@
     "Update the DP table with the maximum coins for the current subarray.",
     "After filling the DP table, return the result for the entire original array (excluding dummies)."
   ],
-  "final_explanation": "This solution uses dynamic programming to consider bursting balloons in reverse order: instead of choosing which balloon to burst first, we decide which balloon bursts last in each subarray. By adding dummy balloons with value 1 at both ends, we simplify boundary checks. The DP table stores the maximum coins for subarrays, and we compute it by iterating over all possible subarrays and last burst positions, ensuring optimal substructure and overlapping subproblems are efficiently handled."
+  "final_explanation": "This solution uses dynamic programming to consider bursting balloons in reverse order: instead of choosing which balloon to burst first, we decide which balloon bursts last in each subarray. By adding dummy balloons with value 1 at both ends, we simplify boundary checks. The DP table stores the maximum coins for subarrays, and we compute it by iterating over all possible subarrays and last burst positions, ensuring optimal substructure and overlapping subproblems are efficiently handled.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

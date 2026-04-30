@@ -73,7 +73,7 @@
   "hint_plan": {
     "level_1": "Use nested loops: for each `i`, try `j` with `j > i`.",
     "level_2": "Return as soon as you find a pair that sums to `target`.",
-    "level_3": "You only need plain loops here\u2014focus on correct bounds and early exit.",
+    "level_3": "You only need plain loops here—focus on correct bounds and early exit.",
     "level_4": "Return `[]` when no pair works."
   },
   "canonical_solution_summary": "brute",
@@ -85,5 +85,9 @@
   "tags": [
     "precode",
     "dicts-sets"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

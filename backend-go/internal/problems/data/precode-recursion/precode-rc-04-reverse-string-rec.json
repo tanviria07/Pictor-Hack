@@ -4,7 +4,7 @@
   "title": "Reverse String Recursive",
   "difficulty": "medium",
   "category": "precode-recursion",
-  "description": "Reverse `s` using recursion only (no [::-1] in your logic \u2014 ok to use slicing in helper).",
+  "description": "Reverse `s` using recursion only (no [::-1] in your logic — ok to use slicing in helper).",
   "examples": [
     {
       "input": "ab",
@@ -61,5 +61,9 @@
   "tags": [
     "precode",
     "recursion"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

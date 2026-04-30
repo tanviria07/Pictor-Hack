@@ -4,7 +4,7 @@
   "title": "Build Range List",
   "difficulty": "easy",
   "category": "precode-core-data-structures",
-  "description": "Return a list `[0, 1, \u2026, n - 1]` for `n >= 0` (empty list when `n` is 0).",
+  "description": "Return a list `[0, 1, …, n - 1]` for `n >= 0` (empty list when `n` is 0).",
   "examples": [
     {
       "input": "3",
@@ -66,5 +66,9 @@
   "tags": [
     "precode",
     "data-structures"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

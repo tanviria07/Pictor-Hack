@@ -90,5 +90,9 @@
     "Use the XOR operator to update the result with the current number, leveraging the property that XOR cancels out duplicates.",
     "Return the final result, which should be the single number after processing all elements."
   ],
-  "final_explanation": "The solution uses the XOR bitwise operator, which has the property that a number XORed with itself equals 0, and 0 XORed with any number equals that number. By XORing all numbers in the array, duplicates cancel out, leaving only the single number. This approach runs in linear time with constant space, meeting the problem constraints."
+  "final_explanation": "The solution uses the XOR bitwise operator, which has the property that a number XORed with itself equals 0, and 0 XORed with any number equals that number. By XORing all numbers in the array, duplicates cancel out, leaving only the single number. This approach runs in linear time with constant space, meeting the problem constraints.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

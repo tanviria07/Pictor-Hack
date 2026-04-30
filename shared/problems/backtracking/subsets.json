@@ -117,5 +117,9 @@
     "Call the helper function initially with start index 0 and an empty subset.",
     "Return the final list of all subsets."
   ],
-  "final_explanation": "This solution uses backtracking to generate all subsets by exploring each element's inclusion or exclusion. It builds subsets incrementally, adding each subset to the result as it's formed, and backtracks to try different combinations. This ensures all unique subsets are collected without duplicates due to the unique elements and the order of exploration."
+  "final_explanation": "This solution uses backtracking to generate all subsets by exploring each element's inclusion or exclusion. It builds subsets incrementally, adding each subset to the result as it's formed, and backtracks to try different combinations. This ensures all unique subsets are collected without duplicates due to the unique elements and the order of exploration.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

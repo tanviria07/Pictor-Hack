@@ -6,25 +6,91 @@
   "category": "cloud-python-automation",
   "problem_type": "coding",
   "description": "Given log lines in the format `timestamp service level message`, return a dictionary counting ERROR lines by service.",
-  "examples": [{"input": "[\"10:00 api ERROR timeout\", \"10:01 web INFO ok\", \"10:02 api ERROR db\"]", "output": "{\"api\": 2}"}],
-  "constraints": ["Each line has at least four whitespace-separated fields.", "Only count lines where the third field is exactly ERROR."],
+  "examples": [
+    {
+      "input": "[\"10:00 api ERROR timeout\", \"10:01 web INFO ok\", \"10:02 api ERROR db\"]",
+      "output": "{\"api\": 2}"
+    }
+  ],
+  "constraints": [
+    "Each line has at least four whitespace-separated fields.",
+    "Only count lines where the third field is exactly ERROR."
+  ],
   "execution_mode": "function",
   "class_name": "",
   "function_name": "count_errors_by_service",
   "starter_code": "def count_errors_by_service(lines):\n    pass\n",
-  "parameters": [{"name": "lines", "type": "List[str]"}],
+  "parameters": [
+    {
+      "name": "lines",
+      "type": "List[str]"
+    }
+  ],
   "expected_return_type": "Dict[str,int]",
   "visible_tests": [
-    {"args": [["10:00 api ERROR timeout", "10:01 web INFO ok", "10:02 api ERROR db"]], "expected": {"api": 2}},
-    {"args": [["10:00 auth ERROR denied", "10:01 billing ERROR declined", "10:02 auth WARN retry"]], "expected": {"auth": 1, "billing": 1}}
+    {
+      "args": [
+        [
+          "10:00 api ERROR timeout",
+          "10:01 web INFO ok",
+          "10:02 api ERROR db"
+        ]
+      ],
+      "expected": {
+        "api": 2
+      }
+    },
+    {
+      "args": [
+        [
+          "10:00 auth ERROR denied",
+          "10:01 billing ERROR declined",
+          "10:02 auth WARN retry"
+        ]
+      ],
+      "expected": {
+        "auth": 1,
+        "billing": 1
+      }
+    }
   ],
   "hidden_tests": [
-    {"args": [[]], "expected": {}},
-    {"args": [["t web INFO ok", "t web WARN slow"]], "expected": {}}
+    {
+      "args": [
+        []
+      ],
+      "expected": {}
+    },
+    {
+      "args": [
+        [
+          "t web INFO ok",
+          "t web WARN slow"
+        ]
+      ],
+      "expected": {}
+    }
   ],
-  "hint_plan": {"level_1": "Split each line into fields.", "level_2": "The service is field 2 and the level is field 3 if counting from 1.", "level_3": "Use a dict accumulator.", "level_4": "Skip every non-ERROR line."},
+  "hint_plan": {
+    "level_1": "Split each line into fields.",
+    "level_2": "The service is field 2 and the level is field 3 if counting from 1.",
+    "level_3": "Use a dict accumulator.",
+    "level_4": "Skip every non-ERROR line."
+  },
   "canonical_solution_summary": "Loop through log lines, split, filter ERROR level, and increment counts by service.",
   "disallowed_full_solution_exposure": true,
-  "skill_tags": ["python", "logs", "dictionaries"],
-  "tags": ["cloud", "automation", "coding"]
+  "skill_tags": [
+    "python",
+    "logs",
+    "dictionaries"
+  ],
+  "tags": [
+    "cloud",
+    "automation",
+    "coding"
+  ],
+  "recommended_for_roles": [
+    "backend_engineer",
+    ""
+  ]
 }

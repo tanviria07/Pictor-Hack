@@ -112,5 +112,9 @@
     "level_4": "Think about when you want to switch the progress on one of the indexes. If you progress on i out of [i, j], you'll shift in the same column. Similarly, by changing values for j, you'd be shifting in the same row.\nAlso, keep track of the end of a boundary so that you can move inwards and then keep repeating. It's always best to simulate edge cases like a single column or a single row to see if anything breaks or not."
   },
   "canonical_solution_summary": "Think about when you want to switch the progress on one of the indexes. If you progress on i out of [i, j], you'll shift in the same column. Similarly, by changing values for j, you'd be shifting in the same row.\nAlso, keep track of the end of a boundary so that you can move inwards and then keep repeating. It's always best to simulate edge cases like a single column or a single row to see if anything breaks or not.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

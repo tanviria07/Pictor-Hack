@@ -166,5 +166,9 @@
     "",
     ""
   ],
-  "final_explanation": "The solution works by first marking all 'O' regions connected to the edge with a temporary marker using DFS, because these cannot be surrounded. Then, any 'O's left are surrounded and are flipped to 'X'. Finally, the temporary markers are reverted to 'O' to preserve the edge-connected regions. This approach efficiently captures only the surrounded regions in-place."
+  "final_explanation": "The solution works by first marking all 'O' regions connected to the edge with a temporary marker using DFS, because these cannot be surrounded. Then, any 'O's left are surrounded and are flipped to 'X'. Finally, the temporary markers are reverted to 'O' to preserve the edge-connected regions. This approach efficiently captures only the surrounded regions in-place.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

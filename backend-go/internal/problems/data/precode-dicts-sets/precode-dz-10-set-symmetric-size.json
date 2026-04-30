@@ -67,7 +67,7 @@
     "level_1": "Symmetric difference of sets: `set(a) ^ set(b)` or union minus intersection.",
     "level_2": "Count distinct elements in exactly one set.",
     "level_3": "Duplicates in one list do not change the distinct-element set.",
-    "level_4": "Equal multisets as sets \u2192 0."
+    "level_4": "Equal multisets as sets → 0."
   },
   "canonical_solution_summary": "symdiff",
   "disallowed_full_solution_exposure": true,
@@ -77,5 +77,9 @@
   "tags": [
     "precode",
     "dicts-sets"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

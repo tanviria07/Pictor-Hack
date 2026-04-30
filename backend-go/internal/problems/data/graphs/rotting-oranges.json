@@ -174,5 +174,9 @@
   "company_tags": [
     "Amazon",
     "Google"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

@@ -84,5 +84,9 @@
     "If neither branch returned, `n` is zero — return `0`."
   ],
   "final_explanation": "`sign(n)` returns `1` for positives, `-1` for negatives, and `0` for zero. Early returns let each branch exit as soon as it matches, so the final `return 0` handles the remaining zero case.",
-  "curated": true
+  "curated": true,
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

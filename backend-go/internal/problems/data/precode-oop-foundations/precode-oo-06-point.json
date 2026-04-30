@@ -4,7 +4,7 @@
   "title": "Point Distance",
   "difficulty": "easy",
   "category": "precode-oop-foundations",
-  "description": "Point(x,y) with distance_from_origin returning sqrt(x*x+y*y) \u2014 use **0.5 or math.sqrt.",
+  "description": "Point(x,y) with distance_from_origin returning sqrt(x*x+y*y) — use **0.5 or math.sqrt.",
   "examples": [
     {
       "input": "",
@@ -43,7 +43,7 @@
       ],
       "expected": [
         null,
-        5.0
+        5
       ]
     }
   ],
@@ -62,7 +62,7 @@
       ],
       "expected": [
         null,
-        0.0
+        0
       ]
     }
   ],
@@ -81,5 +81,9 @@
   "tags": [
     "precode",
     "oop"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

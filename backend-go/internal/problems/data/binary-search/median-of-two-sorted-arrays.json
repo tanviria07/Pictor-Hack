@@ -122,5 +122,9 @@
     "",
     ""
   ],
-  "final_explanation": "This solution uses a binary search approach on the smaller array to partition both arrays such that the left halves contain the correct number of elements for the median. By ensuring the maximum left element is less than or equal to the minimum right element across both arrays, we efficiently find the median in O(log(min(m, n))) time, meeting the required complexity. The edge cases are handled with infinity values to simplify comparisons."
+  "final_explanation": "This solution uses a binary search approach on the smaller array to partition both arrays such that the left halves contain the correct number of elements for the median. By ensuring the maximum left element is less than or equal to the minimum right element across both arrays, we efficiently find the median in O(log(min(m, n))) time, meeting the required complexity. The edge cases are handled with infinity values to simplify comparisons.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

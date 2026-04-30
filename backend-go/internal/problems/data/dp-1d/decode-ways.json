@@ -98,5 +98,9 @@
     "If valid, add the number of ways from two positions back to the current count.",
     "After the loop, return the total ways stored for the full string length."
   ],
-  "final_explanation": "This solution uses dynamic programming to count decodings by building up from smaller substrings. At each position, we consider if the last digit can be a single code (if not '0') and if the last two digits form a valid double-digit code (10-26), adding ways from previous states. The base cases handle empty strings and initial zeros, ensuring invalid sequences return 0."
+  "final_explanation": "This solution uses dynamic programming to count decodings by building up from smaller substrings. At each position, we consider if the last digit can be a single code (if not '0') and if the last two digits form a valid double-digit code (10-26), adding ways from previous states. The base cases handle empty strings and initial zeros, ensuring invalid sequences return 0.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

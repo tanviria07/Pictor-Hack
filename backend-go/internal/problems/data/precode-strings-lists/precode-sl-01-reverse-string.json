@@ -61,5 +61,9 @@
   "tags": [
     "precode",
     "strings-lists"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

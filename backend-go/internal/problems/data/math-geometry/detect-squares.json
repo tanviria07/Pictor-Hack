@@ -113,5 +113,9 @@
     "level_4": "Traverse the hash map and if any point has the same y-coordinate as the query point, consider this point and the query point to form one of the horizontal lines of the square."
   },
   "canonical_solution_summary": "Traverse the hash map and if any point has the same y-coordinate as the query point, consider this point and the query point to form one of the horizontal lines of the square.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

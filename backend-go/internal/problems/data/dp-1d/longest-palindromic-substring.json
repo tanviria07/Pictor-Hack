@@ -104,5 +104,9 @@
     "",
     ""
   ],
-  "final_explanation": "This solution uses dynamic programming to efficiently find the longest palindromic substring. It builds a table where each entry indicates whether a substring is a palindrome, starting from single characters and expanding to longer substrings by checking outer characters and inner substrings. By storing results, it avoids redundant checks and achieves O(n^2) time complexity with O(n^2) space, ensuring all possible substrings are considered to identify the longest palindrome."
+  "final_explanation": "This solution uses dynamic programming to efficiently find the longest palindromic substring. It builds a table where each entry indicates whether a substring is a palindrome, starting from single characters and expanding to longer substrings by checking outer characters and inner substrings. By storing results, it avoids redundant checks and achieves O(n^2) time complexity with O(n^2) space, ensuring all possible substrings are considered to identify the longest palindrome.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

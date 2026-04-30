@@ -140,6 +140,35 @@ func TestListProblems_includesCompanyTags(t *testing.T) {
 	t.Fatal("two-sum missing from problem summaries")
 }
 
+func TestListProblems_includesRecommendedRoles(t *testing.T) {
+	h, cleanup := newTestHandler(t, nil)
+	defer cleanup()
+	srv := httpapi.NewRouter(h, []string{"*"}, 10000)
+	rec := httptest.NewRecorder()
+	srv.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/api/problems", nil))
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status %d %s", rec.Code, rec.Body.String())
+	}
+	var rows []map[string]any
+	if err := json.Unmarshal(rec.Body.Bytes(), &rows); err != nil {
+		t.Fatal(err)
+	}
+	for _, row := range rows {
+		if row["id"] != "two-sum" {
+			continue
+		}
+		roles, ok := row["recommended_for_roles"].([]any)
+		if !ok || len(roles) == 0 {
+			t.Fatalf("expected recommended_for_roles on two-sum, got %#v", row["recommended_for_roles"])
+		}
+		if roles[0] != "swe_intern" {
+			t.Fatalf("expected swe_intern affinity on two-sum, got %#v", roles)
+		}
+		return
+	}
+	t.Fatal("two-sum missing from problem summaries")
+}
+
 func TestRun_invalidProblemIDFormat(t *testing.T) {
 	h, cleanup := newTestHandler(t, func(w http.ResponseWriter, r *http.Request) {
 		t.Fatal("runner should not be called")

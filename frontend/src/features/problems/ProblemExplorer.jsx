@@ -11,6 +11,7 @@ import {
     hasCompanyTag,
     priorityLabel,
 } from "./companyTracks";
+import { learningPathForRole, roleDescription } from "../../lib/roles";
 function matchesSearch(problem, query) {
     if (!query.trim())
         return true;
@@ -97,12 +98,13 @@ function companySolvedCount(problems, progress, companyId) {
     }
     return { solved, total };
 }
-export function ProblemExplorer({ categories, problems, progress, selectedId, onSelectProblem, loading, trackFilter = "all", }) {
+export function ProblemExplorer({ categories, problems, progress, selectedId, onSelectProblem, loading, trackFilter = "all", role = "", }) {
     const [search, setSearch] = useState("");
     const [difficulty, setDifficulty] = useState("");
     const [category, setCategory] = useState("");
     const [company, setCompany] = useState("");
     const [expanded, setExpanded] = useState({});
+    const learningPath = useMemo(() => learningPathForRole(role), [role]);
     const trackProblems = useMemo(() => filterProblemsByTrack(problems, trackFilter), [problems, trackFilter]);
     const activeCompany = useMemo(() => companyById(company), [company]);
     const effectiveTrackFilter = company ? "all" : trackFilter;
@@ -114,8 +116,12 @@ export function ProblemExplorer({ categories, problems, progress, selectedId, on
             .sort(compareByCompanyOrder(company));
     }, [company, problems, trackProblems]);
     const displayCategories = useMemo(() => {
-        return filterCategoriesByTrack(categories, companyBaseProblems, effectiveTrackFilter);
-    }, [categories, companyBaseProblems, effectiveTrackFilter]);
+        const items = filterCategoriesByTrack(categories, companyBaseProblems, effectiveTrackFilter);
+        if (!learningPath)
+            return items;
+        const rank = new Map(learningPath.order.map((id, index) => [id, index]));
+        return [...items].sort((a, b) => (rank.get(a.id) ?? 9999) - (rank.get(b.id) ?? 9999));
+    }, [categories, companyBaseProblems, effectiveTrackFilter, learningPath]);
     const categoryOptions = useMemo(() => {
         const activeCategories = new Set(companyBaseProblems.map((problem) => problem.category));
         return displayCategories.filter((item) => activeCategories.has(item.id));
@@ -161,6 +167,11 @@ export function ProblemExplorer({ categories, problems, progress, selectedId, on
     }, [filteredProblems, visibleCategories]);
     return (<div className="ex">
       <div className="ex-toolbar">
+        {learningPath && (<div className="company-track-summary">
+          <p className="company-track-summary-title">{learningPath.name}</p>
+          <p className="company-track-summary-desc">{roleDescription(role)}</p>
+          <p className="company-track-summary-note">Target: {learningPath.target_problems} problems. Categories are ordered by the selected track view.</p>
+        </div>)}
         <div className="company-track-menu">
           <label className="company-track-label" htmlFor="company-track">
             Company Practice Tracks

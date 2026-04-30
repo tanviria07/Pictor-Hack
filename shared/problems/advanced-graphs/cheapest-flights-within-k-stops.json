@@ -187,5 +187,9 @@
     "Return the cost to the destination if it's reachable; otherwise, return -1.",
     ""
   ],
-  "final_explanation": "This solution uses a Bellman-Ford-like approach to find the cheapest price with at most k stops. It iteratively relaxes edges up to k+1 times, updating the minimum cost to each city while ensuring we don't exceed the stop limit. By using a temporary array to store updates, it prevents using newly updated costs within the same iteration, which could incorrectly count extra stops."
+  "final_explanation": "This solution uses a Bellman-Ford-like approach to find the cheapest price with at most k stops. It iteratively relaxes edges up to k+1 times, updating the minimum cost to each city while ensuring we don't exceed the stop limit. By using a temporary array to store updates, it prevents using newly updated costs within the same iteration, which could incorrectly count extra stops.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

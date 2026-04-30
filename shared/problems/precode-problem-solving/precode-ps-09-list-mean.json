@@ -32,7 +32,7 @@
           4
         ]
       ],
-      "expected": 3.0
+      "expected": 3
     },
     {
       "args": [
@@ -40,7 +40,7 @@
           5
         ]
       ],
-      "expected": 5.0
+      "expected": 5
     }
   ],
   "hidden_tests": [
@@ -52,7 +52,7 @@
           1
         ]
       ],
-      "expected": 1.0
+      "expected": 1
     }
   ],
   "hint_plan": {
@@ -69,5 +69,9 @@
   "tags": [
     "precode",
     "problem-solving"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

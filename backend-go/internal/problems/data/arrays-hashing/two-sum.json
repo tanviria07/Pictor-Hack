@@ -144,5 +144,9 @@
       "reason": "Python reasoning, robustness, correctness, evaluation mindset",
       "recommended_order": 1
     }
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

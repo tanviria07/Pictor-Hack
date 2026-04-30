@@ -83,5 +83,9 @@
     "For each inner cell, compute the number of paths as the sum of paths from the cell above and the cell to the left.",
     "Finally, return the value in the bottom-right corner of the matrix, which holds the total unique paths."
   ],
-  "final_explanation": "This solution uses dynamic programming to build up the number of paths to each cell. The key idea is that the number of ways to reach any cell is the sum of ways to reach the cell directly above and the cell directly to the left, with the first row and column initialized to 1 because there's only one straight path along the edges. By filling the matrix iteratively, we efficiently compute the answer for the bottom-right corner."
+  "final_explanation": "This solution uses dynamic programming to build up the number of paths to each cell. The key idea is that the number of ways to reach any cell is the sum of ways to reach the cell directly above and the cell directly to the left, with the first row and column initialized to 1 because there's only one straight path along the edges. By filling the matrix iteratively, we efficiently compute the answer for the bottom-right corner.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

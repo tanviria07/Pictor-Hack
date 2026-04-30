@@ -159,5 +159,9 @@
     "",
     ""
   ],
-  "final_explanation": "This solution finds the minimum cost to connect all points by treating each point as a node in a graph, with edges weighted by Manhattan distance. It uses Kruskal's algorithm with a union-find data structure to build a minimum spanning tree: first, all edges are generated and sorted by cost, then edges are added in increasing order if they connect different components, ensuring no cycles and minimal total cost. The algorithm stops once all points are connected, efficiently computing the result."
+  "final_explanation": "This solution finds the minimum cost to connect all points by treating each point as a node in a graph, with edges weighted by Manhattan distance. It uses Kruskal's algorithm with a union-find data structure to build a minimum spanning tree: first, all edges are generated and sorted by cost, then edges are added in increasing order if they connect different components, ensuring no cycles and minimal total cost. The algorithm stops once all points are connected, efficiently computing the result.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

@@ -307,6 +307,7 @@ type ProblemSummary struct {
 	Tags             []string          `json:"tags,omitempty"`
 	CompanyTags      []string          `json:"company_tags,omitempty"`
 	CompanyTrackTags []CompanyTrackTag `json:"company_track_tags,omitempty"`
+	RecommendedRoles []string          `json:"recommended_for_roles,omitempty"`
 	ProblemType      string            `json:"problem_type,omitempty"`
 }
 
@@ -336,6 +337,7 @@ type ProblemDetail struct {
 	Tags               []string          `json:"tags,omitempty"`
 	CompanyTags        []string          `json:"company_tags,omitempty"`
 	CompanyTrackTags   []CompanyTrackTag `json:"company_track_tags,omitempty"`
+	RecommendedRoles   []string          `json:"recommended_for_roles,omitempty"`
 	StepwiseAvailable  bool              `json:"stepwise_available,omitempty"`
 	StepwiseTotal      int               `json:"stepwise_total,omitempty"`
 	ProblemType        string            `json:"problem_type,omitempty"`

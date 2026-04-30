@@ -26,7 +26,13 @@
   "visible_tests": [],
   "hidden_tests": [],
   "rubric": {
-    "categories": ["technical accuracy", "clarity", "structure", "tradeoff awareness", "customer communication"],
+    "categories": [
+      "technical accuracy",
+      "clarity",
+      "structure",
+      "tradeoff awareness",
+      "customer communication"
+    ],
     "strong_answer_includes": [
       "App Service hosts long-running web apps and APIs",
       "Functions runs event-driven or scheduled serverless code",
@@ -48,6 +54,18 @@
   },
   "canonical_solution_summary": "App Service for hosted web apps/APIs; Functions for event-driven serverless tasks.",
   "disallowed_full_solution_exposure": false,
-  "skill_tags": ["azure", "serverless", "customer explanation"],
-  "tags": ["cloud", "azure", "explanation"]
+  "skill_tags": [
+    "azure",
+    "serverless",
+    "customer explanation"
+  ],
+  "tags": [
+    "cloud",
+    "azure",
+    "explanation"
+  ],
+  "recommended_for_roles": [
+    "cloud_solutions_architect",
+    ""
+  ]
 }

@@ -103,5 +103,9 @@
     "level_4": "You should be familiar with how a Trie works. If not, please work on this problem: Implement Trie (Prefix Tree) first."
   },
   "canonical_solution_summary": "You should be familiar with how a Trie works. If not, please work on this problem: Implement Trie (Prefix Tree) first.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

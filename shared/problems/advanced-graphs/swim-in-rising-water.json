@@ -161,5 +161,9 @@
     "",
     ""
   ],
-  "final_explanation": "The solution uses binary search to find the minimum time T such that you can travel from (0,0) to (n-1,n-1) only stepping on cells with elevation ≤ T. For each candidate T, a DFS (or BFS) checks reachability by exploring accessible cells. This approach efficiently narrows down T by halving the search range each time, avoiding checking all possible times directly."
+  "final_explanation": "The solution uses binary search to find the minimum time T such that you can travel from (0,0) to (n-1,n-1) only stepping on cells with elevation ≤ T. For each candidate T, a DFS (or BFS) checks reachability by exploring accessible cells. This approach efficiently narrows down T by halving the search range each time, avoiding checking all possible times directly.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

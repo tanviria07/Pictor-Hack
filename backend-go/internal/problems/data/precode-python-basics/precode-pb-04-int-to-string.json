@@ -61,5 +61,9 @@
   "tags": [
     "precode",
     "basics"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

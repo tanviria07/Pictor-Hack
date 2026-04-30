@@ -149,5 +149,9 @@
     "Update the overall result by computing the path from each cell and taking the maximum.",
     "Return the final result as the length of the longest increasing path."
   ],
-  "final_explanation": "This solution uses DFS with memoization to efficiently find the longest increasing path. By caching results in a dp table, it avoids recomputing paths for each cell, ensuring O(m*n) time complexity. The algorithm explores all cells, recursively checking valid neighbors with higher values to build up path lengths."
+  "final_explanation": "This solution uses DFS with memoization to efficiently find the longest increasing path. By caching results in a dp table, it avoids recomputing paths for each cell, ensuring O(m*n) time complexity. The algorithm explores all cells, recursively checking valid neighbors with higher values to build up path lengths.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

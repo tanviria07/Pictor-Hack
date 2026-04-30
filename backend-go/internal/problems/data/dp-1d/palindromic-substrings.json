@@ -81,5 +81,9 @@
     "Move the right index one step to the right to match the left movement.",
     "After checking all centers, return the total count."
   ],
-  "final_explanation": "This solution uses a center expansion approach to efficiently count palindromic substrings. By iterating through each possible center (including positions between characters for even-length palindromes) and expanding outward while characters match, it avoids redundant checks and runs in O(n^2) time with O(1) extra space. This method leverages the symmetry of palindromes to count all substrings without explicitly generating each one."
+  "final_explanation": "This solution uses a center expansion approach to efficiently count palindromic substrings. By iterating through each possible center (including positions between characters for even-length palindromes) and expanding outward while characters match, it avoids redundant checks and runs in O(n^2) time with O(1) extra space. This method leverages the symmetry of palindromes to count all substrings without explicitly generating each one.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

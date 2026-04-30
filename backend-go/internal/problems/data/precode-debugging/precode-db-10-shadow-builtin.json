@@ -66,5 +66,9 @@
   "tags": [
     "precode",
     "debugging"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

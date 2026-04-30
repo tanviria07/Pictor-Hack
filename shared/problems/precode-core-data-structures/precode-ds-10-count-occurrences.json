@@ -76,5 +76,9 @@
   "tags": [
     "precode",
     "data-structures"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

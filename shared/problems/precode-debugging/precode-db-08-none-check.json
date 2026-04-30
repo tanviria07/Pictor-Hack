@@ -47,7 +47,7 @@
     }
   ],
   "hint_plan": {
-    "level_1": "`not x` is true for `None`, but also for `0`, `[]`, and `''`\u2014usually not what you want here.",
+    "level_1": "`not x` is true for `None`, but also for `0`, `[]`, and `''`—usually not what you want here.",
     "level_2": "To test specifically for missing values, distinguish `None` from zero.",
     "level_3": "Use `x is None`.",
     "level_4": ""
@@ -61,5 +61,9 @@
   "tags": [
     "precode",
     "debugging"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

@@ -33,7 +33,7 @@
       ],
       "args": [
         [
-          100.0
+          100
         ],
         [
           0.1
@@ -43,7 +43,7 @@
       "expected": [
         null,
         null,
-        110.0
+        110
       ]
     }
   ],
@@ -56,17 +56,17 @@
       ],
       "args": [
         [
-          50.0
+          50
         ],
         [
-          0.0
+          0
         ],
         []
       ],
       "expected": [
         null,
         null,
-        50.0
+        50
       ]
     }
   ],
@@ -84,5 +84,9 @@
   "tags": [
     "precode",
     "oop"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

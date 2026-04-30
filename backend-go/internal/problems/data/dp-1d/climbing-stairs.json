@@ -76,5 +76,9 @@
     "The ways to reach step i is the sum of ways to reach step i-1 and step i-2, since you can come from those.",
     "After filling the list, return the value for step n, which gives the total distinct ways."
   ],
-  "final_explanation": "This problem is essentially a Fibonacci sequence where each step's ways depend on the previous two steps. By using dynamic programming to store intermediate results, we avoid redundant calculations and efficiently compute the answer for any n. The base cases handle small staircases directly, ensuring correctness for all inputs."
+  "final_explanation": "This problem is essentially a Fibonacci sequence where each step's ways depend on the previous two steps. By using dynamic programming to store intermediate results, we avoid redundant calculations and efficiently compute the answer for any n. The base cases handle small staircases directly, ensuring correctness for all inputs.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

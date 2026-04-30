@@ -7,8 +7,16 @@
   "problem_type": "explanation",
   "description": "Explain logs, metrics, and traces in observability using plain language.",
   "prompt": "Explain the role of logs, metrics, and traces when diagnosing a slow or failing cloud app.",
-  "examples": [{"input": "Audience: new intern", "output": "Plain-language differences and when to use each."}],
-  "constraints": ["Use simple language.", "Give one example for each telemetry type."],
+  "examples": [
+    {
+      "input": "Audience: new intern",
+      "output": "Plain-language differences and when to use each."
+    }
+  ],
+  "constraints": [
+    "Use simple language.",
+    "Give one example for each telemetry type."
+  ],
   "function_name": "cloud_text_answer",
   "execution_mode": "text",
   "class_name": "",
@@ -18,14 +26,49 @@
   "visible_tests": [],
   "hidden_tests": [],
   "rubric": {
-    "categories": ["technical accuracy", "clarity", "structure", "tradeoff awareness", "customer communication"],
-    "strong_answer_includes": ["Logs are event records with details", "Metrics are numeric time-series for trends and alerts", "Traces show a request path across services", "Explains how they complement each other"],
-    "common_gaps": ["Uses the terms interchangeably", "No examples", "No diagnostic workflow"]
+    "categories": [
+      "technical accuracy",
+      "clarity",
+      "structure",
+      "tradeoff awareness",
+      "customer communication"
+    ],
+    "strong_answer_includes": [
+      "Logs are event records with details",
+      "Metrics are numeric time-series for trends and alerts",
+      "Traces show a request path across services",
+      "Explains how they complement each other"
+    ],
+    "common_gaps": [
+      "Uses the terms interchangeably",
+      "No examples",
+      "No diagnostic workflow"
+    ]
   },
   "sample_answer": "Logs tell you what happened at a specific moment, such as an exception message or failed login. Metrics tell you how the system is behaving over time, such as CPU usage, request count, latency, or error rate. Traces show the path of one request across services, which helps find where time was spent or where the request failed. I would use metrics to notice a problem, traces to locate the slow service, and logs to inspect the detailed error.",
-  "hint_plan": {"level_1": "Define each term separately.", "level_2": "Add one example each.", "level_3": "Explain how they work together.", "level_4": "Use a troubleshooting flow."},
+  "hint_plan": {
+    "level_1": "Define each term separately.",
+    "level_2": "Add one example each.",
+    "level_3": "Explain how they work together.",
+    "level_4": "Use a troubleshooting flow."
+  },
   "canonical_solution_summary": "Logs are detailed events, metrics are numeric trends, and traces follow requests across services.",
   "disallowed_full_solution_exposure": false,
-  "skill_tags": ["observability", "logs", "metrics", "traces"],
-  "tags": ["cloud", "monitoring", "explanation"]
+  "skill_tags": [
+    "observability",
+    "logs",
+    "metrics",
+    "traces"
+  ],
+  "tags": [
+    "cloud",
+    "monitoring",
+    "explanation"
+  ],
+  "recommended_for_roles": [
+    "cloud_solutions_architect",
+    "backend_engineer",
+    "ai_infrastructure",
+    ""
+  ]
 }

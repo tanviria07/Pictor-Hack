@@ -6,8 +6,16 @@
   "description": "Design a tool that allows users to upload their Instagram 'Data Export' ZIP file and provides insights/visualizations about their activity (e.g., most liked posts, followers over time).",
   "problem_type": "system_design",
   "execution_mode": "system_design",
-  "tags": ["SYSTEM DESIGN", "CLOUD", "BACKEND"],
-  "skill_tags": ["Batch Processing", "Data Pipelines", "Privacy"],
+  "tags": [
+    "SYSTEM DESIGN",
+    "CLOUD",
+    "BACKEND"
+  ],
+  "skill_tags": [
+    "Batch Processing",
+    "Data Pipelines",
+    "Privacy"
+  ],
   "constraints": [
     "Securely handle large user data uploads.",
     "Process data asynchronously.",
@@ -21,5 +29,10 @@
       "security",
       "tradeoff explanation"
     ]
-  }
+  },
+  "recommended_for_roles": [
+    "cloud_solutions_architect",
+    "backend_engineer",
+    ""
+  ]
 }

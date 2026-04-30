@@ -62,5 +62,9 @@
     "level_4": "Simulate the process.  We can do it with a heap, or by sorting some list of stones every time we take a turn."
   },
   "canonical_solution_summary": "Simulate the process.  We can do it with a heap, or by sorting some list of stones every time we take a turn.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

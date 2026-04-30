@@ -6,8 +6,16 @@
   "description": "Design a service that allows users to upload and download large files (e.g., images, videos). The service should support resumable uploads and provide secure access to files.",
   "problem_type": "system_design",
   "execution_mode": "system_design",
-  "tags": ["SYSTEM DESIGN", "BACKEND", "CLOUD"],
-  "skill_tags": ["Object Storage", "API Design", "Security"],
+  "tags": [
+    "SYSTEM DESIGN",
+    "BACKEND",
+    "CLOUD"
+  ],
+  "skill_tags": [
+    "Object Storage",
+    "API Design",
+    "Security"
+  ],
   "constraints": [
     "Support files up to 10GB.",
     "Ensure data durability and availability.",
@@ -23,5 +31,10 @@
       "security",
       "tradeoff explanation"
     ]
-  }
+  },
+  "recommended_for_roles": [
+    "cloud_solutions_architect",
+    "backend_engineer",
+    ""
+  ]
 }

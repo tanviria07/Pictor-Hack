@@ -6,8 +6,15 @@
   "description": "Design a service that takes a long URL and returns a short, unique alias. When a user visits the short URL, they should be redirected to the original long URL.",
   "problem_type": "system_design",
   "execution_mode": "system_design",
-  "tags": ["SYSTEM DESIGN", "BACKEND"],
-  "skill_tags": ["API Design", "Database Selection", "Scaling"],
+  "tags": [
+    "SYSTEM DESIGN",
+    "BACKEND"
+  ],
+  "skill_tags": [
+    "API Design",
+    "Database Selection",
+    "Scaling"
+  ],
   "constraints": [
     "Short URL should be as short as possible.",
     "The system should be highly available.",
@@ -26,5 +33,10 @@
       "tradeoff explanation",
       "communication clarity"
     ]
-  }
+  },
+  "recommended_for_roles": [
+    "cloud_solutions_architect",
+    "backend_engineer",
+    ""
+  ]
 }

@@ -149,5 +149,9 @@
       "reason": "clean implementation, readability, arrays, strings, trees",
       "recommended_order": 3
     }
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

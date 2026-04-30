@@ -6,8 +6,16 @@
   "description": "Design a mobile app backend that provides hyper-local weather forecasts and stargazing conditions (visibility, light pollution) based on the user's location.",
   "problem_type": "system_design",
   "execution_mode": "system_design",
-  "tags": ["SYSTEM DESIGN", "CLOUD", "BACKEND"],
-  "skill_tags": ["External APIs", "Caching", "Geospatial Queries"],
+  "tags": [
+    "SYSTEM DESIGN",
+    "CLOUD",
+    "BACKEND"
+  ],
+  "skill_tags": [
+    "External APIs",
+    "Caching",
+    "Geospatial Queries"
+  ],
   "constraints": [
     "Integrate with multiple weather data providers.",
     "Provide location-based recommendations.",
@@ -22,5 +30,10 @@
       "cost awareness",
       "tradeoff explanation"
     ]
-  }
+  },
+  "recommended_for_roles": [
+    "cloud_solutions_architect",
+    "backend_engineer",
+    ""
+  ]
 }

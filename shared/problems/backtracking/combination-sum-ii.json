@@ -140,5 +140,9 @@
     "",
     ""
   ],
-  "final_explanation": "This solution uses backtracking to explore all possible combinations while avoiding duplicates. Sorting the candidates allows skipping duplicates and early termination when candidates exceed the remaining target. The recursive helper function builds combinations incrementally, ensuring each candidate is used at most once and unique results are collected."
+  "final_explanation": "This solution uses backtracking to explore all possible combinations while avoiding duplicates. Sorting the candidates allows skipping duplicates and early termination when candidates exceed the remaining target. The recursive helper function builds combinations incrementally, ensuring each candidate is used at most once and unique results are collected.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

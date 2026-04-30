@@ -114,5 +114,9 @@
       "reason": "practical DSA, heaps, intervals, sliding window, fast tradeoffs",
       "recommended_order": 13
     }
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

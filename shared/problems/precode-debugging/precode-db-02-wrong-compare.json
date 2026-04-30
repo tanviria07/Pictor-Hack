@@ -56,7 +56,7 @@
   "hint_plan": {
     "level_1": "`==` compares values; `is` checks whether two names refer to the same object.",
     "level_2": "Small integers may be cached, so `is` can accidentally pass some tests.",
-    "level_3": "Use `a == b` whenever you mean \u201cequal values\u201d.",
+    "level_3": "Use `a == b` whenever you mean “equal values”.",
     "level_4": ""
   },
   "canonical_solution_summary": "use ==",
@@ -68,5 +68,9 @@
   "tags": [
     "precode",
     "debugging"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

@@ -7,8 +7,16 @@
   "problem_type": "explanation",
   "description": "Practice explaining cloud hosting without jargon.",
   "prompt": "Explain cloud hosting to a non-technical campus club leader who wants a club website and signup form.",
-  "examples": [{"input": "Audience: campus club leader", "output": "A friendly, simple explanation with benefits and responsibilities."}],
-  "constraints": ["Avoid heavy jargon.", "Mention reliability, cost, security, and ownership in simple terms."],
+  "examples": [
+    {
+      "input": "Audience: campus club leader",
+      "output": "A friendly, simple explanation with benefits and responsibilities."
+    }
+  ],
+  "constraints": [
+    "Avoid heavy jargon.",
+    "Mention reliability, cost, security, and ownership in simple terms."
+  ],
   "function_name": "cloud_text_answer",
   "execution_mode": "text",
   "class_name": "",
@@ -18,14 +26,44 @@
   "visible_tests": [],
   "hidden_tests": [],
   "rubric": {
-    "categories": ["technical accuracy", "clarity", "structure", "tradeoff awareness", "customer communication"],
-    "strong_answer_includes": ["Cloud hosting means running the site on provider-managed servers", "Benefits include availability, easier scaling, and less hardware management", "Mentions ongoing cost and data/security responsibility", "Uses a customer-friendly analogy or plain wording"],
-    "common_gaps": ["Too much jargon", "Ignores cost", "Promises perfect reliability"]
+    "categories": [
+      "technical accuracy",
+      "clarity",
+      "structure",
+      "tradeoff awareness",
+      "customer communication"
+    ],
+    "strong_answer_includes": [
+      "Cloud hosting means running the site on provider-managed servers",
+      "Benefits include availability, easier scaling, and less hardware management",
+      "Mentions ongoing cost and data/security responsibility",
+      "Uses a customer-friendly analogy or plain wording"
+    ],
+    "common_gaps": [
+      "Too much jargon",
+      "Ignores cost",
+      "Promises perfect reliability"
+    ]
   },
   "sample_answer": "Cloud hosting means your club website runs on servers managed by a cloud provider instead of on someone's personal laptop. The benefit is that the site can stay available more reliably, handle more visitors during events, and be updated without your club buying hardware. You still need to manage the signup data responsibly, use access controls, and keep an eye on monthly cost. For a club site, I would keep it simple: a hosted website, a small backend or form service, and secure storage for member signups.",
-  "hint_plan": {"level_1": "Define it without jargon.", "level_2": "Use the club website as the example.", "level_3": "Mention costs and data care.", "level_4": "Avoid promising perfection."},
+  "hint_plan": {
+    "level_1": "Define it without jargon.",
+    "level_2": "Use the club website as the example.",
+    "level_3": "Mention costs and data care.",
+    "level_4": "Avoid promising perfection."
+  },
   "canonical_solution_summary": "Cloud hosting runs apps on provider-managed infrastructure with reliability benefits and cost/security responsibilities.",
   "disallowed_full_solution_exposure": false,
-  "skill_tags": ["customer communication", "cloud basics"],
-  "tags": ["cloud", "explanation"]
+  "skill_tags": [
+    "customer communication",
+    "cloud basics"
+  ],
+  "tags": [
+    "cloud",
+    "explanation"
+  ],
+  "recommended_for_roles": [
+    "cloud_solutions_architect",
+    ""
+  ]
 }

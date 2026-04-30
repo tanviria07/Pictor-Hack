@@ -74,5 +74,9 @@
     "Shift the carry left by one bit to align it for the next addition, and assign it to b for the next iteration.",
     "Once b becomes zero, return a, which now holds the sum of the original integers."
   ],
-  "final_explanation": "This solution uses bitwise operations to simulate addition without using + or -. It repeatedly calculates the sum without carry (XOR) and the carry (AND shifted left), adding them in a loop until no carry remains. This mimics how binary addition works at the hardware level, ensuring the result is computed efficiently."
+  "final_explanation": "This solution uses bitwise operations to simulate addition without using + or -. It repeatedly calculates the sum without carry (XOR) and the carry (AND shifted left), adding them in a loop until no carry remains. This mimics how binary addition works at the hardware level, ensuring the result is computed efficiently.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

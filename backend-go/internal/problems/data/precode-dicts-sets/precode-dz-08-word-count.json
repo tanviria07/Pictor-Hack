@@ -49,7 +49,7 @@
   "hint_plan": {
     "level_1": "`split()` with no argument splits on any whitespace.",
     "level_2": "Filter empty strings if you split manually.",
-    "level_3": "Empty or whitespace-only input \u2192 0 words.",
+    "level_3": "Empty or whitespace-only input → 0 words.",
     "level_4": "Trim leading/trailing spaces mentally: split handles it."
   },
   "canonical_solution_summary": "split",
@@ -60,5 +60,9 @@
   "tags": [
     "precode",
     "dicts-sets"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

@@ -93,5 +93,9 @@
     "Update the dp array to mark sum i as achievable.",
     "Finally, return whether the target sum is achievable based on the dp array."
   ],
-  "final_explanation": "The solution uses dynamic programming to check if a subset sums to half the total. First, if the total sum is odd, return False. Then, create a boolean array where each index represents whether that sum can be formed with the numbers seen so far. Iterate through each number and update the array backwards to avoid counting the same number multiple times. The result is whether the target sum (half of total) is achievable."
+  "final_explanation": "The solution uses dynamic programming to check if a subset sums to half the total. First, if the total sum is odd, return False. Then, create a boolean array where each index represents whether that sum can be formed with the numbers seen so far. Iterate through each number and update the array backwards to avoid counting the same number multiple times. The result is whether the target sum (half of total) is achievable.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

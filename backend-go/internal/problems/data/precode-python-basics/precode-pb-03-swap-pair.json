@@ -87,5 +87,9 @@
     "Inside `swap_pair`, the body is a single statement: `return (y, x)`."
   ],
   "final_explanation": "`swap_pair` is implemented with one statement: `return (y, x)`. The signature declares the parameters and the body returns the value the tests expect.",
-  "curated": true
+  "curated": true,
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

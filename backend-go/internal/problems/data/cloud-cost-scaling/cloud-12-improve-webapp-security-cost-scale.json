@@ -7,8 +7,17 @@
   "problem_type": "architecture",
   "description": "Improve a basic web app design that currently runs everything on one VM with a public database password in code.",
   "prompt": "A small web app runs on one public VM. The database is on the same VM. Secrets are stored in source code. There is no monitoring, backup, or scaling plan. Propose improvements for security, cost, and scalability.",
-  "examples": [{"input": "One VM, embedded secrets, no backups, no monitoring", "output": "Prioritized architecture improvements with tradeoffs."}],
-  "constraints": ["Prioritize practical changes.", "Mention tradeoffs.", "Include monitoring and backup."],
+  "examples": [
+    {
+      "input": "One VM, embedded secrets, no backups, no monitoring",
+      "output": "Prioritized architecture improvements with tradeoffs."
+    }
+  ],
+  "constraints": [
+    "Prioritize practical changes.",
+    "Mention tradeoffs.",
+    "Include monitoring and backup."
+  ],
   "function_name": "cloud_text_answer",
   "execution_mode": "text",
   "class_name": "",
@@ -18,14 +27,47 @@
   "visible_tests": [],
   "hidden_tests": [],
   "rubric": {
-    "categories": ["technical accuracy", "clarity", "structure", "tradeoff awareness", "customer communication"],
-    "strong_answer_includes": ["Move secrets to Key Vault or managed secret storage", "Restrict public access and use managed identity or least privilege", "Use managed database or backups", "Add monitoring, alerts, and logs", "Discuss autoscaling, right-sizing, and cost controls"],
-    "common_gaps": ["Only adds more servers", "No backup plan", "No cost control"]
+    "categories": [
+      "technical accuracy",
+      "clarity",
+      "structure",
+      "tradeoff awareness",
+      "customer communication"
+    ],
+    "strong_answer_includes": [
+      "Move secrets to Key Vault or managed secret storage",
+      "Restrict public access and use managed identity or least privilege",
+      "Use managed database or backups",
+      "Add monitoring, alerts, and logs",
+      "Discuss autoscaling, right-sizing, and cost controls"
+    ],
+    "common_gaps": [
+      "Only adds more servers",
+      "No backup plan",
+      "No cost control"
+    ]
   },
   "sample_answer": "First I would remove secrets from source code and store them in Key Vault or the platform's managed secret settings, using managed identity where possible. I would restrict public exposure so only the web endpoint is public and database access is private or tightly firewalled. For reliability, I would move data to a managed database or at least add automated backups and restore testing. I would add logs, metrics, alerts, and a health check before scaling. For cost, I would right-size the app, start with a small managed tier, set budgets, and only add autoscaling when traffic patterns justify it. The tradeoff is that managed services may cost more than one VM at tiny scale, but they reduce operational risk and make growth safer.",
-  "hint_plan": {"level_1": "Start with the biggest risk: secrets.", "level_2": "Separate public app access from database access.", "level_3": "Add backup and monitoring.", "level_4": "Discuss cost before scaling."},
+  "hint_plan": {
+    "level_1": "Start with the biggest risk: secrets.",
+    "level_2": "Separate public app access from database access.",
+    "level_3": "Add backup and monitoring.",
+    "level_4": "Discuss cost before scaling."
+  },
   "canonical_solution_summary": "Improve security with secrets and network controls, reliability with managed data/backups, and scaling with monitoring and cost-aware tiers.",
   "disallowed_full_solution_exposure": false,
-  "skill_tags": ["security", "cost", "scaling", "architecture"],
-  "tags": ["cloud", "architecture"]
+  "skill_tags": [
+    "security",
+    "cost",
+    "scaling",
+    "architecture"
+  ],
+  "tags": [
+    "cloud",
+    "architecture"
+  ],
+  "recommended_for_roles": [
+    "cloud_solutions_architect",
+    ""
+  ]
 }

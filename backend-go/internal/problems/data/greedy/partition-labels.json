@@ -88,5 +88,9 @@
     "Add the size of the partition to the result list and update the start index for the next partition.",
     ""
   ],
-  "final_explanation": "The solution uses a greedy approach by first recording the last occurrence of each character. Then, it iterates through the string, expanding the current partition's end to include the last occurrence of all characters seen so far. When the current index reaches this end, a partition is complete, and its size is added to the result. This ensures each character appears in only one part while maximizing the number of partitions."
+  "final_explanation": "The solution uses a greedy approach by first recording the last occurrence of each character. Then, it iterates through the string, expanding the current partition's end to include the last occurrence of all characters seen so far. When the current index reaches this end, a partition is complete, and its size is added to the result. This ensures each character appears in only one part while maximizing the number of partitions.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

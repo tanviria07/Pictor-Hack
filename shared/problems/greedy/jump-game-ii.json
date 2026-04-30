@@ -97,5 +97,9 @@
     "Update the current end to the farthest reachable index for the next jump range.",
     "After the loop, return the total number of jumps calculated."
   ],
-  "final_explanation": "This solution uses a greedy approach to minimize jumps by tracking the farthest reachable index at each step. It increments the jump count only when the current index reaches the end of the previous jump's range, ensuring each jump extends the reach as far as possible. This efficiently computes the minimum jumps in linear time without needing to explore all paths."
+  "final_explanation": "This solution uses a greedy approach to minimize jumps by tracking the farthest reachable index at each step. It increments the jump count only when the current index reaches the end of the previous jump's range, ensuring each jump extends the reach as far as possible. This efficiently computes the minimum jumps in linear time without needing to explore all paths.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

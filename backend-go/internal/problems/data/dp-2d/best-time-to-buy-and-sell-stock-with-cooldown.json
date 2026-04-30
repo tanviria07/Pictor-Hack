@@ -92,5 +92,9 @@
     "Update profit if holding stock: max of previous day's holding or buying today with cooldown (use profit from two days ago).",
     "Return the profit on the last day when not holding any stock."
   ],
-  "final_explanation": "This solution uses dynamic programming with two states per day: holding stock or not. It tracks maximum profit at each day, considering the cooldown by using profit from two days ago when buying. The approach ensures optimal decisions by comparing choices at each step, leading to the overall maximum profit."
+  "final_explanation": "This solution uses dynamic programming with two states per day: holding stock or not. It tracks maximum profit at each day, considering the cooldown by using profit from two days ago when buying. The approach ensures optimal decisions by comparing choices at each step, leading to the overall maximum profit.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

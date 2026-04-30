@@ -83,5 +83,9 @@
     "level_4": "Implement the direct approach that maintains the required invariant step by step."
   },
   "canonical_solution_summary": "Implement the direct approach that maintains the required invariant step by step.",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

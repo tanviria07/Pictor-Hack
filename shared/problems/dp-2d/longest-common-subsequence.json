@@ -97,5 +97,9 @@
     "Set the DP value to the maximum of the value above or to the left, representing skipping a character in one string.",
     "After filling the table, return the value in the bottom-right corner, which holds the length of the LCS."
   ],
-  "final_explanation": "This solution uses dynamic programming to build a table where each cell dp[i][j] stores the length of the longest common subsequence up to the i-th character of text1 and j-th character of text2. By comparing characters and using previous results, it efficiently computes the answer without enumerating all subsequences, achieving O(m*n) time and space complexity."
+  "final_explanation": "This solution uses dynamic programming to build a table where each cell dp[i][j] stores the length of the longest common subsequence up to the i-th character of text1 and j-th character of text2. By comparing characters and using previous results, it efficiently computes the answer without enumerating all subsequences, achieving O(m*n) time and space complexity.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

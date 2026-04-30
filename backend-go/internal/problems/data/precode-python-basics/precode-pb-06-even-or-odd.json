@@ -81,5 +81,9 @@
     "Otherwise, return `\"odd\"` (no `else` needed since the previous branch returned)."
   ],
   "final_explanation": "`parity(n)` uses the modulo operator `%` to test whether `n` is divisible by 2. The early `return` in the `if` branch means we reach the final `return \"odd\"` only for odd numbers.",
-  "curated": true
+  "curated": true,
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

@@ -4,7 +4,7 @@
   "title": "Sum of Decimal Digits",
   "difficulty": "easy",
   "category": "precode-control-flow",
-  "description": "Sum the decimal digits of a non-negative integer `n` (e.g. 123 \u2192 1+2+3).",
+  "description": "Sum the decimal digits of a non-negative integer `n` (e.g. 123 → 1+2+3).",
   "examples": [
     {
       "input": "123",
@@ -61,5 +61,9 @@
   "tags": [
     "precode",
     "control-flow"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

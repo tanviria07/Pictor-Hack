@@ -108,5 +108,9 @@
     "",
     ""
   ],
-  "final_explanation": "This solution uses dynamic programming to check if s3 can be formed by interleaving s1 and s2. It builds a table where dp[i][j] represents whether the first i characters of s1 and first j characters of s2 can interleave to form the first i+j characters of s3. By iterating through all combinations and checking character matches, it efficiently determines the answer without exploring all possible splits explicitly."
+  "final_explanation": "This solution uses dynamic programming to check if s3 can be formed by interleaving s1 and s2. It builds a table where dp[i][j] represents whether the first i characters of s1 and first j characters of s2 can interleave to form the first i+j characters of s3. By iterating through all combinations and checking character matches, it efficiently determines the answer without exploring all possible splits explicitly.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

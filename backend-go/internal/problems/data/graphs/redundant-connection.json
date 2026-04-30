@@ -148,5 +148,9 @@
     "",
     ""
   ],
-  "final_explanation": "This solution uses Union-Find (Disjoint Set Union) to detect the first edge that creates a cycle in the graph. By maintaining parent pointers and ranks, it efficiently checks connectivity while processing edges in order. The last edge that connects already-connected nodes is returned, satisfying the problem's requirement to output the last such edge in the input."
+  "final_explanation": "This solution uses Union-Find (Disjoint Set Union) to detect the first edge that creates a cycle in the graph. By maintaining parent pointers and ranks, it efficiently checks connectivity while processing edges in order. The last edge that connects already-connected nodes is returned, satisfying the problem's requirement to output the last such edge in the input.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

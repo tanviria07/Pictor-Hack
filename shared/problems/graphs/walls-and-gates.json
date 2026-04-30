@@ -163,5 +163,9 @@
     "Add the neighbor to the queue for further exploration.",
     ""
   ],
-  "final_explanation": "This solution uses BFS starting from all treasure chests simultaneously to efficiently compute the shortest distances to each land cell. By initializing the queue with all zeros and propagating distances outward, it ensures each cell is updated with the minimum distance without revisiting. This approach runs in O(m*n) time and modifies the grid in-place as required."
+  "final_explanation": "This solution uses BFS starting from all treasure chests simultaneously to efficiently compute the shortest distances to each land cell. By initializing the queue with all zeros and propagating distances outward, it ensures each cell is updated with the minimum distance without revisiting. This approach runs in O(m*n) time and modifies the grid in-place as required.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

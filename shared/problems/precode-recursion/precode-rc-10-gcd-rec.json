@@ -4,7 +4,7 @@
   "title": "Greatest Common Divisor (Recursive)",
   "difficulty": "medium",
   "category": "precode-recursion",
-  "description": "Return the **greatest common divisor** of non-negative integers `a` and `b` (the largest integer that divides both). Use the usual rule: `gcd(n, 0) = n`. This is the classic Euclidean algorithm\u2014handy for simplifying ratios and shared measures.",
+  "description": "Return the **greatest common divisor** of non-negative integers `a` and `b` (the largest integer that divides both). Use the usual rule: `gcd(n, 0) = n`. This is the classic Euclidean algorithm—handy for simplifying ratios and shared measures.",
   "examples": [
     {
       "input": "48,18",
@@ -68,5 +68,9 @@
   "tags": [
     "precode",
     "recursion"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

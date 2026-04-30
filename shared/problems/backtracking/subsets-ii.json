@@ -115,5 +115,9 @@
     "Return the final list of all subsets.",
     ""
   ],
-  "final_explanation": "The solution uses backtracking to generate all subsets while avoiding duplicates. By sorting the array first, duplicates become adjacent, allowing us to skip over duplicate elements during recursion to prevent generating identical subsets. This approach efficiently builds subsets incrementally and ensures each unique subset is added exactly once to the result."
+  "final_explanation": "The solution uses backtracking to generate all subsets while avoiding duplicates. By sorting the array first, duplicates become adjacent, allowing us to skip over duplicate elements during recursion to prevent generating identical subsets. This approach efficiently builds subsets incrementally and ensures each unique subset is added exactly once to the result.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

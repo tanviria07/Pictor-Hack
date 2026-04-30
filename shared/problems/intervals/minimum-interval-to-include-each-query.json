@@ -117,5 +117,9 @@
     "level_4": "Is there a way to add and remove intervals by going from the smallest query to the largest query to find the minimum size?"
   },
   "canonical_solution_summary": "Is there a way to add and remove intervals by going from the smallest query to the largest query to find the minimum size?",
-  "disallowed_full_solution_exposure": true
+  "disallowed_full_solution_exposure": true,
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

@@ -121,5 +121,9 @@
     "After the loop, return the starting index found.",
     ""
   ],
-  "final_explanation": "The solution first checks if total gas is at least total cost; if not, it's impossible to complete the circuit. Then, it iterates through stations, tracking the tank's net gas. If the tank goes negative, it means starting from the previous start point is invalid, so the start is moved to the next station and the tank is reset. This greedy approach efficiently finds the unique starting index if one exists."
+  "final_explanation": "The solution first checks if total gas is at least total cost; if not, it's impossible to complete the circuit. Then, it iterates through stations, tracking the tank's net gas. If the tank goes negative, it means starting from the previous start point is invalid, so the start is moved to the next station and the tank is reset. This greedy approach efficiently finds the unique starting index if one exists.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

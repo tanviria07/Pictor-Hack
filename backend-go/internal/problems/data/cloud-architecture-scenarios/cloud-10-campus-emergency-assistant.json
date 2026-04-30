@@ -7,8 +7,17 @@
   "problem_type": "architecture",
   "description": "Design an Azure-backed app that helps campus users report emergencies and receive guidance.",
   "prompt": "Design a small campus emergency assistant app on Azure. Include frontend, backend/API, data storage, authentication, notifications, monitoring, security, cost, and scaling tradeoffs.",
-  "examples": [{"input": "Campus users submit emergency reports and admins monitor them.", "output": "A practical cloud architecture and tradeoffs."}],
-  "constraints": ["Do not overbuild for a global enterprise.", "Include security and monitoring.", "Mention cost and scaling tradeoffs."],
+  "examples": [
+    {
+      "input": "Campus users submit emergency reports and admins monitor them.",
+      "output": "A practical cloud architecture and tradeoffs."
+    }
+  ],
+  "constraints": [
+    "Do not overbuild for a global enterprise.",
+    "Include security and monitoring.",
+    "Mention cost and scaling tradeoffs."
+  ],
   "function_name": "cloud_text_answer",
   "execution_mode": "text",
   "class_name": "",
@@ -18,14 +27,47 @@
   "visible_tests": [],
   "hidden_tests": [],
   "rubric": {
-    "categories": ["technical accuracy", "clarity", "structure", "tradeoff awareness", "customer communication"],
-    "strong_answer_includes": ["Static Web Apps or App Service frontend plus App Service/FastAPI backend", "Database or storage choice for reports and audit data", "Authentication/authorization and secret management", "Notifications, monitoring, alerts, and logs", "Cost-aware scaling approach"],
-    "common_gaps": ["No security model", "No monitoring plan", "Overly complex architecture without reason"]
+    "categories": [
+      "technical accuracy",
+      "clarity",
+      "structure",
+      "tradeoff awareness",
+      "customer communication"
+    ],
+    "strong_answer_includes": [
+      "Static Web Apps or App Service frontend plus App Service/FastAPI backend",
+      "Database or storage choice for reports and audit data",
+      "Authentication/authorization and secret management",
+      "Notifications, monitoring, alerts, and logs",
+      "Cost-aware scaling approach"
+    ],
+    "common_gaps": [
+      "No security model",
+      "No monitoring plan",
+      "Overly complex architecture without reason"
+    ]
   },
   "sample_answer": "I would host the frontend with Azure Static Web Apps and run a FastAPI backend on Azure App Service for a simple always-available API. Reports and admin status fields can go in Azure SQL, while any uploaded images can go in Blob Storage with metadata in SQL. Authentication can use Microsoft Entra ID or Entra External ID depending on the users, with admin roles separated from student users, and secrets stored in Key Vault. For notifications I would use a queue plus a small worker or Function so message sending does not block report submission. I would monitor App Service logs, request latency, error rate, queue depth, and database failures with alerts. For cost, I would start with small App Service and database tiers, autoscale only if traffic grows, and use Blob Storage lifecycle rules for old uploads.",
-  "hint_plan": {"level_1": "Start with frontend, API, and data.", "level_2": "Add identity and roles.", "level_3": "Add monitoring and alerts.", "level_4": "Discuss cost and scaling."},
+  "hint_plan": {
+    "level_1": "Start with frontend, API, and data.",
+    "level_2": "Add identity and roles.",
+    "level_3": "Add monitoring and alerts.",
+    "level_4": "Discuss cost and scaling."
+  },
   "canonical_solution_summary": "Small Azure web architecture with App Service, Static Web Apps, SQL/Blob, auth, notifications, monitoring, and cost-aware scaling.",
   "disallowed_full_solution_exposure": false,
-  "skill_tags": ["azure", "architecture", "security", "monitoring"],
-  "tags": ["cloud", "architecture"]
+  "skill_tags": [
+    "azure",
+    "architecture",
+    "security",
+    "monitoring"
+  ],
+  "tags": [
+    "cloud",
+    "architecture"
+  ],
+  "recommended_for_roles": [
+    "cloud_solutions_architect",
+    ""
+  ]
 }

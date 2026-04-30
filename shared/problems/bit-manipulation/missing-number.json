@@ -99,5 +99,9 @@
     "Compute the sum of the numbers present in the input list.",
     "Subtract the actual sum from the expected sum to find the missing number."
   ],
-  "final_explanation": "The solution uses the property that the sum of numbers from 0 to n is fixed. By comparing this expected sum with the actual sum of the given list, the difference reveals the missing number, as all other numbers are distinct and accounted for."
+  "final_explanation": "The solution uses the property that the sum of numbers from 0 to n is fixed. By comparing this expected sum with the actual sum of the given list, the difference reveals the missing number, as all other numbers are distinct and accounted for.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

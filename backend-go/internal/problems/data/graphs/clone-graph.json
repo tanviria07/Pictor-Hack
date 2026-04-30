@@ -162,5 +162,9 @@
     "Amazon",
     "Google",
     "OpenAI"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

@@ -78,5 +78,9 @@
     "Subtract and wrap in `abs(...)`: `return abs(a - b)`."
   ],
   "final_explanation": "`abs_diff` computes the distance between `a` and `b` regardless of order. `abs()` returns the non-negative magnitude of its input.",
-  "curated": true
+  "curated": true,
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

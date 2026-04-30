@@ -4,7 +4,7 @@
   "title": "List Length Recursive",
   "difficulty": "easy",
   "category": "precode-recursion",
-  "description": "Return len(nums) without using len() \u2014 use recursion.",
+  "description": "Return len(nums) without using len() — use recursion.",
   "examples": [
     {
       "input": "[1,2,3]",
@@ -66,5 +66,9 @@
   "tags": [
     "precode",
     "recursion"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

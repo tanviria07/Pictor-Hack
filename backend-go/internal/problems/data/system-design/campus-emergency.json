@@ -6,8 +6,16 @@
   "description": "Design a system for a university campus that allows students to report emergencies and allows administrators to broadcast alerts to everyone on campus instantly.",
   "problem_type": "system_design",
   "execution_mode": "system_design",
-  "tags": ["SYSTEM DESIGN", "SECURITY", "BACKEND"],
-  "skill_tags": ["Broadcast Systems", "Geolocation", "High Availability"],
+  "tags": [
+    "SYSTEM DESIGN",
+    "SECURITY",
+    "BACKEND"
+  ],
+  "skill_tags": [
+    "Broadcast Systems",
+    "Geolocation",
+    "High Availability"
+  ],
   "constraints": [
     "Instant alert delivery to all users.",
     "Reliable reporting even under heavy load.",
@@ -22,5 +30,10 @@
       "tradeoff explanation",
       "communication clarity"
     ]
-  }
+  },
+  "recommended_for_roles": [
+    "cloud_solutions_architect",
+    "backend_engineer",
+    ""
+  ]
 }

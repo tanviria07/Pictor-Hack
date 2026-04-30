@@ -126,5 +126,9 @@
   "company_tags": [
     "Google",
     "Microsoft"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }

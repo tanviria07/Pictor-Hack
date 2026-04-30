@@ -79,5 +79,9 @@
     "For each i, compute the number of 1s using the previously computed value for i shifted right by 1 bit, plus the least significant bit of i.",
     "Return the completed list ans as the final answer."
   ],
-  "final_explanation": "This solution uses dynamic programming to efficiently compute the number of 1s for each number from 0 to n. By observing that shifting a number right by one bit (i >> 1) gives a smaller number whose count is already known, and adding the least significant bit (i & 1) accounts for whether i is odd or even. This avoids recalculating from scratch for each i, resulting in linear time complexity."
+  "final_explanation": "This solution uses dynamic programming to efficiently compute the number of 1s for each number from 0 to n. By observing that shifting a number right by one bit (i >> 1) gives a smaller number whose count is already known, and adding the least significant bit (i & 1) accounts for whether i is odd or even. This avoids recalculating from scratch for each i, resulting in linear time complexity.",
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
+  ]
 }

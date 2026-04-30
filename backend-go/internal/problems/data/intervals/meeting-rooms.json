@@ -71,5 +71,9 @@
   "company_tags": [
     "Amazon",
     "Microsoft"
+  ],
+  "recommended_for_roles": [
+    "swe_intern",
+    ""
   ]
 }
