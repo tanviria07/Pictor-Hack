@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 	"sync"
+	"time"
 
 	"golang.org/x/time/rate"
 
@@ -23,8 +24,16 @@ func IPRateLimit(requestsPerMinute int) func(http.Handler) http.Handler {
 		burst = 60
 	}
 
+	const cleanupEvery = 1000
+	window := time.Minute
+	type limiterEntry struct {
+		lim      *rate.Limiter
+		lastSeen time.Time
+	}
+
 	var mu sync.Mutex
-	limiters := make(map[string]*rate.Limiter)
+	var requests uint64
+	limiters := make(map[string]*limiterEntry)
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -38,12 +47,25 @@ func IPRateLimit(requestsPerMinute int) func(http.Handler) http.Handler {
 				ip = r.RemoteAddr
 			}
 
+			now := time.Now()
 			mu.Lock()
-			lim, ok := limiters[ip]
+			requests++
+			entry, ok := limiters[ip]
 			if !ok {
-				lim = rate.NewLimiter(rps, burst)
-				limiters[ip] = lim
+				entry = &limiterEntry{lim: rate.NewLimiter(rps, burst)}
+				limiters[ip] = entry
 			}
+			entry.lastSeen = now
+			// Periodically evict inactive IPs so the limiter map cannot grow forever.
+			if requests%cleanupEvery == 0 {
+				cutoff := now.Add(-window)
+				for key, item := range limiters {
+					if item.lastSeen.Before(cutoff) {
+						delete(limiters, key)
+					}
+				}
+			}
+			lim := entry.lim
 			mu.Unlock()
 
 			if !lim.Allow() {

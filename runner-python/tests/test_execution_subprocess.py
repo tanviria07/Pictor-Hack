@@ -48,9 +48,11 @@ def test_run_in_subprocess_success(monkeypatch: pytest.MonkeyPatch) -> None:
     assert isinstance(out, RunResponse)
     assert out.status == "correct"
     mock_run.assert_called_once()
+    call_args = mock_run.call_args.args
     call_kw = mock_run.call_args.kwargs
-    assert call_kw["cwd"] == str(ROOT)
-    assert call_kw["env"]["PYTHONPATH"] == str(ROOT)
+    assert call_args[0][-1] == str(ROOT / "app" / "run_job.py")
+    assert call_kw["cwd"] != str(ROOT)
+    assert call_kw["env"]["PYTHONPATH"] == call_kw["cwd"]
     assert call_kw["env"].get("PYTHONUTF8") == "1"
     assert call_kw["env"].get("PYTHONIOENCODING") == "utf-8"
 

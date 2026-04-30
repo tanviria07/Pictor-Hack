@@ -151,7 +151,16 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                   setHintHistory([]);
                 } else {
                   const starter = isCodingProblem(problemDetail) ? buildStarter(problemDetail) : "";
-                  const session = user ? await loadMySession(problemId) : null;
+                  let session = null;
+                  if (user) {
+                      try {
+                          session = await loadMySession(problemId);
+                      }
+                      catch (sessionErr) {
+                          console.error(sessionErr);
+                          setErr("Couldn't load your previous code. Check your connection and try again.");
+                      }
+                  }
                   if (session?.code) {
                       setCode(session.code);
                       setHintHistory(session.hint_history || []);

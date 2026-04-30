@@ -8,12 +8,13 @@ from __future__ import annotations
 
 import json
 import sys
+from pathlib import Path
+
+RUNNER_ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:
     if len(sys.argv) > 1:
-        from pathlib import Path
-
         raw = Path(sys.argv[1]).read_bytes()
         try:
             payload = json.loads(raw.decode("utf-8"))
@@ -30,9 +31,19 @@ def main() -> None:
     code = payload["code"]
     problem_id = payload["problem_id"]
 
+    added_runner_root = False
+    runner_root = str(RUNNER_ROOT)
+    if runner_root not in sys.path:
+        sys.path.insert(0, runner_root)
+        added_runner_root = True
+
     from app.evaluator import evaluate_with_problem_id
     from app.feedback import deterministic_interviewer_note
     from app.models import RunResponse
+
+    if added_runner_root:
+        # Drop the internal path before user code is evaluated.
+        sys.path = [p for p in sys.path if p != runner_root]
 
     ev = evaluate_with_problem_id(code, problem_id)
     note = deterministic_interviewer_note(ev)

@@ -6,7 +6,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"strings"
+	"fmt"
 	"time"
 
 	_ "modernc.org/sqlite"
@@ -49,15 +49,7 @@ CREATE TABLE IF NOT EXISTS sessions (
 }
 
 func migrateSessions(s *Store) error {
-	_, err := s.db.Exec(`ALTER TABLE sessions ADD COLUMN practice_status TEXT NOT NULL DEFAULT 'not_started'`)
-	if err == nil {
-		return nil
-	}
-	msg := strings.ToLower(err.Error())
-	if strings.Contains(msg, "duplicate column") {
-		return nil
-	}
-	return err
+	return addColumnIfMissing(s.db, "sessions", "practice_status", `ALTER TABLE sessions ADD COLUMN practice_status TEXT NOT NULL DEFAULT 'not_started'`)
 }
 
 func migrateUsers(s *Store) error {
@@ -104,6 +96,7 @@ CREATE TABLE IF NOT EXISTS user_problem_progress (
   last_attempt_at TEXT NOT NULL DEFAULT '',
   solved_at TEXT NOT NULL DEFAULT '',
   hint_count INTEGER NOT NULL DEFAULT 0,
+  hint_history_json TEXT NOT NULL DEFAULT '[]',
   role_mode TEXT NOT NULL DEFAULT '',
   updated_at TEXT NOT NULL,
   PRIMARY KEY(user_id, problem_id),
@@ -139,38 +132,60 @@ CREATE TABLE IF NOT EXISTS user_design_answers (
 	if err != nil {
 		return err
 	}
-	_, err = s.db.Exec(`ALTER TABLE users ADD COLUMN username TEXT NOT NULL DEFAULT ''`)
-	if err != nil {
-		msg := strings.ToLower(err.Error())
-		if !strings.Contains(msg, "duplicate column") {
-			return err
-		}
+	if err := addColumnIfMissing(s.db, "users", "username", `ALTER TABLE users ADD COLUMN username TEXT NOT NULL DEFAULT ''`); err != nil {
+		return err
 	}
-	_, err = s.db.Exec(`ALTER TABLE users ADD COLUMN email_verified INTEGER NOT NULL DEFAULT 0`)
-	if err != nil {
-		msg := strings.ToLower(err.Error())
-		if !strings.Contains(msg, "duplicate column") {
-			return err
-		}
+	if err := addColumnIfMissing(s.db, "users", "email_verified", `ALTER TABLE users ADD COLUMN email_verified INTEGER NOT NULL DEFAULT 0`); err != nil {
+		return err
 	}
-	_, err = s.db.Exec(`ALTER TABLE users ADD COLUMN updated_at TEXT NOT NULL DEFAULT ''`)
-	if err != nil {
-		msg := strings.ToLower(err.Error())
-		if !strings.Contains(msg, "duplicate column") {
-			return err
-		}
+	if err := addColumnIfMissing(s.db, "users", "updated_at", `ALTER TABLE users ADD COLUMN updated_at TEXT NOT NULL DEFAULT ''`); err != nil {
+		return err
 	}
-	_, err = s.db.Exec(`ALTER TABLE email_verifications ADD COLUMN purpose TEXT NOT NULL DEFAULT 'email_verification'`)
-	if err != nil {
-		msg := strings.ToLower(err.Error())
-		if !strings.Contains(msg, "duplicate column") {
-			return err
-		}
+	if err := addColumnIfMissing(s.db, "email_verifications", "purpose", `ALTER TABLE email_verifications ADD COLUMN purpose TEXT NOT NULL DEFAULT 'email_verification'`); err != nil {
+		return err
+	}
+	if err := addColumnIfMissing(s.db, "user_problem_progress", "hint_history_json", `ALTER TABLE user_problem_progress ADD COLUMN hint_history_json TEXT NOT NULL DEFAULT '[]'`); err != nil {
+		return err
 	}
 	_, err = s.db.Exec(`
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email_lower ON users(lower(email));
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username_lower ON users(lower(username)) WHERE username != '';`)
 	return err
+}
+
+func addColumnIfMissing(db *sql.DB, table, column, stmt string) error {
+	ok, err := columnExists(db, table, column)
+	if err != nil {
+		return err
+	}
+	if ok {
+		return nil
+	}
+	_, err = db.Exec(stmt)
+	return err
+}
+
+func columnExists(db *sql.DB, table, column string) (bool, error) {
+	rows, err := db.Query(fmt.Sprintf("PRAGMA table_info(%s)", table))
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var cid int
+		var colName string
+		var colType string
+		var notNull int
+		var dfltValue sql.NullString
+		var pk int
+		if err := rows.Scan(&cid, &colName, &colType, &notNull, &dfltValue, &pk); err != nil {
+			return false, err
+		}
+		if colName == column {
+			return true, nil
+		}
+	}
+	return false, rows.Err()
 }
 
 // Close releases the database handle.
@@ -359,6 +374,11 @@ func (s *Store) DeleteAuthSession(_ context.Context, tokenHash string) error {
 	return err
 }
 
+func (s *Store) DeleteUserSessions(_ context.Context, userID int64) error {
+	_, err := s.db.Exec(`DELETE FROM auth_sessions WHERE user_id=?`, userID)
+	return err
+}
+
 func (s *Store) DeleteExpiredAuthSessions(_ context.Context) error {
 	_, err := s.db.Exec(`DELETE FROM auth_sessions WHERE expires_at <= ?`, time.Now().UTC().Format(time.RFC3339))
 	return err
@@ -372,28 +392,26 @@ func (s *Store) SaveUserSession(ctx context.Context, userID int64, req dto.Sessi
 	if err != nil {
 		return err
 	}
-	_, err = s.db.Exec(`UPDATE user_problem_progress SET last_code=?, hint_count=?, updated_at=? WHERE user_id=? AND problem_id=?`,
-		req.Code, len(req.HintHistory), time.Now().UTC().Format(time.RFC3339), userID, req.ProblemID)
+	_, err = s.db.Exec(`UPDATE user_problem_progress SET last_code=?, hint_count=?, hint_history_json=?, updated_at=? WHERE user_id=? AND problem_id=?`,
+		req.Code, len(req.HintHistory), string(b), time.Now().UTC().Format(time.RFC3339), userID, req.ProblemID)
 	if err != nil {
 		return err
 	}
-	_ = b
 	return nil
 }
 
 func (s *Store) GetUserSession(_ context.Context, userID int64, problemID string) (*dto.SessionState, error) {
-	row := s.db.QueryRow(`SELECT last_code, status, hint_count, updated_at FROM user_problem_progress WHERE user_id=? AND problem_id=?`, userID, problemID)
-	var code, status, updated string
-	var hintCount int
-	if err := row.Scan(&code, &status, &hintCount, &updated); err != nil {
+	row := s.db.QueryRow(`SELECT last_code, status, hint_history_json, updated_at FROM user_problem_progress WHERE user_id=? AND problem_id=?`, userID, problemID)
+	var code, status, histJSON, updated string
+	if err := row.Scan(&code, &status, &histJSON, &updated); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
 		return nil, err
 	}
-	hints := make([]string, 0, hintCount)
-	for i := 0; i < hintCount; i++ {
-		hints = append(hints, "Saved hint")
+	var hints []string
+	if err := json.Unmarshal([]byte(histJSON), &hints); err != nil {
+		hints = nil
 	}
 	return &dto.SessionState{ProblemID: problemID, Code: code, HintHistory: hints, PracticeStatus: normStatus(dto.PracticeStatus(status)), UpdatedAt: updated}, nil
 }
@@ -449,6 +467,7 @@ ON CONFLICT(user_id, problem_id) DO UPDATE SET
  END,
  last_code=excluded.last_code,
  hint_count=CASE WHEN excluded.hint_count > user_problem_progress.hint_count THEN excluded.hint_count ELSE user_problem_progress.hint_count END,
+ hint_history_json=CASE WHEN excluded.hint_history_json != '[]' THEN excluded.hint_history_json ELSE user_problem_progress.hint_history_json END,
  role_mode=CASE WHEN excluded.role_mode != '' THEN excluded.role_mode ELSE user_problem_progress.role_mode END,
  updated_at=excluded.updated_at`,
 		userID, problemID, track, category, status, bestStatus, code, hintCount, role, now)

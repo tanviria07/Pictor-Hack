@@ -363,14 +363,39 @@ func TestPasswordAuthLocalMVPFlow(t *testing.T) {
 		t.Fatalf("me response %d %s", me.Code, me.Body.String())
 	}
 
-	logout := postJSON("/api/auth/logout", map[string]any{}, []*http.Cookie{sessionCookie})
+	loginAfterVerify := postJSON("/api/auth/login", map[string]any{"identifier": "LOCAL_USER", "password": "password123"}, nil)
+	if loginAfterVerify.Code != http.StatusOK {
+		t.Fatalf("verified login response %d %s", loginAfterVerify.Code, loginAfterVerify.Body.String())
+	}
+	if len(loginAfterVerify.Result().Cookies()) == 0 {
+		t.Fatal("login should issue a rotated session cookie")
+	}
+	rotatedCookie := loginAfterVerify.Result().Cookies()[0]
+
+	oldCookie := httptest.NewRecorder()
+	oldCookieReq := httptest.NewRequest(http.MethodGet, "/api/auth/me", nil)
+	oldCookieReq.AddCookie(sessionCookie)
+	srv.ServeHTTP(oldCookie, oldCookieReq)
+	if oldCookie.Code != http.StatusUnauthorized {
+		t.Fatalf("old session cookie should be invalid after rotation, got %d %s", oldCookie.Code, oldCookie.Body.String())
+	}
+
+	newCookie := httptest.NewRecorder()
+	newCookieReq := httptest.NewRequest(http.MethodGet, "/api/auth/me", nil)
+	newCookieReq.AddCookie(rotatedCookie)
+	srv.ServeHTTP(newCookie, newCookieReq)
+	if newCookie.Code != http.StatusOK || !strings.Contains(newCookie.Body.String(), "local_user") {
+		t.Fatalf("rotated session cookie response %d %s", newCookie.Code, newCookie.Body.String())
+	}
+
+	logout := postJSON("/api/auth/logout", map[string]any{}, []*http.Cookie{rotatedCookie})
 	if logout.Code != http.StatusOK {
 		t.Fatalf("logout status %d %s", logout.Code, logout.Body.String())
 	}
 
 	protected := httptest.NewRecorder()
 	protectedReq := httptest.NewRequest(http.MethodGet, "/api/me/dashboard", nil)
-	protectedReq.AddCookie(sessionCookie)
+	protectedReq.AddCookie(rotatedCookie)
 	srv.ServeHTTP(protected, protectedReq)
 	if protected.Code != http.StatusUnauthorized {
 		t.Fatalf("dashboard should require a valid session, got %d %s", protected.Code, protected.Body.String())

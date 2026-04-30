@@ -6,6 +6,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 from app.evaluator import evaluate_with_problem_id
@@ -49,20 +50,23 @@ def run_user_code(req: RunRequest) -> RunResponse:
 def _run_in_subprocess(req: RunRequest) -> RunResponse:
     payload = {"code": req.code, "problem_id": req.problem_id}
     env = os.environ.copy()
-    env["PYTHONPATH"] = str(ROOT)
     # Force UTF-8 stdio in the child (Windows cp1252 stdout breaks parent's UTF-8 decode).
     env.setdefault("PYTHONUTF8", "1")
     env.setdefault("PYTHONIOENCODING", "utf-8")
     tv, th = _problem_test_counts(req.problem_id)
     try:
-        proc = subprocess.run(
-            [sys.executable, "-m", "app.run_job"],
-            input=json.dumps(payload).encode("utf-8"),
-            capture_output=True,
-            timeout=float(os.environ.get("RUNNER_SUBPROCESS_TIMEOUT_SEC", "6")),
-            env=env,
-            cwd=str(ROOT),
-        )
+        with tempfile.TemporaryDirectory(prefix="kitkode-runner-") as temp_code_dir:
+            # Keep only the user temp directory on PYTHONPATH so evaluated code cannot
+            # discover or import runner internals through the environment.
+            env["PYTHONPATH"] = temp_code_dir
+            proc = subprocess.run(
+                [sys.executable, str(ROOT / "app" / "run_job.py")],
+                input=json.dumps(payload).encode("utf-8"),
+                capture_output=True,
+                timeout=float(os.environ.get("RUNNER_SUBPROCESS_TIMEOUT_SEC", "6")),
+                env=env,
+                cwd=temp_code_dir,
+            )
     except subprocess.TimeoutExpired:
         ev = StructuredEvaluation(
             status="runtime_error",

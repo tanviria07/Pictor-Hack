@@ -27,6 +27,7 @@ type UserRepository interface {
 	CreateAuthSession(ctx context.Context, userID int64, tokenHash string, expiresAt string) error
 	GetUserIDBySessionHash(ctx context.Context, tokenHash string) (int64, error)
 	DeleteAuthSession(ctx context.Context, tokenHash string) error
+	DeleteUserSessions(ctx context.Context, userID int64) error
 	DeleteExpiredAuthSessions(ctx context.Context) error
 	SaveUserSession(ctx context.Context, userID int64, req dto.SessionSaveRequest) error
 	GetUserSession(ctx context.Context, userID int64, problemID string) (*dto.SessionState, error)

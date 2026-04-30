@@ -87,6 +87,11 @@ func (h *Handler) maxCodeBytes() int {
 	return 256 * 1024
 }
 
+func (h *Handler) limitJSONBody(w http.ResponseWriter, r *http.Request) {
+	// Bound JSON decoding before parsing so oversized payloads cannot exhaust memory.
+	r.Body = http.MaxBytesReader(w, r.Body, int64(h.maxCodeBytes()))
+}
+
 func (h *Handler) validateRunInput(w http.ResponseWriter, req *dto.RunRequest) bool {
 	validation.NormalizeRunRequest(req)
 	if err := validation.ValidateRunRequest(req, h.maxCodeBytes()); err != nil {
@@ -102,6 +107,7 @@ func (h *Handler) validateRunInput(w http.ResponseWriter, req *dto.RunRequest) b
 
 // Run forwards code to the Python runner and returns its evaluation (optionally rephrased feedback).
 func (h *Handler) Run(w http.ResponseWriter, r *http.Request) {
+	h.limitJSONBody(w, r)
 	var req dto.RunRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
@@ -142,6 +148,7 @@ func (h *Handler) Run(w http.ResponseWriter, r *http.Request) {
 // Validate runs stepwise (sentence-by-sentence) validation through the runner.
 // The Python runner is authoritative for correctness; this handler only forwards.
 func (h *Handler) Validate(w http.ResponseWriter, r *http.Request) {
+	h.limitJSONBody(w, r)
 	var req dto.StepwiseValidateRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
@@ -178,6 +185,7 @@ func (h *Handler) Validate(w http.ResponseWriter, r *http.Request) {
 // problem via DeepSeek. This is an admin-flavoured endpoint; the runner is
 // authoritative for both the API call and the filesystem write.
 func (h *Handler) GenerateStepwise(w http.ResponseWriter, r *http.Request) {
+	h.limitJSONBody(w, r)
 	var req dto.StepwiseGenerateRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
@@ -208,6 +216,7 @@ func (h *Handler) GenerateStepwise(w http.ResponseWriter, r *http.Request) {
 
 // Hint returns a progressive hint grounded in runner evaluation (never recomputed here).
 func (h *Handler) Hint(w http.ResponseWriter, r *http.Request) {
+	h.limitJSONBody(w, r)
 	var req dto.HintRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
@@ -233,6 +242,7 @@ func (h *Handler) Hint(w http.ResponseWriter, r *http.Request) {
 
 // InlineHint returns real-time line‑by‑line feedback for partial code.
 func (h *Handler) InlineHint(w http.ResponseWriter, r *http.Request) {
+	h.limitJSONBody(w, r)
 	var req dto.InlineHintRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
@@ -328,8 +338,8 @@ func (h *Handler) signupWithVerification(w http.ResponseWriter, r *http.Request)
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
 		return
 	}
-	email := strings.ToLower(strings.TrimSpace(req.Email))
-	username := strings.ToLower(strings.TrimSpace(req.Username))
+	email := normalizeEmail(req.Email)
+	username := normalizeUsername(req.Username)
 	if email == "" || username == "" || req.Password == "" {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "email, username, and password are required")
 		return
@@ -375,9 +385,9 @@ func (h *Handler) authWithPassword(w http.ResponseWriter, r *http.Request, creat
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
 		return
 	}
-	email := strings.ToLower(strings.TrimSpace(req.Email))
-	username := strings.ToLower(strings.TrimSpace(req.Username))
-	identifier := strings.ToLower(strings.TrimSpace(req.Identifier))
+	email := normalizeEmail(req.Email)
+	username := normalizeUsername(req.Username)
+	identifier := normalizeIdentifier(req.Identifier)
 	if create && (email == "" || username == "" || req.Password == "") {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "email, username, and password are required")
 		return
@@ -448,7 +458,7 @@ func (h *Handler) VerifyEmail(w http.ResponseWriter, r *http.Request) {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
 		return
 	}
-	email := strings.ToLower(strings.TrimSpace(req.Email))
+	email := normalizeEmail(req.Email)
 	otp := strings.TrimSpace(req.OTP)
 	if !validEmail(email) || len(otp) != 6 {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "email and 6-digit otp are required")
@@ -504,7 +514,7 @@ func (h *Handler) ResendOTP(w http.ResponseWriter, r *http.Request) {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
 		return
 	}
-	email := strings.ToLower(strings.TrimSpace(req.Email))
+	email := normalizeEmail(req.Email)
 	if !validEmail(email) {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "enter a valid email address")
 		return
@@ -545,7 +555,7 @@ func (h *Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
 		return
 	}
-	email := strings.ToLower(strings.TrimSpace(req.Email))
+	email := normalizeEmail(req.Email)
 	if !validEmail(email) {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "enter a valid email address")
 		return
@@ -739,9 +749,14 @@ func (h *Handler) issueSession(w http.ResponseWriter, r *http.Request, userID in
 		return err
 	}
 	expires := time.Now().UTC().Add(14 * 24 * time.Hour)
+	// Rotate sessions on login/verification so older tokens stop working.
+	if err := h.Users.DeleteUserSessions(r.Context(), userID); err != nil {
+		return err
+	}
 	if err := h.Users.CreateAuthSession(r.Context(), userID, hash, expires.Format(time.RFC3339)); err != nil {
 		return err
 	}
+	isSecure := r.TLS != nil || strings.EqualFold(r.Header.Get("X-Forwarded-Proto"), "https")
 	http.SetCookie(w, &http.Cookie{
 		Name:     authCookieName,
 		Value:    token,
@@ -749,7 +764,7 @@ func (h *Handler) issueSession(w http.ResponseWriter, r *http.Request, userID in
 		Expires:  expires,
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
-		Secure:   r.TLS != nil,
+		Secure:   isSecure,
 	})
 	return nil
 }
@@ -895,6 +910,19 @@ func validEmail(email string) bool {
 	return len(email) <= 254 && strings.Contains(email, "@") && strings.Contains(email, ".") && !strings.ContainsAny(email, " \t\r\n")
 }
 
+func normalizeEmail(email string) string {
+	return strings.ToLower(strings.TrimSpace(email))
+}
+
+func normalizeUsername(username string) string {
+	return strings.ToLower(strings.TrimSpace(username))
+}
+
+func normalizeIdentifier(identifier string) string {
+	// Login identifiers are matched against lower(email) or lower(username) in the store.
+	return strings.ToLower(strings.TrimSpace(identifier))
+}
+
 func validUsername(username string) bool {
 	if len(username) < 3 || len(username) > 32 {
 		return false
@@ -953,6 +981,7 @@ func (h *Handler) SaveSession(w http.ResponseWriter, r *http.Request) {
 
 // Trace generates a structured interview trace after a code run.
 func (h *Handler) Trace(w http.ResponseWriter, r *http.Request) {
+	h.limitJSONBody(w, r)
 	var req dto.TraceRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")

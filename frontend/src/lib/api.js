@@ -67,38 +67,42 @@ export async function saveSession(body) {
 }
 /** Session load is optional; failures must not block the editor. */
 export async function loadSession(problemId) {
-    try {
-        const url = `${base()}/api/session/${encodeURIComponent(problemId)}`;
-        const r = await fetch(url, { signal: withTimeout(undefined, 25_000), credentials: "include" });
-        if (r.status === 404)
-            return null;
-        if (!r.ok) {
-            return null;
-        }
-        return r.json();
-    }
-    catch {
+    const url = `${base()}/api/session/${encodeURIComponent(problemId)}`;
+    const r = await fetch(url, { signal: withTimeout(undefined, 25_000), credentials: "include" });
+    if (r.status === 404)
         return null;
+    if (!r.ok) {
+        throw new Error(`Failed to load session: ${r.status} ${r.statusText}`);
     }
+    return r.json();
+}
+
+function normalizeAuthBody(body) {
+    return {
+        ...body,
+        email: typeof body?.email === "string" ? body.email.trim().toLowerCase() : body?.email,
+        username: typeof body?.username === "string" ? body.username.trim().toLowerCase() : body?.username,
+        identifier: typeof body?.identifier === "string" ? body.identifier.trim().toLowerCase() : body?.identifier,
+    };
 }
 
 export async function signup(body) {
-    return j("/api/auth/signup", { method: "POST", body: JSON.stringify(body) });
+    return j("/api/auth/signup", { method: "POST", body: JSON.stringify(normalizeAuthBody(body)) });
 }
 export async function verifyEmail(body) {
-    return j("/api/auth/verify-email", { method: "POST", body: JSON.stringify(body) });
+    return j("/api/auth/verify-email", { method: "POST", body: JSON.stringify(normalizeAuthBody(body)) });
 }
 export async function resendOtp(body) {
-    return j("/api/auth/resend-otp", { method: "POST", body: JSON.stringify(body) });
+    return j("/api/auth/resend-otp", { method: "POST", body: JSON.stringify(normalizeAuthBody(body)) });
 }
 export async function forgotPassword(body) {
-    return j("/api/auth/forgot-password", { method: "POST", body: JSON.stringify(body) });
+    return j("/api/auth/forgot-password", { method: "POST", body: JSON.stringify(normalizeAuthBody(body)) });
 }
 export async function resetPassword(body) {
     return j("/api/auth/reset-password", { method: "POST", body: JSON.stringify(body) });
 }
 export async function login(body) {
-    return j("/api/auth/login", { method: "POST", body: JSON.stringify(body) });
+    return j("/api/auth/login", { method: "POST", body: JSON.stringify(normalizeAuthBody(body)) });
 }
 export async function logout() {
     return j("/api/auth/logout", { method: "POST" });
@@ -126,18 +130,13 @@ export async function saveMySession(body) {
     return j("/api/me/session/save", { method: "POST", body: JSON.stringify(body) });
 }
 export async function loadMySession(problemId) {
-    try {
-        const url = `${base()}/api/me/session/${encodeURIComponent(problemId)}`;
-        const r = await fetch(url, { signal: withTimeout(undefined, 25_000), credentials: "include" });
-        if (r.status === 404 || r.status === 401)
-            return null;
-        if (!r.ok)
-            return null;
-        return r.json();
-    }
-    catch {
+    const url = `${base()}/api/me/session/${encodeURIComponent(problemId)}`;
+    const r = await fetch(url, { signal: withTimeout(undefined, 25_000), credentials: "include" });
+    if (r.status === 404 || r.status === 401)
         return null;
-    }
+    if (!r.ok)
+        throw new Error(`Failed to load session: ${r.status} ${r.statusText}`);
+    return r.json();
 }
 export async function exportMyProgress() {
     return j("/api/me/export");
