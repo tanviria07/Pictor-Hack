@@ -1,0 +1,44 @@
+{
+  "id": "sd-comment-system",
+  "title": "Design a Comment System",
+  "difficulty": "Medium",
+  "category": "sys-design-backend",
+  "description": "Design a comment platform that can be embedded across articles, videos, and product pages. The system should support threaded conversations, reactions, moderation, notifications, and high read traffic.",
+  "problem_type": "system_design",
+  "execution_mode": "system_design",
+  "tags": [
+    "SYSTEM DESIGN",
+    "BACKEND",
+    "SOCIAL",
+    "MODERATION"
+  ],
+  "skill_tags": [
+    "Hierarchical Data Modeling",
+    "Fanout",
+    "Caching",
+    "Moderation Queues"
+  ],
+  "constraints": [
+    "Support nested comments while keeping reads efficient.",
+    "Handle spam, abuse reports, deletes, and moderator actions.",
+    "Notify users about replies without overwhelming them."
+  ],
+  "rubric": {
+    "categories": [
+      "requirements clarification",
+      "API design",
+      "data model",
+      "scalability",
+      "reliability",
+      "observability",
+      "security",
+      "cost awareness",
+      "tradeoff explanation",
+      "communication clarity"
+    ]
+  },
+  "recommended_for_roles": [
+    "backend_engineer",
+    "cloud_solutions_architect"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "id": "sd-ticketmaster",
+  "title": "Design Ticketmaster",
+  "difficulty": "Hard",
+  "category": "sys-design-reliability",
+  "description": "Design a ticketing platform where users can discover events, view seat availability, reserve seats, and purchase tickets. The system should handle traffic spikes, seat locking, payment coordination, fraud prevention, and fairness during high-demand sales.",
+  "problem_type": "system_design",
+  "execution_mode": "system_design",
+  "tags": [
+    "SYSTEM DESIGN",
+    "BACKEND",
+    "PAYMENTS",
+    "HIGH TRAFFIC"
+  ],
+  "skill_tags": [
+    "Distributed Locking",
+    "Queue-based Admission",
+    "Inventory Management",
+    "Payment Orchestration"
+  ],
+  "constraints": [
+    "Prevent overselling seats during concurrent checkout attempts.",
+    "Handle sudden traffic spikes for popular events.",
+    "Coordinate reservations, payment authorization, expiration, and fraud checks."
+  ],
+  "rubric": {
+    "categories": [
+      "requirements clarification",
+      "API design",
+      "data model",
+      "scalability",
+      "reliability",
+      "observability",
+      "security",
+      "cost awareness",
+      "tradeoff explanation",
+      "communication clarity"
+    ]
+  },
+  "recommended_for_roles": [
+    "backend_engineer",
+    "cloud_solutions_architect"
+  ]
+}

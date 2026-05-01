@@ -1,0 +1,44 @@
+{
+  "id": "sd-realtime-monitoring",
+  "title": "Design a Real-Time Monitoring System",
+  "difficulty": "Hard",
+  "category": "sys-design-reliability",
+  "description": "Design a monitoring platform that collects metrics, logs, and alerts from many services in near real time. The system should support high-cardinality ingestion, dashboards, alert evaluation, and reliable incident workflows.",
+  "problem_type": "system_design",
+  "execution_mode": "system_design",
+  "tags": [
+    "SYSTEM DESIGN",
+    "BACKEND",
+    "OBSERVABILITY",
+    "STREAMING"
+  ],
+  "skill_tags": [
+    "Time-series Storage",
+    "Stream Processing",
+    "Alerting",
+    "Data Retention"
+  ],
+  "constraints": [
+    "Ingest large volumes of metrics and logs with bounded loss.",
+    "Evaluate alerts quickly while avoiding duplicate or noisy notifications.",
+    "Support dashboard queries over recent and historical data."
+  ],
+  "rubric": {
+    "categories": [
+      "requirements clarification",
+      "API design",
+      "data model",
+      "scalability",
+      "reliability",
+      "observability",
+      "security",
+      "cost awareness",
+      "tradeoff explanation",
+      "communication clarity"
+    ]
+  },
+  "recommended_for_roles": [
+    "backend_engineer",
+    "cloud_solutions_architect"
+  ]
+}

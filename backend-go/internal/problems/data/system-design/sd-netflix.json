@@ -1,0 +1,44 @@
+{
+  "id": "sd-netflix",
+  "title": "Design Netflix",
+  "difficulty": "Hard",
+  "category": "sys-design-cloud",
+  "description": "Design a subscription video streaming platform that lets users browse, watch, and resume movies and shows across devices. The system should support recommendations, adaptive streaming, content licensing, profiles, and global delivery.",
+  "problem_type": "system_design",
+  "execution_mode": "system_design",
+  "tags": [
+    "SYSTEM DESIGN",
+    "BACKEND",
+    "VIDEO",
+    "RECOMMENDATIONS"
+  ],
+  "skill_tags": [
+    "CDN Distribution",
+    "Adaptive Bitrate Streaming",
+    "Recommendation Systems",
+    "Metadata Modeling"
+  ],
+  "constraints": [
+    "Stream licensed content globally with low buffering and high availability.",
+    "Personalize recommendations and continue-watching state per profile.",
+    "Enforce regional licensing, subscription status, and device limits."
+  ],
+  "rubric": {
+    "categories": [
+      "requirements clarification",
+      "API design",
+      "data model",
+      "scalability",
+      "reliability",
+      "observability",
+      "security",
+      "cost awareness",
+      "tradeoff explanation",
+      "communication clarity"
+    ]
+  },
+  "recommended_for_roles": [
+    "backend_engineer",
+    "cloud_solutions_architect"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "id": "sd-payment-system",
+  "title": "Design a Payment System",
+  "difficulty": "Hard",
+  "category": "sys-design-security-cost",
+  "description": "Design a payment platform that supports card payments, refunds, ledger entries, reconciliation, and integration with external payment processors. The system should prioritize correctness, idempotency, fraud controls, auditability, and secure handling of sensitive data.",
+  "problem_type": "system_design",
+  "execution_mode": "system_design",
+  "tags": [
+    "SYSTEM DESIGN",
+    "BACKEND",
+    "PAYMENTS",
+    "SECURITY"
+  ],
+  "skill_tags": [
+    "Idempotency",
+    "Ledger Design",
+    "Saga Pattern",
+    "Reconciliation"
+  ],
+  "constraints": [
+    "Prevent duplicate charges and maintain accurate financial records.",
+    "Integrate with external processors that may fail or respond asynchronously.",
+    "Protect sensitive payment data and provide auditable transaction history."
+  ],
+  "rubric": {
+    "categories": [
+      "requirements clarification",
+      "API design",
+      "data model",
+      "scalability",
+      "reliability",
+      "observability",
+      "security",
+      "cost awareness",
+      "tradeoff explanation",
+      "communication clarity"
+    ]
+  },
+  "recommended_for_roles": [
+    "backend_engineer",
+    "cloud_solutions_architect"
+  ]
+}

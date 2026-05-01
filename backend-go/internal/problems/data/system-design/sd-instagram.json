@@ -1,0 +1,44 @@
+{
+  "id": "sd-instagram",
+  "title": "Design Instagram",
+  "difficulty": "Hard",
+  "category": "sys-design-backend",
+  "description": "Design a photo and video sharing social network where users can upload media, follow accounts, view feeds, like, comment, and explore content. The system should support media processing, feed generation, ranking, notifications, and moderation.",
+  "problem_type": "system_design",
+  "execution_mode": "system_design",
+  "tags": [
+    "SYSTEM DESIGN",
+    "BACKEND",
+    "SOCIAL",
+    "MEDIA"
+  ],
+  "skill_tags": [
+    "Feed Fanout",
+    "Media Processing",
+    "Object Storage",
+    "Ranking"
+  ],
+  "constraints": [
+    "Process and serve uploaded images and videos efficiently.",
+    "Generate personalized feeds under high read traffic.",
+    "Handle likes, comments, notifications, privacy, and abuse moderation."
+  ],
+  "rubric": {
+    "categories": [
+      "requirements clarification",
+      "API design",
+      "data model",
+      "scalability",
+      "reliability",
+      "observability",
+      "security",
+      "cost awareness",
+      "tradeoff explanation",
+      "communication clarity"
+    ]
+  },
+  "recommended_for_roles": [
+    "backend_engineer",
+    "cloud_solutions_architect"
+  ]
+}

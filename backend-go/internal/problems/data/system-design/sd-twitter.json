@@ -1,0 +1,44 @@
+{
+  "id": "sd-twitter",
+  "title": "Design Twitter",
+  "difficulty": "Hard",
+  "category": "sys-design-backend",
+  "description": "Design a social microblogging platform where users can post short messages, follow accounts, view timelines, and engage with content. The system should support massive fanout, ranking, search, moderation, and real-time updates.",
+  "problem_type": "system_design",
+  "execution_mode": "system_design",
+  "tags": [
+    "SYSTEM DESIGN",
+    "BACKEND",
+    "SOCIAL",
+    "FEEDS"
+  ],
+  "skill_tags": [
+    "Feed Fanout",
+    "Timeline Ranking",
+    "Caching",
+    "Event-driven Architecture"
+  ],
+  "constraints": [
+    "Serve home timelines with low latency under very high read traffic.",
+    "Handle celebrity accounts with extremely large follower counts.",
+    "Support posting, deletion, moderation, and search indexing."
+  ],
+  "rubric": {
+    "categories": [
+      "requirements clarification",
+      "API design",
+      "data model",
+      "scalability",
+      "reliability",
+      "observability",
+      "security",
+      "cost awareness",
+      "tradeoff explanation",
+      "communication clarity"
+    ]
+  },
+  "recommended_for_roles": [
+    "backend_engineer",
+    "cloud_solutions_architect"
+  ]
+}

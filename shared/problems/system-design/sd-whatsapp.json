@@ -1,0 +1,44 @@
+{
+  "id": "sd-whatsapp",
+  "title": "Design WhatsApp",
+  "difficulty": "Hard",
+  "category": "sys-design-backend",
+  "description": "Design a messaging application that supports one-to-one chats, group chats, media messages, delivery receipts, and offline delivery. The system should provide low-latency messaging while preserving privacy and reliability across devices.",
+  "problem_type": "system_design",
+  "execution_mode": "system_design",
+  "tags": [
+    "SYSTEM DESIGN",
+    "BACKEND",
+    "MESSAGING",
+    "REAL TIME"
+  ],
+  "skill_tags": [
+    "WebSockets",
+    "Message Queues",
+    "End-to-end Encryption",
+    "Presence"
+  ],
+  "constraints": [
+    "Deliver messages reliably to online and offline users.",
+    "Support group chats, media attachments, and delivery or read receipts.",
+    "Protect message privacy and minimize retained sensitive data."
+  ],
+  "rubric": {
+    "categories": [
+      "requirements clarification",
+      "API design",
+      "data model",
+      "scalability",
+      "reliability",
+      "observability",
+      "security",
+      "cost awareness",
+      "tradeoff explanation",
+      "communication clarity"
+    ]
+  },
+  "recommended_for_roles": [
+    "backend_engineer",
+    "cloud_solutions_architect"
+  ]
+}

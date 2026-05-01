@@ -1,0 +1,44 @@
+{
+  "id": "sd-typeahead",
+  "title": "Design Typeahead Search",
+  "difficulty": "Medium",
+  "category": "sys-design-backend",
+  "description": "Design an autocomplete service that returns relevant suggestions as users type into a search box. The system should support low-latency prefix lookup, ranking, personalization, and frequent updates to popular queries.",
+  "problem_type": "system_design",
+  "execution_mode": "system_design",
+  "tags": [
+    "SYSTEM DESIGN",
+    "BACKEND",
+    "SEARCH",
+    "LOW LATENCY"
+  ],
+  "skill_tags": [
+    "Trie",
+    "Search Indexing",
+    "Caching",
+    "Ranking"
+  ],
+  "constraints": [
+    "Return suggestions within tens of milliseconds.",
+    "Rank suggestions by popularity, freshness, and optional personalization.",
+    "Update indexes without disrupting live query traffic."
+  ],
+  "rubric": {
+    "categories": [
+      "requirements clarification",
+      "API design",
+      "data model",
+      "scalability",
+      "reliability",
+      "observability",
+      "security",
+      "cost awareness",
+      "tradeoff explanation",
+      "communication clarity"
+    ]
+  },
+  "recommended_for_roles": [
+    "backend_engineer",
+    "cloud_solutions_architect"
+  ]
+}

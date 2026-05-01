@@ -1,0 +1,44 @@
+{
+  "id": "sd-google-maps",
+  "title": "Design Google Maps",
+  "difficulty": "Hard",
+  "category": "sys-design-cloud",
+  "description": "Design a mapping platform that provides map rendering, place search, routing, traffic-aware navigation, and location updates. The system should support global scale, geospatial indexing, route computation, and frequently changing traffic data.",
+  "problem_type": "system_design",
+  "execution_mode": "system_design",
+  "tags": [
+    "SYSTEM DESIGN",
+    "BACKEND",
+    "GEO",
+    "ROUTING"
+  ],
+  "skill_tags": [
+    "Geospatial Indexing",
+    "Graph Algorithms",
+    "Tile Serving",
+    "Caching"
+  ],
+  "constraints": [
+    "Serve map tiles and place search results with low latency worldwide.",
+    "Compute routes using road networks, traffic, and user preferences.",
+    "Process frequent location and traffic updates at scale."
+  ],
+  "rubric": {
+    "categories": [
+      "requirements clarification",
+      "API design",
+      "data model",
+      "scalability",
+      "reliability",
+      "observability",
+      "security",
+      "cost awareness",
+      "tradeoff explanation",
+      "communication clarity"
+    ]
+  },
+  "recommended_for_roles": [
+    "backend_engineer",
+    "cloud_solutions_architect"
+  ]
+}

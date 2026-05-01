@@ -1,0 +1,43 @@
+{
+  "id": "sd-pastebin",
+  "title": "Design Pastebin",
+  "difficulty": "Easy",
+  "category": "sys-design-fundamentals",
+  "description": "Design a service that lets users paste text, receive a short link, and optionally set expiration or visibility controls. The system should optimize for simple writes, fast reads, and durable storage of paste content.",
+  "problem_type": "system_design",
+  "execution_mode": "system_design",
+  "tags": [
+    "SYSTEM DESIGN",
+    "BACKEND",
+    "STORAGE"
+  ],
+  "skill_tags": [
+    "Key Generation",
+    "Object Storage",
+    "Caching",
+    "TTL Management"
+  ],
+  "constraints": [
+    "Generate unique, short, hard-to-guess paste identifiers.",
+    "Support expiration policies and private or public visibility.",
+    "Serve popular pastes with low latency."
+  ],
+  "rubric": {
+    "categories": [
+      "requirements clarification",
+      "API design",
+      "data model",
+      "scalability",
+      "reliability",
+      "observability",
+      "security",
+      "cost awareness",
+      "tradeoff explanation",
+      "communication clarity"
+    ]
+  },
+  "recommended_for_roles": [
+    "backend_engineer",
+    "cloud_solutions_architect"
+  ]
+}
