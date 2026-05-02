@@ -39,13 +39,8 @@ func (s *RunService) GenerateStepwise(ctx context.Context, req dto.StepwiseGener
 // Execute forwards to the runner and returns its response. DeepSeek never changes
 // evaluation, status, or test counts — only the optional natural-language feedback string.
 func (s *RunService) Execute(ctx context.Context, req dto.RunRequest) (*dto.RunResponse, error) {
-	p, err := problems.GetPublic(req.ProblemID)
-	if err != nil {
+	if _, err := problems.GetPublic(req.ProblemID); err != nil {
 		return nil, err
-	}
-
-	if p.ExecutionMode == "system_design" {
-		return s.executeSystemDesign(ctx, req, p)
 	}
 
 	if req.Language != "" && req.Language != "python" {
@@ -62,32 +57,6 @@ func (s *RunService) Execute(ctx context.Context, req dto.RunRequest) (*dto.RunR
 	out.Trace = s.GenerateTrace(ctx, req, out.Evaluation)
 	return out, nil
 }
-
-func (s *RunService) executeSystemDesign(ctx context.Context, req dto.RunRequest, p *dto.ProblemDetail) (*dto.RunResponse, error) {
-	var feedback string
-	if s.deepseek.Enabled() {
-		user := coach.UserPromptSystemDesign(p.Title, p.ID, p.Description, req.Code)
-		if fb, err := s.deepseek.CoachFeedback(coach.SystemSystemDesignInterviewer, user); err == nil {
-			feedback = fb
-		}
-	}
-
-	if feedback == "" {
-		feedback = "Your design has been recorded. To get AI-powered feedback, ensure DEEPSEEK_API_KEY is configured in the backend environment."
-	}
-
-	res := &dto.RunResponse{
-		Status: dto.StatusCorrect, // System design is always "correct" in terms of completion
-		Evaluation: dto.StructuredEvaluation{
-			Status:   dto.StatusCorrect,
-			SyntaxOK: true,
-		},
-		InterviewerFeedback: feedback,
-	}
-	res.Trace = s.GenerateTrace(ctx, req, res.Evaluation)
-	return res, nil
-}
-
 
 // ApplyCoachFeedback optionally rephrases interviewer_feedback via DeepSeek (wording only).
 func (s *RunService) ApplyCoachFeedback(ctx context.Context, req dto.RunRequest, out *dto.RunResponse) {

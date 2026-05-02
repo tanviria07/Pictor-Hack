@@ -30,16 +30,6 @@ func dsaCat(id, title string) CategoryMeta {
 	}
 }
 
-func sysDesignCat(id, title, description string) CategoryMeta {
-	return CategoryMeta{
-		ID:                 id,
-		Title:              title,
-		TrackID:            "system_design",
-		TrackTitle:         "System Design Prep",
-		SectionDescription: description,
-	}
-}
-
 func cloudCat(id, title, description string) CategoryMeta {
 	return CategoryMeta{
 		ID:                 id,
@@ -81,13 +71,6 @@ var AllCategories = []CategoryMeta{
 	dsaCat("intervals", "Intervals"),
 	dsaCat("math-geometry", "Math & Geometry"),
 	dsaCat("bit-manipulation", "Bit Manipulation"),
-
-	sysDesignCat("sys-design-fundamentals", "System Design Fundamentals", "Core concepts: Load balancing, caching, databases, and scaling."),
-	sysDesignCat("sys-design-backend", "Backend Design", "Designing APIs, services, and communication patterns."),
-	sysDesignCat("sys-design-cloud", "Cloud System Design", "Utilizing cloud-native services and architecture patterns."),
-	sysDesignCat("sys-design-reliability", "Reliability & Observability", "Ensuring systems are dependable and monitored effectively."),
-	sysDesignCat("sys-design-security-cost", "Security & Cost", "Implementing security best practices and managing cloud spending."),
-	sysDesignCat("sys-design-communication", "Communication Practice", "Articulating design choices and explaining tradeoffs."),
 
 	cloudCat("cloud-azure-fundamentals", "Azure Fundamentals", "Core Azure services and when to use each one."),
 	cloudCat("cloud-python-automation", "Python for Cloud Automation", "Small Python utilities for cloud operations, logs, and resources."),

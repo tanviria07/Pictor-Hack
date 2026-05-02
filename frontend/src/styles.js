@@ -2707,32 +2707,6 @@ textarea:focus-visible {
   font-style: italic;
 }
 
-/* System Design Design Editor */
-.design-editor {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.design-editor-input {
-  flex: 1;
-  width: 100%;
-  background: var(--surface-code);
-  color: var(--text-primary);
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 1rem;
-  font-family: var(--font-mono);
-  font-size: 14px;
-  line-height: 1.6;
-  resize: none;
-  outline: none;
-}
-
-.design-editor-input:focus {
-  box-shadow: 0 0 0 1px var(--accent) inset;
-}
-
 /* Rubric Panel */
 .rubric-list {
   list-style: none;
@@ -2755,7 +2729,6 @@ textarea:focus-visible {
   margin-right: 0.5rem;
 }
 
-/* Badges for System Design */
 .pp-tag {
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-secondary);
@@ -2767,7 +2740,6 @@ textarea:focus-visible {
   border: 1px solid var(--border-hairline);
 }
 
-.pp-tag--system-design { color: #ff9f0a; border-color: rgba(255, 159, 10, 0.3); }
 .pp-tag--cloud { color: #5e5ce6; border-color: rgba(94, 92, 230, 0.3); }
 .pp-tag--backend { color: #30d158; border-color: rgba(48, 209, 88, 0.3); }
 .pp-tag--security { color: #ff375f; border-color: rgba(255, 55, 95, 0.3); }

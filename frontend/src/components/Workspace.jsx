@@ -9,7 +9,6 @@ import { ENABLE_VOICE_COACH } from "../lib/config";
 import { VoiceCoach } from "../features/voiceCoach/VoiceCoach";
 import { ProblemExplorer } from "../features/problems/ProblemExplorer";
 import { PythonEditor } from "../features/editor/PythonEditor";
-import { DesignEditor } from "../features/editor/DesignEditor";
 import { EvaluationPanel } from "../features/evaluation/EvaluationPanel";
 import { DifficultyBadge } from "./DifficultyBadge";
 import { RoleSelector } from "../features/role/RoleSelector";
@@ -352,12 +351,10 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
         let precode = 0;
         let dsa = 0;
         let blind75 = 0;
-        let systemDesign = 0;
         let cloud = 0;
         let precodeSolved = 0;
         let dsaSolved = 0;
         let blind75Solved = 0;
-        let systemDesignSolved = 0;
         let cloudSolved = 0;
         for (const problem of roleProblems) {
             const track = problem.track_id || "dsa";
@@ -366,11 +363,6 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                 precode++;
                 if (solved)
                     precodeSolved++;
-            }
-            else if (track === "system_design") {
-                systemDesign++;
-                if (solved)
-                    systemDesignSolved++;
             }
             else if (track === "cloud-architect-prep") {
                 cloud++;
@@ -390,15 +382,13 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
         }
         return {
             all: roleProblems.length,
-            allSolved: precodeSolved + dsaSolved + systemDesignSolved + cloudSolved,
+            allSolved: precodeSolved + dsaSolved + cloudSolved,
             precode,
             precodeSolved,
             blind75,
             blind75Solved,
             dsa,
             dsaSolved,
-            systemDesign,
-            systemDesignSolved,
             cloud,
             cloudSolved,
         };
@@ -451,9 +441,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                 ? "Blind 75"
                 : trackFilter === "dsa"
                     ? "NeetCode-style"
-                    : trackFilter === "system_design"
-                        ? "System Design Prep"
-                        : "Full curriculum"}
+                    : "Full curriculum"}
               </span>
             </div>
             <p className="ws-header-desc">
@@ -463,9 +451,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                 ? "A focused 75-problem interview set pulled from the existing NeetCode-style catalog."
                 : trackFilter === "dsa"
                     ? "Classic DSA interview set. You write the solution; we run tests and give structured feedback."
-                    : trackFilter === "system_design"
-                        ? "Intern-level system design and cloud architecture practice for SWE and Cloud Solutions Architect roles."
-                        : trackFilter === "cloud-architect-prep"
+                    : trackFilter === "cloud-architect-prep"
                             ? "Cloud architecture, debugging, automation, and customer explanation practice for CSA internships."
             : learningPath
                 ? `${learningPath.name}: ${learningPath.target_problems} target problems in a role-specific order.`
@@ -505,12 +491,6 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
             <span className="track-tab-title">NeetCode 150</span>
             <span className="track-tab-sub">
               DSA interviews &middot; {trackCounts.dsaSolved}/{trackCounts.dsa} solved
-            </span>
-          </button>
-          <button type="button" role="tab" aria-selected={trackFilter === "system_design"} className={`track-tab${trackFilter === "system_design" ? " track-tab--active" : ""}`} onClick={() => setTrackFilter("system_design")}>
-            <span className="track-tab-title">System Design</span>
-            <span className="track-tab-sub">
-              Architecture &middot; {trackCounts.systemDesignSolved}/{trackCounts.systemDesign} solved
             </span>
           </button>
           <button type="button" role="tab" aria-selected={trackFilter === "cloud-architect-prep"} className={`track-tab${trackFilter === "cloud-architect-prep" ? " track-tab--active" : ""}`} onClick={() => setTrackFilter("cloud-architect-prep")}>
@@ -601,7 +581,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
           <main className="main-col">
             <div className="main-toolbar">
               <button type="button" data-testid="run-code-button" onClick={() => void onRun()} disabled={loading !== "idle" || !problemId} className="btn-run">
-                {loading === "run" ? (isCoding ? "Running..." : "Evaluating...") : (problemType === "system_design" ? "Evaluate Design" : (isCoding ? "Run Code" : "Submit Answer"))}
+                {loading === "run" ? (isCoding ? "Running..." : "Evaluating...") : (isCoding ? "Run Code" : "Submit Answer")}
               </button>
               <button type="button" onClick={() => void onHint()} disabled={loading !== "idle" || !run || !!detail?.stepwise_available} className="btn-hint" title={detail?.stepwise_available
             ? "This problem uses stepwise validation — hints come from Run Code."
@@ -622,29 +602,25 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                   <div className="code-panel-head">
                     <div className="flex-row-gap-sm">
                       <span className="code-panel-label">
-                        {problemType === "system_design" ? "Design Response" : (isCoding ? "Code" : "Text Response")}
+                        {isCoding ? "Code" : "Text Response"}
                       </span>
                       <span className="code-panel-badge" title={isCoding ? "Plain text editor (Python)" : "Rubric-scored written answer"}>
                         {isCoding ? "Text" : problemType.toUpperCase()}
                       </span>
                     </div>
                     <span className="code-panel-lang">
-                      {problemType === "system_design" ? "System Design" : (isCoding ? "Python 3" : "Rubric")}
+                      {isCoding ? "Python 3" : "Rubric"}
                     </span>
                   </div>
                   <div className="code-panel-body">
-                    {!isCoding ? (<DesignEditor value={code} onChange={setCode} disabled={loading === "run" || loading === "hint"} onRun={loading === "idle" && problemId
-                ? () => {
-                    void onRun();
-                }
-                : undefined}/>) : (<PythonEditor ref={editorRef} value={code} onChange={setCode} disabled={loading === "run" || loading === "hint"} onRun={loading === "idle" && problemId
+                    <PythonEditor ref={editorRef} value={code} onChange={setCode} disabled={loading === "run" || loading === "hint"} onRun={loading === "idle" && problemId
                 ? () => {
                     void onRun();
                 }
                 : undefined} onCursorChange={(ln, col) => {
                 setCursorLine(ln);
                 setCursorColumn(col);
-            }}/>)}
+            }}/>
                   </div>
                 </div>
 
@@ -658,9 +634,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
       <div className="ws-disclaimer" style={{fontSize: "10px", padding: "4px 1rem", color: "var(--text-muted)", textAlign: "center", borderTop: "1px solid var(--border-hairline)"}}>
         {trackFilter === "cloud-architect-prep"
             ? "Unofficial cloud interview preparation practice, designed around common CSA internship skills."
-            : trackFilter === "system_design"
-                ? "Unofficial intern-level system design practice focused on architecture thinking, tradeoffs, and communication."
-                : "Kitkode: Local interview practice for Python and System Design."}
+            : "Kitkode: Local interview practice for Python."}
       </div>
     </div>);
 }

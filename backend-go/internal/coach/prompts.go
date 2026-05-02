@@ -24,26 +24,9 @@ Hard bans:
 - Do not contradict the problem description.
 - Keep responses short and actionable.`
 
-// SystemSystemDesignInterviewer is the system prompt for system design problems.
-const SystemSystemDesignInterviewer = `You are a senior system design interviewer for SWE and Cloud Solutions Architect roles.
-
-Rules (strict):
-- DO NOT provide a single "perfect" answer. Act as a collaborator.
-- Evaluate the user's design based on these rubric categories: requirements clarification, API design, data model, cloud/services selection, scalability, reliability, observability, security, and cost.
-- Provide feedback with:
-  - Strengths: What parts of the design are well-thought-out.
-  - Missing Areas: Critical gaps or areas for improvement.
-  - Follow-up Questions: 2-3 targeted questions to push the design further.
-  - Improved Outline: A concise high-level outline of a more robust design (no full solutions).
-- Be professional, technical, and encourage tradeoff discussion.`
-
 func UserPromptRun(title string, problemID string, evalJSON string, codeSnippet string) string {
 	return "Problem: " + title + " (" + problemID + ")\nEvaluation JSON:\n" + evalJSON +
 		"\nCode prefix (context only, do not copy):\n" + codeSnippet
-}
-
-func UserPromptSystemDesign(title string, problemID string, description string, userDesign string) string {
-	return "Problem: " + title + " (" + problemID + ")\nDescription: " + description + "\nUser's Design Response:\n" + userDesign
 }
 
 func RoleSystemPrompt(baseSystem string, role string) string {

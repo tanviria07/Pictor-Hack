@@ -207,29 +207,6 @@ function EvalSection({ title, hint, tone = "neutral", children, }) {
     </section>);
 }
 
-function RubricPanel() {
-    const categories = [
-        { name: "Requirements Clarification", desc: "Clarifying goals, scope, and non-goals." },
-        { name: "API Design", desc: "Defining clear endpoints or interfaces." },
-        { name: "Data Model", desc: "Choosing appropriate databases and schemas." },
-        { name: "Cloud/Services Selection", desc: "Selecting the right tools for the job." },
-        { name: "Scalability", desc: "Handling load and horizontal growth." },
-        { name: "Reliability", desc: "Dealing with failures and ensuring uptime." },
-        { name: "Observability", desc: "Monitoring, logging, and tracing." },
-        { name: "Security", desc: "Protecting data and access." },
-        { name: "Cost Awareness", desc: "Managing resource spending efficiently." },
-        { name: "Tradeoff Explanation", desc: "Justifying choices and knowing alternatives." },
-        { name: "Communication Clarity", desc: "Structuring the response logically." },
-    ];
-    return (<EvalSection title="System Design Rubric" hint="Evaluation Focus">
-      <ul className="rubric-list">
-        {categories.map((c) => (<li key={c.name} className="rubric-item">
-            <strong>{c.name}:</strong> {c.desc}
-          </li>))}
-      </ul>
-    </EvalSection>);
-}
-
 function RubricFeedback({ feedback, detail }) {
     const rubric = detail?.rubric;
     if (!feedback) {
@@ -366,7 +343,6 @@ function IdleState({ detail, inlineHint, }) {
 
 export function EvaluationPanel({ detail, run, stepwise, stepwiseCode, inlineHint, hintHistory, rubricFeedback, onInsertSnippet, }) {
     const showIdle = !run && !stepwise;
-    const isSystemDesign = detail?.execution_mode === "system_design";
     const isNonCoding = detail && (detail.problem_type || "coding") !== "coding";
     const caseNote = useMemo(() => run?.evaluation?.failing_case_summary?.trim()
         ? run.evaluation.failing_case_summary
@@ -378,10 +354,7 @@ export function EvaluationPanel({ detail, run, stepwise, stepwiseCode, inlineHin
       <div className="eval-scroll">
         {isNonCoding && (<RubricFeedback feedback={rubricFeedback} detail={detail}/>)}
 
-        {!isNonCoding && showIdle && (<>
-            {isSystemDesign && <RubricPanel />}
-            <IdleState detail={detail} inlineHint={inlineHint}/>
-          </>)}
+        {!isNonCoding && showIdle && <IdleState detail={detail} inlineHint={inlineHint}/>}
 
         {!isNonCoding && stepwise && (<>
             <StepwisePanel stepwise={stepwise} stepwiseCode={stepwiseCode} onInsertSnippet={onInsertSnippet}/>
@@ -389,20 +362,16 @@ export function EvaluationPanel({ detail, run, stepwise, stepwiseCode, inlineHin
           </>)}
 
         {!isNonCoding && run && !stepwise && (<>
-            {isSystemDesign ? (<EvalSection title="Design Feedback" tone="success">
-                <InterviewerNotes text={run.interviewer_feedback}/>
-              </EvalSection>) : (<>
-                <ResultHero run={run}/>
-                <VisibleTestGrid results={run.visible_test_results}/>
-                <HiddenTestStrip passed={run.evaluation?.passed_hidden_tests} total={run.evaluation?.total_hidden_tests}/>
-                <ErrorSection status={run.status} errorType={run.evaluation?.error_type} errorMessage={run.evaluation?.error_message}/>
-                {caseNote && (<EvalSection title="Case note">
-                    <p className="notes-body">{caseNote}</p>
-                  </EvalSection>)}
-                <InterviewerNotes text={run.interviewer_feedback}/>
-                <FocusAreas items={run.evaluation?.feedback_targets || []}/>
-                {run.trace && <InterviewTracePanel trace={run.trace}/>}
-              </>)}
+            <ResultHero run={run}/>
+            <VisibleTestGrid results={run.visible_test_results}/>
+            <HiddenTestStrip passed={run.evaluation?.passed_hidden_tests} total={run.evaluation?.total_hidden_tests}/>
+            <ErrorSection status={run.status} errorType={run.evaluation?.error_type} errorMessage={run.evaluation?.error_message}/>
+            {caseNote && (<EvalSection title="Case note">
+                <p className="notes-body">{caseNote}</p>
+              </EvalSection>)}
+            <InterviewerNotes text={run.interviewer_feedback}/>
+            <FocusAreas items={run.evaluation?.feedback_targets || []}/>
+            {run.trace && <InterviewTracePanel trace={run.trace}/>}
             <HintHistory hints={hintHistory} onInsertSnippet={onInsertSnippet} stepwise={false}/>
           </>)}
       </div>

@@ -97,8 +97,6 @@ func trackTitle(track string) string {
 		return "NeetCode 150"
 	case "company":
 		return "Company Tracks"
-	case "system_design":
-		return "System Design"
 	case "cloud-architect-prep":
 		return "Cloud Architect Prep"
 	default:
