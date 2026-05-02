@@ -8,6 +8,7 @@ import (
 
 	"pictorhack/backend/internal/auth"
 	"pictorhack/backend/internal/handler"
+	"pictorhack/backend/internal/interview"
 	appmw "pictorhack/backend/internal/middleware"
 )
 
@@ -23,6 +24,7 @@ func NewRouter(h *handler.Handler, corsOrigins []string, rateLimitPerMinute int)
 	r.Use(optionalAuth(h))
 
 	r.Get("/health", h.Health)
+	r.Get("/ws/interview", interview.WebSocketHandler)
 
 	r.Route("/api", func(r chi.Router) {
 		r.With(appmw.IPRateLimit(12)).Post("/auth/signup", h.Signup)
