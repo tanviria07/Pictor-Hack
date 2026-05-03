@@ -17,6 +17,7 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"pictorhack/backend/internal/auth"
+	"pictorhack/backend/internal/deepseek"
 	"pictorhack/backend/internal/dto"
 	"pictorhack/backend/internal/httpx"
 	"pictorhack/backend/internal/problems"
@@ -41,6 +42,7 @@ type Handler struct {
 	TokenSecret   string
 	Dashboard     *service.DashboardService
 	MaxCodeBytes  int // max submitted code size; if zero, a default is used in validateRunInput
+	SecureCookies bool
 	signupLimiter *windowLimiter
 }
 
@@ -214,19 +216,37 @@ func (h *Handler) GenerateStepwise(w http.ResponseWriter, r *http.Request) {
 	httpx.JSON(w, http.StatusOK, out)
 }
 
-// Hint returns a progressive hint grounded in runner evaluation (never recomputed here).
+// Hint returns a concise DeepSeek-generated hint with deterministic fallback.
 func (h *Handler) Hint(w http.ResponseWriter, r *http.Request) {
 	h.limitJSONBody(w, r)
-	var req dto.HintRequest
+	var req struct {
+		ProblemID  string                   `json:"problem_id"`
+		Code       string                   `json:"code"`
+		ErrorType  string                   `json:"error_type"`
+		Evaluation dto.StructuredEvaluation `json:"evaluation"`
+		Role       string                   `json:"role,omitempty"`
+	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
 		return
 	}
-	out, err := h.Hints.Hint(r.Context(), req)
-	if errors.Is(err, problems.ErrNotFound) {
-		httpx.Error(w, http.StatusNotFound, httpx.ErrNotFound, "unknown problem_id")
+	if strings.TrimSpace(req.ProblemID) == "" {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "problem_id required")
 		return
 	}
+	if _, err := problems.BuildHintPromptContext(req.ProblemID); errors.Is(err, problems.ErrNotFound) {
+		httpx.Error(w, http.StatusNotFound, httpx.ErrNotFound, "unknown problem_id")
+		return
+	} else if err != nil {
+		log.Println("hint:", err)
+		httpx.ErrorWithDetails(w, http.StatusInternalServerError, httpx.ErrHintUnavailable, "Could not build a hint right now.", map[string]string{"reason": err.Error()})
+		return
+	}
+	errorType := strings.TrimSpace(req.ErrorType)
+	if errorType == "" {
+		errorType = string(req.Evaluation.Status)
+	}
+	hint, err := deepseek.GetHint(req.ProblemID, req.Code, errorType)
 	if err != nil {
 		log.Println("hint:", err)
 		httpx.ErrorWithDetails(w, http.StatusInternalServerError, httpx.ErrHintUnavailable, "Could not build a hint right now.", map[string]string{"reason": err.Error()})
@@ -237,7 +257,13 @@ func (h *Handler) Hint(w http.ResponseWriter, r *http.Request) {
 			log.Println("hint progress:", err)
 		}
 	}
-	httpx.JSON(w, http.StatusOK, out)
+	httpx.JSON(w, http.StatusOK, dto.HintResponse{
+		Feedback:            hint,
+		Hint:                hint,
+		NextFocus:           "",
+		HintLevel:           1,
+		InterviewerFeedback: hint,
+	})
 }
 
 // InlineHint returns real-time line‑by‑line feedback for partial code.
@@ -376,6 +402,7 @@ func (h *Handler) signupWithVerification(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *Handler) authWithPassword(w http.ResponseWriter, r *http.Request, create bool) {
+	h.limitJSONBody(w, r)
 	if h.Users == nil {
 		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "auth unavailable")
 		return
@@ -735,6 +762,10 @@ func (l *windowLimiter) allow(key string) bool {
 			kept = append(kept, t)
 		}
 	}
+	if len(kept) == 0 {
+		delete(l.hits, key)
+		return true
+	}
 	if len(kept) >= l.limit {
 		l.hits[key] = kept
 		return false
@@ -744,19 +775,15 @@ func (l *windowLimiter) allow(key string) bool {
 }
 
 func (h *Handler) issueSession(w http.ResponseWriter, r *http.Request, userID int64) error {
+	_ = h.Users.DeleteUserSessions(r.Context(), userID)
 	token, hash, err := auth.NewSessionToken()
 	if err != nil {
 		return err
 	}
 	expires := time.Now().UTC().Add(14 * 24 * time.Hour)
-	// Rotate sessions on login/verification so older tokens stop working.
-	if err := h.Users.DeleteUserSessions(r.Context(), userID); err != nil {
-		return err
-	}
 	if err := h.Users.CreateAuthSession(r.Context(), userID, hash, expires.Format(time.RFC3339)); err != nil {
 		return err
 	}
-	isSecure := r.TLS != nil || strings.EqualFold(r.Header.Get("X-Forwarded-Proto"), "https")
 	http.SetCookie(w, &http.Cookie{
 		Name:     authCookieName,
 		Value:    token,
@@ -764,7 +791,7 @@ func (h *Handler) issueSession(w http.ResponseWriter, r *http.Request, userID in
 		Expires:  expires,
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
-		Secure:   isSecure,
+		Secure:   h.SecureCookies || r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https",
 	})
 	return nil
 }
@@ -962,6 +989,7 @@ func problemSummary(id string) (dto.ProblemSummary, error) {
 
 // SaveSession persists editor buffer and hint history locally.
 func (h *Handler) SaveSession(w http.ResponseWriter, r *http.Request) {
+	h.limitJSONBody(w, r)
 	var req dto.SessionSaveRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")

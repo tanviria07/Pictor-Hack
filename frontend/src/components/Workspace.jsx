@@ -450,6 +450,13 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                 `[L${hintResponse.hint_level}] Feedback: ${hintResponse.feedback}\nHint: ${hintResponse.hint}\nNext: ${hintResponse.next_focus}`,
             ];
             setHintHistory(nextHints);
+            const text = hintResponse.interviewer_feedback || hintResponse.hint || hintResponse.feedback;
+            if (text) {
+                setInterviewerMessages((prev) => [
+                    ...prev,
+                    { id: `manual-${Date.now()}-${prev.length}`, text },
+                ]);
+            }
             await persist(code, nextHints, "in_progress");
         }
         catch (e) {
@@ -815,7 +822,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                 <EvaluationPanel detail={detail} run={run} stepwise={stepwise} stepwiseCode={stepwiseCode} inlineHint={inlineHint} hintHistory={hintHistory} rubricFeedback={null} onInsertSnippet={insertSnippet}/>
                 <div className="interviewer-panel" aria-live="polite">
                   <div className="interviewer-panel-head">
-                    <h2>Interview Simulator</h2>
+                    <h2>KitKode Simulator</h2>
                     <span>{interviewerMessages.length} messages</span>
                   </div>
                   <div className="interviewer-panel-list">
