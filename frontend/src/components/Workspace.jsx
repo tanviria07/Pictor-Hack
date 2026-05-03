@@ -20,6 +20,35 @@ function SectionTitle({ children }) {
     return <h3 className="sec-title">{children}</h3>;
 }
 
+function interviewWebSocketURL() {
+    const explicit = process.env.WS_BASE || process.env.INTERVIEW_WS_BASE;
+    if (explicit) {
+        return `${String(explicit).replace(/\/$/, "")}/ws/interview`;
+    }
+    if (typeof window === "undefined") {
+        return "ws://localhost:8080/ws/interview";
+    }
+    if (window.location.port === "3000") {
+        return "ws://localhost:8080/ws/interview";
+    }
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    return `${protocol}//${window.location.host}/ws/interview`;
+}
+
+function mapEvaluationStatusToInterviewErrorType(status) {
+    switch (status) {
+        case "correct":
+            return "correct";
+        case "runtime_error":
+            return "runtime_error";
+        case "partial":
+            return "partial";
+        case "wrong":
+        default:
+            return "wrong";
+    }
+}
+
 export function Workspace({ user, onAuth, onDashboard, onLogout }) {
     const [categories, setCategories] = useState([]);
     const [problems, setProblems] = useState([]);
@@ -43,6 +72,15 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
     const [cursorLine, setCursorLine] = useState(1);
     const [cursorColumn, setCursorColumn] = useState(1);
     const debounceTimerRef = useRef(null);
+    // Interview simulator WebSocket state. Refs keep timers and the socket out of
+    // React render cycles while still allowing cleanup on unmount.
+    const [interviewerMessages, setInterviewerMessages] = useState([]);
+    const interviewSocketRef = useRef(null);
+    const interviewCodeDebounceRef = useRef(null);
+    const interviewDwellIntervalRef = useRef(null);
+    const interviewCursorStartedAtRef = useRef(Date.now());
+    const latestProblemIdRef = useRef(null);
+    const latestCodeRef = useRef("");
     const [progressById, setProgressById] = useState({});
     const [loading, setLoading] = useState("idle");
     const [err, setErr] = useState(null);
@@ -53,6 +91,127 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
     useEffect(() => {
         setProgressById(loadLocalProgress());
     }, []);
+
+    useEffect(() => {
+        latestProblemIdRef.current = problemId;
+    }, [problemId]);
+
+    useEffect(() => {
+        latestCodeRef.current = code;
+    }, [code]);
+
+    const sendInterviewEvent = useCallback((event) => {
+        const socket = interviewSocketRef.current;
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+            return;
+        }
+        try {
+            socket.send(JSON.stringify(event));
+        }
+        catch (e) {
+            console.log("Interview simulator send failed", e);
+        }
+    }, []);
+
+    // Open one WebSocket for this Workspace instance and close it on unmount.
+    useEffect(() => {
+        const socket = new WebSocket(interviewWebSocketURL());
+        interviewSocketRef.current = socket;
+
+        socket.onopen = () => {
+            console.log("Interview simulator connected");
+            if (latestProblemIdRef.current) {
+                socket.send(JSON.stringify({
+                    type: "start_session",
+                    problem_id: latestProblemIdRef.current,
+                }));
+            }
+        };
+
+        socket.onmessage = (event) => {
+            try {
+                const message = JSON.parse(event.data);
+                if (message.type === "interviewer_message" && message.text) {
+                    setInterviewerMessages((prev) => [
+                        ...prev,
+                        { id: `${Date.now()}-${prev.length}`, text: message.text },
+                    ]);
+                }
+            }
+            catch (e) {
+                console.log("Interview simulator message parse failed", e);
+            }
+        };
+
+        socket.onerror = (event) => {
+            console.log("Interview simulator websocket error", event);
+        };
+
+        socket.onclose = (event) => {
+            console.log("Interview simulator disconnected", event.code, event.reason);
+        };
+
+        return () => {
+            if (interviewCodeDebounceRef.current) {
+                clearTimeout(interviewCodeDebounceRef.current);
+            }
+            if (interviewDwellIntervalRef.current) {
+                clearInterval(interviewDwellIntervalRef.current);
+            }
+            socket.close();
+            if (interviewSocketRef.current === socket) {
+                interviewSocketRef.current = null;
+            }
+        };
+    }, []);
+
+    // Start a fresh simulator session whenever the selected problem changes.
+    useEffect(() => {
+        if (!problemId) {
+            return;
+        }
+        setInterviewerMessages([]);
+        sendInterviewEvent({ type: "start_session", problem_id: problemId });
+    }, [problemId, sendInterviewEvent]);
+
+    // Debounce code changes so typing does not flood the WebSocket.
+    useEffect(() => {
+        if (!problemId) {
+            return;
+        }
+        if (interviewCodeDebounceRef.current) {
+            clearTimeout(interviewCodeDebounceRef.current);
+        }
+        interviewCodeDebounceRef.current = setTimeout(() => {
+            sendInterviewEvent({ type: "code_change", code });
+        }, 1000);
+        return () => {
+            if (interviewCodeDebounceRef.current) {
+                clearTimeout(interviewCodeDebounceRef.current);
+            }
+        };
+    }, [code, problemId, sendInterviewEvent]);
+
+    // Every cursor line gets its own dwell timer. The interval resets whenever
+    // the cursor moves to a different line.
+    useEffect(() => {
+        if (!problemId || cursorLine < 1) {
+            return;
+        }
+        interviewCursorStartedAtRef.current = Date.now();
+        if (interviewDwellIntervalRef.current) {
+            clearInterval(interviewDwellIntervalRef.current);
+        }
+        interviewDwellIntervalRef.current = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - interviewCursorStartedAtRef.current) / 1000);
+            sendInterviewEvent({ type: "dwell_tick", line: cursorLine, seconds: elapsed });
+        }, 10000);
+        return () => {
+            if (interviewDwellIntervalRef.current) {
+                clearInterval(interviewDwellIntervalRef.current);
+            }
+        };
+    }, [cursorLine, problemId, sendInterviewEvent]);
 
     useEffect(() => {
         if (!user)
@@ -233,6 +392,13 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                             ? "in_progress"
                             : "not_started";
                 await persist(code, nextHints, nextStatus);
+                // Integration point: after stepwise evaluation completes, notify
+                // the interviewer about the run result.
+                sendInterviewEvent({
+                    type: "run_attempt",
+                    error_type: response.is_full_solution ? "correct" : response.correct_count > 0 ? "partial" : "wrong",
+                    code,
+                });
                 return;
             }
             const response = await runCode({
@@ -249,6 +415,13 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
             }
             const derivedStatus = deriveProgress(response, code, starterForCompare, hintHistory.length > 0);
             await persist(code, hintHistory, derivedStatus);
+            // Integration point: after the normal runner returns, map its status
+            // to the interview simulator's error_type contract.
+            sendInterviewEvent({
+                type: "run_attempt",
+                error_type: mapEvaluationStatusToInterviewErrorType(response?.evaluation?.status || response?.status),
+                code,
+            });
         }
         catch (e) {
             setErr(formatThrownError(e));
@@ -256,7 +429,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
         finally {
             setLoading("idle");
         }
-    }, [code, detail, hintHistory, persist, problemId, starterForCompare, role, demo]);
+    }, [code, detail, hintHistory, persist, problemId, starterForCompare, role, demo, sendInterviewEvent]);
 
     const onHint = useCallback(async () => {
         if (!problemId || !run) {
@@ -427,6 +600,24 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
         setDemo(prev => ({ ...prev, step: DEMO_STEPS.CORRECTED }));
       }
     };
+
+    const onEditorCursorChange = useCallback((lineNumber, columnNumber = 1) => {
+        setCursorLine(lineNumber);
+        setCursorColumn(columnNumber);
+        // Integration point: Monaco/CodeMirror-style cursor callback.
+        sendInterviewEvent({ type: "cursor_move", line: lineNumber });
+    }, [sendInterviewEvent]);
+
+    const onRunComplete = useCallback((evaluationResult) => {
+        const status = evaluationResult?.evaluation?.status || evaluationResult?.status;
+        // Optional integration point if a future run flow reports completion
+        // outside onRun.
+        sendInterviewEvent({
+            type: "run_attempt",
+            error_type: mapEvaluationStatusToInterviewErrorType(status),
+            code: latestCodeRef.current,
+        });
+    }, [sendInterviewEvent]);
 
     return (<div className="ws">
       <header className="ws-header">
@@ -617,14 +808,28 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                 ? () => {
                     void onRun();
                 }
-                : undefined} onCursorChange={(ln, col) => {
-                setCursorLine(ln);
-                setCursorColumn(col);
-            }}/>
+                : undefined} onCursorChange={(ln, col) => onEditorCursorChange(ln, col)}/>
                   </div>
                 </div>
 
                 <EvaluationPanel detail={detail} run={run} stepwise={stepwise} stepwiseCode={stepwiseCode} inlineHint={inlineHint} hintHistory={hintHistory} rubricFeedback={null} onInsertSnippet={insertSnippet}/>
+                <div className="interviewer-panel" aria-live="polite">
+                  <div className="interviewer-panel-head">
+                    <h2>Interview Simulator</h2>
+                    <span>{interviewerMessages.length} messages</span>
+                  </div>
+                  <div className="interviewer-panel-list">
+                    {interviewerMessages.length === 0 ? (
+                      <p className="interviewer-panel-empty">No proactive hints yet.</p>
+                    ) : (
+                      interviewerMessages.map((message) => (
+                        <div key={message.id} className="interviewer-message">
+                          {message.text}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
               </div>
               {ENABLE_VOICE_COACH && (<VoiceCoach problemId={problemId} problemDetail={detail} code={code} role={role} hints={hintHistory} run={run} stepwise={stepwise} rubricFeedback={null}/>)}
             </div>
