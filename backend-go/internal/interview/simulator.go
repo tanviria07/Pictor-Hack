@@ -5,10 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
-	"net/url"
-	"strconv"
 	"strings"
 	"time"
 
@@ -18,26 +18,32 @@ import (
 )
 
 const (
-	defaultHintAPIURL = "http://127.0.0.1:8080/api/hint"
-	writeWait         = 5 * time.Second
-	hintTimeout       = 2 * time.Second
-	runPause          = 30 * time.Second
+	defaultHintAPIURL   = "http://127.0.0.1:8080/api/hint"
+	hintAPITimeout      = 2 * time.Second
+	runReminderDelay    = 30 * time.Second
+	websocketWriteWait  = 5 * time.Second
+	eventBufferSize     = 16
+	outboundBufferSize  = 8
+	maxIncomingMsgBytes = 1 << 20
 )
 
-type SessionState struct {
-	ProblemID          string
-	CurrentLine        int
-	DwellSeconds       int
-	LastError          string
-	ConsecutiveErrors  int
-	LastRunCode        string
-	CodeSnapshot       string
-	LastRunAt          time.Time
-	LastCodeChangeAt   time.Time
-	LastDwellNudgeLine int
-	PendingRunReminder bool
-}
+const genericHintFallback = "I see you're stuck. Try breaking the problem into smaller steps."
 
+var (
+	upgrader = websocket.Upgrader{
+		CheckOrigin: func(*http.Request) bool {
+			return true
+		},
+	}
+
+	errorHints = map[string]string{
+		"runtime_error": "Runtime error again – check your list indices.",
+		"wrong":         "Still not passing tests. Review the problem statement edge cases.",
+		"partial":       "You're passing some tests. Look at the hidden test cases.",
+	}
+)
+
+// Event is the JSON envelope accepted from the React client.
 type Event struct {
 	Type      string `json:"type"`
 	ProblemID string `json:"problem_id,omitempty"`
@@ -47,53 +53,82 @@ type Event struct {
 	Code      string `json:"code,omitempty"`
 }
 
+// SessionState is intentionally small and connection-scoped.
+type SessionState struct {
+	ProblemID     string
+	CurrentLine   int
+	DwellSeconds  int
+	LastError     string
+	LastRunCode   string
+	ErrorCount    int
+	CodeSnapshot  string
+	LastDwellLine int
+}
+
 type interviewerMessage struct {
 	Type string `json:"type"`
 	Text string `json:"text"`
 }
 
-type Interviewer struct {
+type hintRequest struct {
+	ProblemID  string                   `json:"problem_id"`
+	Code       string                   `json:"code"`
+	ErrorType  string                   `json:"error_type"`
+	Evaluation dto.StructuredEvaluation `json:"evaluation,omitempty"`
+}
+
+type hintResponse struct {
+	Hint                string `json:"hint"`
+	InterviewerFeedback string `json:"interviewer_feedback"`
+}
+
+type simulator struct {
 	conn       *websocket.Conn
 	ctx        context.Context
 	cancel     context.CancelFunc
-	state      SessionState
 	logger     *slog.Logger
+	state      SessionState
 	hintAPIURL string
 	events     chan Event
 	outbound   chan interviewerMessage
 }
 
-var upgrader = websocket.Upgrader{CheckOrigin: allowLocalOrigin}
-
+// WebSocketHandler upgrades /ws/interview requests and runs one isolated
+// interview simulator session per WebSocket connection.
 func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		slog.Warn("interview websocket upgrade failed", "err", err)
 		return
 	}
+
 	ctx, cancel := context.WithCancel(r.Context())
-	(&Interviewer{
+	s := &simulator{
 		conn:       conn,
 		ctx:        ctx,
 		cancel:     cancel,
-		logger:     slog.Default().With("component", "interview_ws"),
+		logger:     slog.Default().With("component", "interview_simulator"),
 		hintAPIURL: defaultHintAPIURL,
-		events:     make(chan Event, 16),
-		outbound:   make(chan interviewerMessage, 8),
-	}).Run()
+		events:     make(chan Event, eventBufferSize),
+		outbound:   make(chan interviewerMessage, outboundBufferSize),
+	}
+	s.run()
 }
 
-func (i *Interviewer) Run() {
+func (s *simulator) run() {
 	defer func() {
-		i.cancel()
-		_ = i.conn.Close()
+		s.cancel()
+		_ = s.conn.Close()
+		s.logger.Debug("interview websocket session closed")
 	}()
-	go i.readLoop()
-	go i.writeLoop()
+
+	go s.readLoop()
+	go s.writeLoop()
 
 	var runReminder <-chan time.Time
 	var runTimer *time.Timer
-	stopTimer := func() {
+
+	stopRunReminder := func() {
 		if runTimer == nil {
 			return
 		}
@@ -103,236 +138,222 @@ func (i *Interviewer) Run() {
 			default:
 			}
 		}
-		runTimer, runReminder = nil, nil
+		runTimer = nil
+		runReminder = nil
 	}
-	resetTimer := func() {
-		stopTimer()
-		runTimer = time.NewTimer(runPause)
+
+	resetRunReminder := func() {
+		stopRunReminder()
+		runTimer = time.NewTimer(runReminderDelay)
 		runReminder = runTimer.C
 	}
 
 	for {
 		select {
-		case <-i.ctx.Done():
-			stopTimer()
+		case <-s.ctx.Done():
+			stopRunReminder()
 			return
 		case <-runReminder:
-			runTimer, runReminder = nil, nil
-			if i.state.PendingRunReminder {
-				i.send("Your code changed - consider running it to see if the new version fixes the issue.")
-				i.state.PendingRunReminder = false
-			}
-		case ev, ok := <-i.events:
+			runTimer = nil
+			runReminder = nil
+			s.send("Your code changed – consider running it to see if the new version fixes the issue.")
+		case ev, ok := <-s.events:
 			if !ok {
-				stopTimer()
+				stopRunReminder()
 				return
 			}
-			if !i.applyEvent(ev, resetTimer, stopTimer) {
-				i.evaluateTriggers(ev)
-			}
+			s.handleEvent(ev, resetRunReminder, stopRunReminder)
 		}
 	}
 }
 
-func (i *Interviewer) readLoop() {
+func (s *simulator) readLoop() {
 	defer func() {
-		i.cancel()
-		close(i.events)
+		s.cancel()
+		close(s.events)
 	}()
+
+	s.conn.SetReadLimit(maxIncomingMsgBytes)
 	for {
 		var ev Event
-		if err := i.conn.ReadJSON(&ev); err != nil {
+		if err := s.conn.ReadJSON(&ev); err != nil {
 			if !websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) {
-				i.logger.Debug("interview websocket read closed", "err", err)
+				s.logger.Debug("interview websocket read stopped", "err", err)
 			}
 			return
 		}
+
 		select {
-		case i.events <- ev:
-		case <-i.ctx.Done():
+		case s.events <- ev:
+		case <-s.ctx.Done():
 			return
 		}
 	}
 }
 
-func (i *Interviewer) writeLoop() {
+func (s *simulator) writeLoop() {
 	for {
 		select {
-		case <-i.ctx.Done():
+		case <-s.ctx.Done():
 			return
-		case msg := <-i.outbound:
-			_ = i.conn.SetWriteDeadline(time.Now().Add(writeWait))
-			if err := i.conn.WriteJSON(msg); err != nil {
-				i.logger.Debug("interview websocket write failed", "err", err)
-				i.cancel()
+		case msg := <-s.outbound:
+			if err := s.conn.SetWriteDeadline(time.Now().Add(websocketWriteWait)); err != nil {
+				s.logger.Debug("interview websocket write deadline failed", "err", err)
+				s.cancel()
+				return
+			}
+			if err := s.conn.WriteJSON(msg); err != nil {
+				s.logger.Debug("interview websocket write failed", "err", err)
+				s.cancel()
 				return
 			}
 		}
 	}
 }
 
-func (i *Interviewer) applyEvent(ev Event, resetRunReminder, stopRunReminder func()) bool {
+func (s *simulator) handleEvent(ev Event, resetRunReminder, stopRunReminder func()) {
 	switch ev.Type {
 	case "start_session":
-		i.state = SessionState{ProblemID: strings.TrimSpace(ev.ProblemID)}
+		s.state = SessionState{ProblemID: strings.TrimSpace(ev.ProblemID)}
+		s.logger.Debug("interview session started", "problem_id", s.state.ProblemID)
 	case "cursor_move":
-		if ev.Line > 0 && ev.Line != i.state.CurrentLine {
-			i.state.CurrentLine, i.state.DwellSeconds = ev.Line, 0
+		if ev.Line > 0 {
+			s.state.CurrentLine = ev.Line
 		}
 	case "dwell_tick":
-		if ev.Line > 0 {
-			i.state.CurrentLine = ev.Line
-		}
-		i.state.DwellSeconds = ev.Seconds
-		return false
+		s.handleDwellTick(ev)
 	case "code_change":
-		i.state.CodeSnapshot = ev.Code
-		i.state.LastCodeChangeAt = time.Now()
-		i.state.PendingRunReminder = true
+		s.state.CodeSnapshot = ev.Code
 		resetRunReminder()
 	case "run_attempt":
-		i.state.LastRunAt = time.Now()
-		i.state.LastRunCode = ev.Code
-		if ev.Code != "" {
-			i.state.CodeSnapshot = ev.Code
-		}
-		i.updateErrorPattern(strings.TrimSpace(ev.ErrorType))
-		i.state.PendingRunReminder = false
 		stopRunReminder()
-		return false
+		s.handleRunAttempt(ev)
 	default:
-		i.logger.Debug("unknown interview event", "type", ev.Type)
-	}
-	return true
-}
-
-func (i *Interviewer) updateErrorPattern(errorType string) {
-	if errorType == "" {
-		return
-	}
-	if errorType == i.state.LastError {
-		i.state.ConsecutiveErrors++
-		return
-	}
-	i.state.LastError = errorType
-	i.state.ConsecutiveErrors = 1
-}
-
-func (i *Interviewer) evaluateTriggers(ev Event) {
-	if msg := i.checkDwellTrigger(); msg != "" {
-		i.send(msg)
-		return
-	}
-	if ev.Type != "run_attempt" {
-		return
-	}
-	if ev.ErrorType == "correct" {
-		i.send("Great! All tests passed. Can you think of an edge case where this might break?")
-		return
-	}
-	if msg := i.checkErrorPatternTrigger(); msg != "" {
-		i.sendHint(msg, i.state.LastError)
+		s.logger.Debug("unknown interview event", "type", ev.Type)
 	}
 }
 
-func (i *Interviewer) sendHint(fallback, errorType string) {
-	problemID, code := i.state.ProblemID, i.state.CodeSnapshot
+func (s *simulator) handleDwellTick(ev Event) {
+	if ev.Line > 0 {
+		s.state.CurrentLine = ev.Line
+	}
+	if ev.Seconds > 0 {
+		s.state.DwellSeconds = ev.Seconds
+	}
+
+	if s.state.CurrentLine <= 0 || s.state.DwellSeconds < 60 {
+		return
+	}
+	if s.state.LastDwellLine == s.state.CurrentLine {
+		return
+	}
+
+	s.state.LastDwellLine = s.state.CurrentLine
+	s.send(fmt.Sprintf("You've been on line %d for a while. Would you like a hint about the loop condition?", s.state.CurrentLine))
+}
+
+func (s *simulator) handleRunAttempt(ev Event) {
+	errorType := strings.TrimSpace(ev.ErrorType)
+	if !isValidErrorType(errorType) {
+		s.logger.Debug("invalid run_attempt error_type", "error_type", ev.ErrorType)
+		return
+	}
+
+	s.state.LastRunCode = ev.Code
+	if ev.Code != "" {
+		s.state.CodeSnapshot = ev.Code
+	}
+
+	if errorType == "correct" {
+		s.state.LastError = errorType
+		s.state.ErrorCount = 0
+		s.send("Great! All tests passed. Can you think of an edge case where this might break?")
+		return
+	}
+
+	if errorType == s.state.LastError {
+		s.state.ErrorCount++
+	} else {
+		s.state.LastError = errorType
+		s.state.ErrorCount = 1
+	}
+
+	if s.state.ErrorCount >= 2 {
+		s.sendGeneratedHint(errorHints[errorType], errorType)
+	}
+}
+
+func (s *simulator) sendGeneratedHint(triggerFallback, errorType string) {
+	if triggerFallback == "" {
+		triggerFallback = genericHintFallback
+	}
+
+	problemID := s.state.ProblemID
+	code := s.state.CodeSnapshot
 	if code == "" {
-		code = i.state.LastRunCode
+		code = s.state.LastRunCode
 	}
+
 	go func() {
-		ctx, cancel := context.WithTimeout(i.ctx, hintTimeout)
+		ctx, cancel := context.WithTimeout(s.ctx, hintAPITimeout)
 		defer cancel()
-		text, err := callHintAPIWithContext(ctx, i.hintAPIURL, problemID, code, errorType)
+
+		text, err := callHintAPI(ctx, s.hintAPIURL, problemID, code, errorType)
 		if err != nil || strings.TrimSpace(text) == "" {
-			text = fallback
+			s.logger.Debug("hint api failed; using trigger fallback", "err", err)
+			text = triggerFallback
 		}
-		i.send(text)
+		s.send(text)
 	}()
 }
 
-func (i *Interviewer) checkDwellTrigger() string {
-	return checkDwellTrigger(&i.state)
-}
-
-func (i *Interviewer) checkErrorPatternTrigger() string {
-	return checkErrorPatternTrigger(&i.state)
-}
-
-func (i *Interviewer) send(text string) {
+func (s *simulator) send(text string) {
 	select {
-	case i.outbound <- interviewerMessage{Type: "interviewer_message", Text: text}:
-	case <-i.ctx.Done():
+	case s.outbound <- interviewerMessage{Type: "interviewer_message", Text: text}:
+	case <-s.ctx.Done():
 	default:
-		i.logger.Debug("dropping interview message; outbound queue full")
+		s.logger.Debug("dropping interview message; outbound queue full")
 	}
 }
 
-func checkDwellTrigger(state *SessionState) string {
-	if state.CurrentLine <= 0 || state.DwellSeconds < 60 || state.LastDwellNudgeLine == state.CurrentLine {
-		return ""
-	}
-	state.LastDwellNudgeLine = state.CurrentLine
-	return "You've been on line " + strconv.Itoa(state.CurrentLine) + " for a while. Would you like a hint about the loop condition?"
-}
-
-func checkErrorPatternTrigger(state *SessionState) string {
-	if state.LastError == "" || state.LastError == "correct" || state.ConsecutiveErrors < 2 {
-		return ""
-	}
-	switch state.LastError {
-	case "runtime_error":
-		return "Index out of range again - check your list bounds and any loop limits."
-	case "wrong":
-		return "The same wrong-answer pattern repeated. Try tracing one visible example by hand before changing more code."
-	case "partial":
-		return "Some tests are still failing. Which edge case is different from the cases that already pass?"
-	default:
-		return "You're seeing the same result again. What assumption could you test with a smaller input?"
-	}
-}
-
-func callHintAPI(problemID, code, errorType string) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), hintTimeout)
-	defer cancel()
-	return callHintAPIWithContext(ctx, defaultHintAPIURL, problemID, code, errorType)
-}
-
-func callHintAPIWithContext(ctx context.Context, apiURL, problemID, code, errorType string) (string, error) {
+func callHintAPI(ctx context.Context, apiURL, problemID, code, errorType string) (string, error) {
 	if strings.TrimSpace(problemID) == "" {
 		return "", errors.New("problem_id required")
 	}
-	body, err := json.Marshal(dto.HintRequest{
+
+	payload, err := json.Marshal(hintRequest{
 		ProblemID: problemID,
 		Code:      code,
+		ErrorType: errorType,
 		Evaluation: dto.StructuredEvaluation{
-			Status:          dto.ProblemStatus(errorType),
-			SyntaxOK:        errorType != "syntax_error",
-			FunctionFound:   true,
-			SignatureOK:     true,
-			FeedbackTargets: []string{"Ask a leading question; do not judge correctness."},
+			Status:        dto.ProblemStatus(errorType),
+			SyntaxOK:      true,
+			FunctionFound: true,
+			SignatureOK:   true,
 		},
 	})
 	if err != nil {
 		return "", err
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, apiURL, bytes.NewReader(body))
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, apiURL, bytes.NewReader(payload))
 	if err != nil {
 		return "", err
 	}
 	req.Header.Set("Content-Type", "application/json")
+
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return "", err
 	}
 	defer res.Body.Close()
-	if res.StatusCode < 200 || res.StatusCode >= 300 {
-		return "", errors.New("hint api status " + res.Status)
+
+	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices {
+		_, _ = io.Copy(io.Discard, res.Body)
+		return "", fmt.Errorf("hint api returned %s", res.Status)
 	}
-	var out struct {
-		Hint                string `json:"hint"`
-		InterviewerFeedback string `json:"interviewer_feedback"`
-	}
+
+	var out hintResponse
 	if err := json.NewDecoder(res.Body).Decode(&out); err != nil {
 		return "", err
 	}
@@ -342,14 +363,11 @@ func callHintAPIWithContext(ctx context.Context, apiURL, problemID, code, errorT
 	return out.Hint, nil
 }
 
-func allowLocalOrigin(r *http.Request) bool {
-	origin := r.Header.Get("Origin")
-	if origin == "" {
+func isValidErrorType(errorType string) bool {
+	switch errorType {
+	case "runtime_error", "wrong", "partial", "correct":
 		return true
-	}
-	u, err := url.Parse(origin)
-	if err != nil {
+	default:
 		return false
 	}
-	return u.Host == r.Host || u.Host == "localhost:3000" || u.Host == "127.0.0.1:3000"
 }
