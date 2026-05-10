@@ -7,6 +7,7 @@ toolchain go1.22.12
 require (
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/gorilla/websocket v1.5.3
+	golang.org/x/crypto v0.33.0
 	golang.org/x/time v0.8.0
 	modernc.org/sqlite v1.34.5
 )

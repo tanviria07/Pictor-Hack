@@ -131,6 +131,7 @@ type SessionState struct {
 type AuthRequest struct {
 	Email      string `json:"email,omitempty"`
 	Username   string `json:"username,omitempty"`
+	FullName   string `json:"full_name,omitempty"`
 	Identifier string `json:"identifier,omitempty"`
 	Password   string `json:"password"`
 }
@@ -139,13 +140,15 @@ type AuthUser struct {
 	ID            int64  `json:"id"`
 	Email         string `json:"email"`
 	Username      string `json:"username"`
+	FullName      string `json:"full_name,omitempty"`
 	EmailVerified bool   `json:"email_verified"`
 	CreatedAt     string `json:"created_at"`
 	UpdatedAt     string `json:"updated_at"`
 }
 
 type AuthResponse struct {
-	User AuthUser `json:"user"`
+	User  AuthUser `json:"user"`
+	Token string   `json:"token,omitempty"`
 }
 
 type PendingVerificationResponse struct {
@@ -170,6 +173,15 @@ type ForgotPasswordRequest struct {
 type ResetPasswordRequest struct {
 	Token       string `json:"token"`
 	NewPassword string `json:"new_password"`
+}
+
+type VerifyTokenRequest struct {
+	Token string `json:"token"`
+}
+
+type ChangePasswordRequest struct {
+	CurrentPassword string `json:"current_password"`
+	NewPassword     string `json:"new_password"`
 }
 
 type CoachRequest struct {

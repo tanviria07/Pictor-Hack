@@ -345,8 +345,99 @@ func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	h.signupWithVerification(w, r)
 }
 
+func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
+	if h.Users == nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "auth unavailable")
+		return
+	}
+	if !h.signupAllowed(clientIP(r)) {
+		w.Header().Set("Retry-After", "3600")
+		httpx.Error(w, http.StatusTooManyRequests, httpx.ErrRateLimited, "too many signup attempts from this network")
+		return
+	}
+	var req dto.AuthRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	username := normalizeUsername(req.Username)
+	fullName := strings.TrimSpace(req.FullName)
+	if !validUsername(username) || len(req.Password) < 8 || len(req.Password) > 256 {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "username must be 3 to 32 characters and password must be at least 8 characters")
+		return
+	}
+	hash, err := auth.HashPassword(req.Password)
+	if err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not hash password")
+		return
+	}
+	if _, err := h.Users.CreateUsernameUser(r.Context(), username, fullName, hash); err != nil {
+		httpx.Error(w, http.StatusConflict, httpx.ErrBadRequest, "username already exists")
+		return
+	}
+	httpx.JSON(w, http.StatusCreated, map[string]string{"message": "User created"})
+}
+
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
-	h.authWithPassword(w, r, false)
+	if h.Users == nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "auth unavailable")
+		return
+	}
+	var req dto.AuthRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	username := normalizeUsername(req.Username)
+	if username == "" {
+		username = normalizeIdentifier(req.Identifier)
+	}
+	if username == "" || req.Password == "" {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "username and password are required")
+		return
+	}
+	user, hash, err := h.Users.GetUserByUsername(r.Context(), username)
+	if errors.Is(err, sql.ErrNoRows) || !auth.VerifyPassword(hash, req.Password) {
+		httpx.Error(w, http.StatusUnauthorized, httpx.ErrBadRequest, "invalid username or password")
+		return
+	}
+	if err != nil {
+		httpx.Error(w, http.StatusUnauthorized, httpx.ErrBadRequest, "could not log in")
+		return
+	}
+	token, err := auth.NewJWT(h.jwtSecret(), user.ID, user.Username, 7*24*time.Hour)
+	if err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not create token")
+		return
+	}
+	httpx.JSON(w, http.StatusOK, map[string]string{"token": token})
+}
+
+func (h *Handler) Verify(w http.ResponseWriter, r *http.Request) {
+	if h.Users == nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "auth unavailable")
+		return
+	}
+	var req dto.VerifyTokenRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	token := strings.TrimSpace(req.Token)
+	if token == "" {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "verification token is required")
+		return
+	}
+	user, err := h.Users.MarkEmailVerifiedByToken(r.Context(), token)
+	if errors.Is(err, sql.ErrNoRows) {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid verification token")
+		return
+	}
+	if err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not verify email")
+		return
+	}
+	httpx.JSON(w, http.StatusOK, dto.AuthResponse{User: *user})
 }
 
 func (h *Handler) signupWithVerification(w http.ResponseWriter, r *http.Request) {
@@ -418,6 +509,9 @@ func (h *Handler) authWithPassword(w http.ResponseWriter, r *http.Request, creat
 	if create && (email == "" || username == "" || req.Password == "") {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "email, username, and password are required")
 		return
+	}
+	if !create && identifier == "" {
+		identifier = email
 	}
 	if !create && (identifier == "" || req.Password == "") {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "email or username and password are required")
@@ -587,6 +681,10 @@ func (h *Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "enter a valid email address")
 		return
 	}
+	h.sendPasswordResetLink(w, r, email)
+}
+
+func (h *Handler) sendPasswordResetLink(w http.ResponseWriter, r *http.Request, email string) {
 	u, _, err := h.Users.GetUserByEmail(r.Context(), email)
 	if errors.Is(err, sql.ErrNoRows) {
 		httpx.JSON(w, http.StatusOK, map[string]bool{"ok": true})
@@ -634,8 +732,11 @@ func (h *Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
 		return
 	}
-	token := strings.TrimSpace(req.Token)
-	if token == "" || len(req.NewPassword) < 8 || len(req.NewPassword) > 256 {
+	h.resetPasswordWithToken(w, r, strings.TrimSpace(req.Token), req.NewPassword)
+}
+
+func (h *Handler) resetPasswordWithToken(w http.ResponseWriter, r *http.Request, token, newPassword string) {
+	if token == "" || len(newPassword) < 8 || len(newPassword) > 256 {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "token and a password of at least 8 characters are required")
 		return
 	}
@@ -653,7 +754,7 @@ func (h *Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid or expired reset token")
 		return
 	}
-	hash, err := auth.HashPassword(req.NewPassword)
+	hash, err := auth.HashPassword(newPassword)
 	if err != nil {
 		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not reset password")
 		return
@@ -663,6 +764,78 @@ func (h *Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	_ = h.Users.DeleteEmailVerifications(r.Context(), ev.Email, auth.PasswordResetPurpose)
+	httpx.JSON(w, http.StatusOK, map[string]bool{"ok": true})
+}
+
+func (h *Handler) ResetPasswordOrRequest(w http.ResponseWriter, r *http.Request) {
+	if h.Users == nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "auth unavailable")
+		return
+	}
+	var req struct {
+		Email       string `json:"email"`
+		Token       string `json:"token"`
+		NewPassword string `json:"new_password"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	if strings.TrimSpace(req.Token) != "" {
+		h.resetPasswordWithToken(w, r, strings.TrimSpace(req.Token), req.NewPassword)
+		return
+	}
+	email := normalizeEmail(req.Email)
+	if !validEmail(email) {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "enter a valid email address")
+		return
+	}
+	h.sendPasswordResetLink(w, r, email)
+}
+
+func (h *Handler) ChangePassword(w http.ResponseWriter, r *http.Request) {
+	if h.Users == nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "auth unavailable")
+		return
+	}
+	userID, ok := auth.UserIDFromContext(r.Context())
+	if !ok {
+		httpx.Error(w, http.StatusUnauthorized, httpx.ErrBadRequest, "login required")
+		return
+	}
+	var req dto.ChangePasswordRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
+		return
+	}
+	if req.CurrentPassword == "" || len(req.NewPassword) < 8 || len(req.NewPassword) > 256 {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "current password and a new password of at least 8 characters are required")
+		return
+	}
+	u, err := h.Users.GetUserByID(r.Context(), userID)
+	if err != nil {
+		httpx.Error(w, http.StatusUnauthorized, httpx.ErrBadRequest, "login required")
+		return
+	}
+	_, currentHash, err := h.Users.GetUserByEmail(r.Context(), u.Email)
+	if err != nil || !auth.VerifyPassword(currentHash, req.CurrentPassword) {
+		httpx.Error(w, http.StatusUnauthorized, httpx.ErrBadRequest, "current password is incorrect")
+		return
+	}
+	nextHash, err := auth.HashPassword(req.NewPassword)
+	if err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not hash password")
+		return
+	}
+	if err := h.Users.UpdatePasswordByUserID(r.Context(), userID, nextHash); err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not update password")
+		return
+	}
+	_ = h.Users.DeleteUserSessions(r.Context(), userID)
+	if err := h.issueSession(w, r, userID); err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not create session")
+		return
+	}
 	httpx.JSON(w, http.StatusOK, map[string]bool{"ok": true})
 }
 
@@ -706,6 +879,13 @@ func (h *Handler) emailTokenSecret() string {
 		return h.TokenSecret
 	}
 	return "kitkode-local-email-token-secret"
+}
+
+func (h *Handler) jwtSecret() string {
+	if strings.TrimSpace(h.TokenSecret) != "" {
+		return h.TokenSecret
+	}
+	return "kitcode-local-jwt-secret"
 }
 
 func expired(ts string) bool {
@@ -780,7 +960,7 @@ func (h *Handler) issueSession(w http.ResponseWriter, r *http.Request, userID in
 	if err != nil {
 		return err
 	}
-	expires := time.Now().UTC().Add(14 * 24 * time.Hour)
+	expires := time.Now().UTC().Add(7 * 24 * time.Hour)
 	if err := h.Users.CreateAuthSession(r.Context(), userID, hash, expires.Format(time.RFC3339)); err != nil {
 		return err
 	}
@@ -819,7 +999,7 @@ func (h *Handler) Me(w http.ResponseWriter, r *http.Request) {
 		httpx.Error(w, http.StatusUnauthorized, httpx.ErrBadRequest, "login required")
 		return
 	}
-	httpx.JSON(w, http.StatusOK, dto.AuthResponse{User: *u})
+	httpx.JSON(w, http.StatusOK, map[string]string{"username": u.Username, "full_name": u.FullName})
 }
 
 func (h *Handler) DashboardView(w http.ResponseWriter, r *http.Request) {
@@ -999,6 +1179,15 @@ func (h *Handler) SaveSession(w http.ResponseWriter, r *http.Request) {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "problem_id required")
 		return
 	}
+	if userID, ok := auth.UserIDFromContext(r.Context()); ok && h.Users != nil {
+		if err := h.Users.SaveUserSession(r.Context(), userID, req); err != nil {
+			log.Println("session save:", err)
+			httpx.ErrorWithDetails(w, http.StatusInternalServerError, httpx.ErrDatabaseError, "Could not save your session.", map[string]string{"reason": err.Error()})
+			return
+		}
+		httpx.JSON(w, http.StatusOK, map[string]bool{"ok": true})
+		return
+	}
 	if err := h.Sessions.SaveSession(r.Context(), req); err != nil {
 		log.Println("session save:", err)
 		httpx.ErrorWithDetails(w, http.StatusInternalServerError, httpx.ErrDatabaseError, "Could not save your session.", map[string]string{"reason": err.Error()})
@@ -1041,6 +1230,20 @@ func (h *Handler) Trace(w http.ResponseWriter, r *http.Request) {
 // GetSession loads stored session for a problem.
 func (h *Handler) GetSession(w http.ResponseWriter, r *http.Request) {
 	pid := chi.URLParam(r, "problem_id")
+	if userID, ok := auth.UserIDFromContext(r.Context()); ok && h.Users != nil {
+		sess, err := h.Users.GetUserSession(r.Context(), userID, pid)
+		if err != nil {
+			log.Println("session get:", err)
+			httpx.ErrorWithDetails(w, http.StatusInternalServerError, httpx.ErrDatabaseError, "Could not load your session.", map[string]string{"reason": err.Error()})
+			return
+		}
+		if sess == nil {
+			httpx.Error(w, http.StatusNotFound, httpx.ErrNotFound, "no session")
+			return
+		}
+		httpx.JSON(w, http.StatusOK, sess)
+		return
+	}
 	sess, err := h.Sessions.GetSession(r.Context(), pid)
 	if err != nil {
 		log.Println("session get:", err)

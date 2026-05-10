@@ -43,20 +43,21 @@ func main() {
 	inlineSvc := service.NewInlineService(ds)
 
 	h := &handler.Handler{
-		Runs:         runs,
-		Hints:        service.NewHintService(ds, st),
-		Inline:       inlineSvc,
-		Traces:       ts,
-		Coach:        ds,
-		Sessions:     st,
-		Users:        st,
-		EmailSender:  handler.NewEmailSenderFromEnv(cfg.EmailProvider, cfg.EmailFrom, cfg.EmailAPIKey),
-		TokenSecret:  cfg.EmailTokenSecret,
-		Dashboard:    service.NewDashboardService(st),
-		MaxCodeBytes: cfg.MaxCodeBytes,
+		Runs:          runs,
+		Hints:         service.NewHintService(ds, st),
+		Inline:        inlineSvc,
+		Traces:        ts,
+		Coach:         ds,
+		Sessions:      st,
+		Users:         st,
+		EmailSender:   handler.NewEmailSenderFromEnv(cfg.EmailProvider, cfg.EmailFrom, cfg.EmailAPIKey),
+		TokenSecret:   cfg.EmailTokenSecret,
+		Dashboard:     service.NewDashboardService(st),
+		MaxCodeBytes:  cfg.MaxCodeBytes,
+		SecureCookies: cfg.SecureCookies,
 	}
 
 	srv := httpapi.NewRouter(h, cfg.CORSOrigins, cfg.RateLimitPerMinute)
-	log.Println("Kitkode API listening on", cfg.HTTPAddr)
+	log.Println("KitCode API listening on", cfg.HTTPAddr)
 	log.Fatal(http.ListenAndServe(cfg.HTTPAddr, srv))
 }

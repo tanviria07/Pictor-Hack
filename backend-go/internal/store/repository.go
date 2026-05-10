@@ -14,11 +14,16 @@ type SessionRepository interface {
 
 type UserRepository interface {
 	CreateUser(ctx context.Context, email, username, passwordHash string) (*dto.AuthUser, error)
+	CreateUsernameUser(ctx context.Context, username, fullName, passwordHash string) (*dto.AuthUser, error)
+	SetUserVerificationToken(ctx context.Context, email, token string) error
+	MarkEmailVerifiedByToken(ctx context.Context, token string) (*dto.AuthUser, error)
 	GetUserByLogin(ctx context.Context, identifier string) (*dto.AuthUser, string, error)
+	GetUserByUsername(ctx context.Context, username string) (*dto.AuthUser, string, error)
 	GetUserByEmail(ctx context.Context, email string) (*dto.AuthUser, string, error)
 	GetUserByID(ctx context.Context, userID int64) (*dto.AuthUser, error)
 	MarkEmailVerified(ctx context.Context, email string) (*dto.AuthUser, error)
 	UpdatePasswordByEmail(ctx context.Context, email, passwordHash string) error
+	UpdatePasswordByUserID(ctx context.Context, userID int64, passwordHash string) error
 	CreateEmailVerification(ctx context.Context, email, purpose, tokenHash, expiresAt string) error
 	LatestEmailVerification(ctx context.Context, email, purpose string) (*EmailVerification, error)
 	GetEmailVerificationByHash(ctx context.Context, purpose, tokenHash string) (*EmailVerification, error)

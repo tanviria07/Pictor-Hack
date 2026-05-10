@@ -11,6 +11,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 const (
@@ -21,6 +23,14 @@ const (
 )
 
 func HashPassword(password string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err == nil {
+		return string(hash), nil
+	}
+	return "", err
+}
+
+func hashPasswordPBKDF2(password string) (string, error) {
 	salt := make([]byte, saltBytes)
 	if _, err := rand.Read(salt); err != nil {
 		return "", err
@@ -35,6 +45,9 @@ func HashPassword(password string) (string, error) {
 }
 
 func VerifyPassword(encoded, password string) bool {
+	if strings.HasPrefix(encoded, "$2a$") || strings.HasPrefix(encoded, "$2b$") || strings.HasPrefix(encoded, "$2y$") {
+		return bcrypt.CompareHashAndPassword([]byte(encoded), []byte(password)) == nil
+	}
 	parts := strings.Split(encoded, "$")
 	if len(parts) != 4 || parts[0] != passwordVersion {
 		return false

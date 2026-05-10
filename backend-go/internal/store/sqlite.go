@@ -58,8 +58,10 @@ CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   email TEXT NOT NULL UNIQUE,
   username TEXT NOT NULL DEFAULT '',
+  full_name TEXT NOT NULL DEFAULT '',
   password_hash TEXT NOT NULL,
   email_verified INTEGER NOT NULL DEFAULT 0,
+  verification_token TEXT NOT NULL DEFAULT '',
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
@@ -128,6 +130,24 @@ CREATE TABLE IF NOT EXISTS user_design_answers (
   updated_at TEXT NOT NULL,
   UNIQUE(user_id, problem_id),
   FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS submissions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  problem_id TEXT NOT NULL,
+  submitted_code TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL,
+  FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_submissions_user_problem ON submissions(user_id, problem_id);
+CREATE TABLE IF NOT EXISTS progress (
+  user_id INTEGER NOT NULL,
+  problem_id TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'not_started',
+  updated_at TEXT NOT NULL,
+  PRIMARY KEY(user_id, problem_id),
+  FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );`)
 	if err != nil {
 		return err
@@ -138,7 +158,16 @@ CREATE TABLE IF NOT EXISTS user_design_answers (
 	if err := addColumnIfMissing(s.db, "users", "email_verified", `ALTER TABLE users ADD COLUMN email_verified INTEGER NOT NULL DEFAULT 0`); err != nil {
 		return err
 	}
+	if err := addColumnIfMissing(s.db, "users", "full_name", `ALTER TABLE users ADD COLUMN full_name TEXT NOT NULL DEFAULT ''`); err != nil {
+		return err
+	}
+	if err := addColumnIfMissing(s.db, "users", "verification_token", `ALTER TABLE users ADD COLUMN verification_token TEXT NOT NULL DEFAULT ''`); err != nil {
+		return err
+	}
 	if err := addColumnIfMissing(s.db, "users", "updated_at", `ALTER TABLE users ADD COLUMN updated_at TEXT NOT NULL DEFAULT ''`); err != nil {
+		return err
+	}
+	if err := addColumnIfMissing(s.db, "sessions", "user_id", `ALTER TABLE sessions ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0`); err != nil {
 		return err
 	}
 	if err := addColumnIfMissing(s.db, "email_verifications", "purpose", `ALTER TABLE email_verifications ADD COLUMN purpose TEXT NOT NULL DEFAULT 'email_verification'`); err != nil {
@@ -149,7 +178,9 @@ CREATE TABLE IF NOT EXISTS user_design_answers (
 	}
 	_, err = s.db.Exec(`
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email_lower ON users(lower(email));
-CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username_lower ON users(lower(username)) WHERE username != '';`)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username_lower ON users(lower(username)) WHERE username != '';
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_verification_token ON users(verification_token) WHERE verification_token != '';
+CREATE INDEX IF NOT EXISTS idx_sessions_user_problem ON sessions(user_id, problem_id);`)
 	return err
 }
 
@@ -262,30 +293,83 @@ func (s *Store) CreateUser(_ context.Context, email, username, passwordHash stri
 	return &dto.AuthUser{ID: id, Email: email, Username: username, EmailVerified: false, CreatedAt: now, UpdatedAt: now}, nil
 }
 
+func (s *Store) CreateUsernameUser(_ context.Context, username, fullName, passwordHash string) (*dto.AuthUser, error) {
+	now := time.Now().UTC().Format(time.RFC3339)
+	email := username + "@kitcode.local"
+	res, err := s.db.Exec(`INSERT INTO users(email, username, full_name, password_hash, email_verified, created_at, updated_at) VALUES(?,?,?,?,1,?,?)`, email, username, fullName, passwordHash, now, now)
+	if err != nil {
+		return nil, err
+	}
+	id, err := res.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+	return &dto.AuthUser{ID: id, Email: email, Username: username, FullName: fullName, EmailVerified: true, CreatedAt: now, UpdatedAt: now}, nil
+}
+
+func (s *Store) SetUserVerificationToken(_ context.Context, email, token string) error {
+	now := time.Now().UTC().Format(time.RFC3339)
+	res, err := s.db.Exec(`UPDATE users SET verification_token=?, updated_at=? WHERE lower(email)=lower(?)`, token, now, email)
+	if err != nil {
+		return err
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
+}
+
+func (s *Store) MarkEmailVerifiedByToken(ctx context.Context, token string) (*dto.AuthUser, error) {
+	now := time.Now().UTC().Format(time.RFC3339)
+	var id int64
+	row := s.db.QueryRow(`SELECT id FROM users WHERE verification_token=? AND verification_token != ''`, token)
+	if err := row.Scan(&id); err != nil {
+		return nil, err
+	}
+	res, err := s.db.Exec(`UPDATE users SET email_verified=1, verification_token='', updated_at=? WHERE id=?`, now, id)
+	if err != nil {
+		return nil, err
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return nil, sql.ErrNoRows
+	}
+	return s.GetUserByID(ctx, id)
+}
+
 func (s *Store) GetUserByLogin(_ context.Context, identifier string) (*dto.AuthUser, string, error) {
-	row := s.db.QueryRow(`SELECT id, email, username, password_hash, email_verified, created_at, updated_at FROM users WHERE lower(email)=lower(?) OR lower(username)=lower(?)`, identifier, identifier)
+	row := s.db.QueryRow(`SELECT id, email, username, full_name, password_hash, email_verified, created_at, updated_at FROM users WHERE lower(email)=lower(?) OR lower(username)=lower(?)`, identifier, identifier)
 	var u dto.AuthUser
 	var hash string
-	if err := row.Scan(&u.ID, &u.Email, &u.Username, &hash, &u.EmailVerified, &u.CreatedAt, &u.UpdatedAt); err != nil {
+	if err := row.Scan(&u.ID, &u.Email, &u.Username, &u.FullName, &hash, &u.EmailVerified, &u.CreatedAt, &u.UpdatedAt); err != nil {
+		return nil, "", err
+	}
+	return &u, hash, nil
+}
+
+func (s *Store) GetUserByUsername(_ context.Context, username string) (*dto.AuthUser, string, error) {
+	row := s.db.QueryRow(`SELECT id, email, username, full_name, password_hash, email_verified, created_at, updated_at FROM users WHERE lower(username)=lower(?)`, username)
+	var u dto.AuthUser
+	var hash string
+	if err := row.Scan(&u.ID, &u.Email, &u.Username, &u.FullName, &hash, &u.EmailVerified, &u.CreatedAt, &u.UpdatedAt); err != nil {
 		return nil, "", err
 	}
 	return &u, hash, nil
 }
 
 func (s *Store) GetUserByEmail(_ context.Context, email string) (*dto.AuthUser, string, error) {
-	row := s.db.QueryRow(`SELECT id, email, username, password_hash, email_verified, created_at, updated_at FROM users WHERE lower(email)=lower(?)`, email)
+	row := s.db.QueryRow(`SELECT id, email, username, full_name, password_hash, email_verified, created_at, updated_at FROM users WHERE lower(email)=lower(?)`, email)
 	var u dto.AuthUser
 	var hash string
-	if err := row.Scan(&u.ID, &u.Email, &u.Username, &hash, &u.EmailVerified, &u.CreatedAt, &u.UpdatedAt); err != nil {
+	if err := row.Scan(&u.ID, &u.Email, &u.Username, &u.FullName, &hash, &u.EmailVerified, &u.CreatedAt, &u.UpdatedAt); err != nil {
 		return nil, "", err
 	}
 	return &u, hash, nil
 }
 
 func (s *Store) GetUserByID(_ context.Context, userID int64) (*dto.AuthUser, error) {
-	row := s.db.QueryRow(`SELECT id, email, username, email_verified, created_at, updated_at FROM users WHERE id=?`, userID)
+	row := s.db.QueryRow(`SELECT id, email, username, full_name, email_verified, created_at, updated_at FROM users WHERE id=?`, userID)
 	var u dto.AuthUser
-	if err := row.Scan(&u.ID, &u.Email, &u.Username, &u.EmailVerified, &u.CreatedAt, &u.UpdatedAt); err != nil {
+	if err := row.Scan(&u.ID, &u.Email, &u.Username, &u.FullName, &u.EmailVerified, &u.CreatedAt, &u.UpdatedAt); err != nil {
 		return nil, err
 	}
 	return &u, nil
@@ -307,6 +391,18 @@ func (s *Store) MarkEmailVerified(ctx context.Context, email string) (*dto.AuthU
 func (s *Store) UpdatePasswordByEmail(_ context.Context, email, passwordHash string) error {
 	now := time.Now().UTC().Format(time.RFC3339)
 	res, err := s.db.Exec(`UPDATE users SET password_hash=?, updated_at=? WHERE lower(email)=lower(?)`, passwordHash, now, email)
+	if err != nil {
+		return err
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
+}
+
+func (s *Store) UpdatePasswordByUserID(_ context.Context, userID int64, passwordHash string) error {
+	now := time.Now().UTC().Format(time.RFC3339)
+	res, err := s.db.Exec(`UPDATE users SET password_hash=?, updated_at=? WHERE id=?`, passwordHash, now, userID)
 	if err != nil {
 		return err
 	}
@@ -450,8 +546,8 @@ func (s *Store) upsertProgress(_ context.Context, userID int64, problemID, track
 	if status == "" {
 		status = "in_progress"
 	}
-	_, err := s.db.Exec(`INSERT INTO user_problem_progress(user_id, problem_id, track, category, status, best_status, last_code, hint_count, role_mode, updated_at)
-VALUES(?,?,?,?,?,?,?,?,?,?)
+	_, err := s.db.Exec(`INSERT INTO user_problem_progress(user_id, problem_id, track, category, status, best_status, last_code, hint_count, hint_history_json, role_mode, updated_at)
+VALUES(?,?,?,?,?,?,?,?,?,?,?)
 ON CONFLICT(user_id, problem_id) DO UPDATE SET
  track=CASE WHEN excluded.track != '' THEN excluded.track ELSE user_problem_progress.track END,
  category=CASE WHEN excluded.category != '' THEN excluded.category ELSE user_problem_progress.category END,
@@ -470,7 +566,7 @@ ON CONFLICT(user_id, problem_id) DO UPDATE SET
  hint_history_json=CASE WHEN excluded.hint_history_json != '[]' THEN excluded.hint_history_json ELSE user_problem_progress.hint_history_json END,
  role_mode=CASE WHEN excluded.role_mode != '' THEN excluded.role_mode ELSE user_problem_progress.role_mode END,
  updated_at=excluded.updated_at`,
-		userID, problemID, track, category, status, bestStatus, code, hintCount, role, now)
+		userID, problemID, track, category, status, bestStatus, code, hintCount, "[]", role, now)
 	return err
 }
 

@@ -10,6 +10,21 @@ const base = () => {
         return env;
     return "";
 };
+const TOKEN_KEY = "kitcode_token";
+
+export function getAuthToken() {
+    return localStorage.getItem(TOKEN_KEY) || "";
+}
+
+export function setAuthToken(token) {
+    if (token) {
+        localStorage.setItem(TOKEN_KEY, token);
+    }
+    else {
+        localStorage.removeItem(TOKEN_KEY);
+    }
+}
+
 async function j(path, init) {
     const url = `${base()}${path.startsWith("/") ? path : `/${path}`}`;
     const hasBody = init?.body != null && init.body !== "";
@@ -17,15 +32,27 @@ async function j(path, init) {
     if (hasBody && !headers.has("Content-Type")) {
         headers.set("Content-Type", "application/json");
     }
-    const r = await fetch(url, {
-        ...init,
-        signal: withTimeout(init?.signal, 25_000),
-        headers,
-        credentials: "include",
-    });
+    const token = getAuthToken();
+    if (token && !headers.has("Authorization")) {
+        headers.set("Authorization", `Bearer ${token}`);
+    }
+    let r;
+    try {
+        r = await fetch(url, {
+            ...init,
+            signal: withTimeout(init?.signal, 25_000),
+            headers,
+            credentials: "include",
+        });
+    }
+    catch {
+        throw new Error(`Cannot reach the Go backend at ${base() || "the dev proxy"}. Start it with npm.cmd run dev from the frontend folder.`);
+    }
     if (!r.ok) {
         const t = await r.text();
-        throw new Error(formatApiErrorMessage(t || r.statusText, r.status));
+        const err = new Error(formatApiErrorMessage(t || r.statusText, r.status));
+        err.status = r.status;
+        throw err;
     }
     return r.json();
 }
@@ -80,14 +107,28 @@ export async function loadSession(problemId) {
 function normalizeAuthBody(body) {
     return {
         ...body,
-        email: typeof body?.email === "string" ? body.email.trim().toLowerCase() : body?.email,
         username: typeof body?.username === "string" ? body.username.trim().toLowerCase() : body?.username,
-        identifier: typeof body?.identifier === "string" ? body.identifier.trim().toLowerCase() : body?.identifier,
+        full_name: typeof body?.full_name === "string" ? body.full_name.trim() : body?.full_name,
     };
 }
 
 export async function signup(body) {
-    return j("/api/auth/signup", { method: "POST", body: JSON.stringify(normalizeAuthBody(body)) });
+    return register(body);
+}
+export async function register(body) {
+    const normalized = normalizeAuthBody(body);
+    try {
+        return await j("/api/auth/register", { method: "POST", body: JSON.stringify(normalized) });
+    }
+    catch (err) {
+        if (err?.status !== 404) {
+            throw err;
+        }
+        return j("/api/auth/signup", { method: "POST", body: JSON.stringify(normalized) });
+    }
+}
+export async function verifyToken(body) {
+    return j("/api/auth/verify", { method: "POST", body: JSON.stringify(body) });
 }
 export async function verifyEmail(body) {
     return j("/api/auth/verify-email", { method: "POST", body: JSON.stringify(normalizeAuthBody(body)) });
@@ -96,16 +137,29 @@ export async function resendOtp(body) {
     return j("/api/auth/resend-otp", { method: "POST", body: JSON.stringify(normalizeAuthBody(body)) });
 }
 export async function forgotPassword(body) {
-    return j("/api/auth/forgot-password", { method: "POST", body: JSON.stringify(normalizeAuthBody(body)) });
+    return j("/api/auth/reset-password", { method: "POST", body: JSON.stringify(normalizeAuthBody(body)) });
 }
 export async function resetPassword(body) {
-    return j("/api/auth/reset-password", { method: "POST", body: JSON.stringify(body) });
+    return j("/api/auth/confirm-reset-password", { method: "POST", body: JSON.stringify(body) });
 }
 export async function login(body) {
-    return j("/api/auth/login", { method: "POST", body: JSON.stringify(normalizeAuthBody(body)) });
+    const response = await j("/api/auth/login", { method: "POST", body: JSON.stringify(normalizeAuthBody(body)) });
+    if (response?.token) {
+        setAuthToken(response.token);
+    }
+    return response;
 }
 export async function logout() {
-    return j("/api/auth/logout", { method: "POST" });
+    setAuthToken("");
+    try {
+        return await j("/api/auth/logout", { method: "POST" });
+    }
+    catch {
+        return { ok: true };
+    }
+}
+export async function changePassword(body) {
+    return j("/api/auth/change-password", { method: "PUT", body: JSON.stringify(body) });
 }
 export async function getMe() {
     try {
