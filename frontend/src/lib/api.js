@@ -10,20 +10,6 @@ const base = () => {
         return env;
     return "";
 };
-const TOKEN_KEY = "kitcode_token";
-
-export function getAuthToken() {
-    return localStorage.getItem(TOKEN_KEY) || "";
-}
-
-export function setAuthToken(token) {
-    if (token) {
-        localStorage.setItem(TOKEN_KEY, token);
-    }
-    else {
-        localStorage.removeItem(TOKEN_KEY);
-    }
-}
 
 async function j(path, init) {
     const url = `${base()}${path.startsWith("/") ? path : `/${path}`}`;
@@ -32,10 +18,7 @@ async function j(path, init) {
     if (hasBody && !headers.has("Content-Type")) {
         headers.set("Content-Type", "application/json");
     }
-    const token = getAuthToken();
-    if (token && !headers.has("Authorization")) {
-        headers.set("Authorization", `Bearer ${token}`);
-    }
+
     let r;
     try {
         r = await fetch(url, {
@@ -143,14 +126,9 @@ export async function resetPassword(body) {
     return j("/api/auth/confirm-reset-password", { method: "POST", body: JSON.stringify(body) });
 }
 export async function login(body) {
-    const response = await j("/api/auth/login", { method: "POST", body: JSON.stringify(normalizeAuthBody(body)) });
-    if (response?.token) {
-        setAuthToken(response.token);
-    }
-    return response;
+    return await j("/api/auth/login", { method: "POST", body: JSON.stringify(normalizeAuthBody(body)) });
 }
 export async function logout() {
-    setAuthToken("");
     try {
         return await j("/api/auth/logout", { method: "POST" });
     }

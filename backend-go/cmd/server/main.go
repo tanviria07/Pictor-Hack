@@ -1,11 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"pictorhack/backend/internal/auth"
 	"pictorhack/backend/internal/db"
 	"pictorhack/backend/internal/handler"
 )
@@ -56,9 +58,38 @@ func main() {
 	r.Post("/api/auth/verify", handler.Verify)
 	r.Get("/api/auth/verify", handler.Verify)
 	r.Post("/api/auth/login", handler.Login)
+	r.Post("/api/auth/logout", handler.Logout)
 	r.Get("/api/auth/me", func(w http.ResponseWriter, r *http.Request) {
+		token := ""
+		if c, err := r.Cookie("auth_token"); err == nil {
+			token = c.Value
+		}
+		if token == "" {
+			if authz := r.Header.Get("Authorization"); len(authz) > 7 && authz[:7] == "Bearer " {
+				token = authz[7:]
+			}
+		}
+
+		if token == "" {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{"user":null}`))
+			return
+		}
+
+		claims, err := auth.ParseJWT(auth.GetJWTSecret(), token)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{"user":null}`))
+			return
+		}
+
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"user":null}`))
+		json.NewEncoder(w).Encode(map[string]any{
+			"user": map[string]any{
+				"id":    claims.UserID,
+				"email": claims.Username,
+			},
+		})
 	})
 
 	// Catch-all for debugging 404s

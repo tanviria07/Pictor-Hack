@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -86,4 +87,12 @@ func TokenExpiresInDays(token string) int {
 
 func UserIDString(id int64) string {
 	return strconv.FormatInt(id, 10)
+}
+
+func GetJWTSecret() string {
+	s := strings.TrimSpace(os.Getenv("JWT_SECRET"))
+	if s == "" {
+		return "kitkode-dev-secret-keep-it-safe"
+	}
+	return s
 }

@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"pictorhack/backend/internal/auth"
 	"pictorhack/backend/internal/db"
 )
 
@@ -100,7 +102,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var id int
+	var id int64
 	var hash string
 	var verified int
 	err := db.DB.QueryRow("SELECT id, password_hash, email_verified FROM users WHERE email = ?", req.Email).Scan(&id, &hash, &verified)
@@ -120,6 +122,22 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	token, err := auth.NewJWT(auth.GetJWTSecret(), id, req.Email, 7*24*time.Hour)
+	if err != nil {
+		http.Error(w, `{"error":"failed to generate token"}`, http.StatusInternalServerError)
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "auth_token",
+		Value:    token,
+		Path:     "/",
+		MaxAge:   int((7 * 24 * time.Hour).Seconds()),
+		HttpOnly: true,
+		Secure:   r.TLS != nil,
+		SameSite: http.SameSiteStrictMode,
+	})
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]any{
 		"user": map[string]any{
@@ -128,4 +146,18 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			"email_verified": true,
 		},
 	})
+}
+
+func Logout(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "auth_token",
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+		Secure:   r.TLS != nil,
+		SameSite: http.SameSiteStrictMode,
+	})
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]bool{"ok": true})
 }
