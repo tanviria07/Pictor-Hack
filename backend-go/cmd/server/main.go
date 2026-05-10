@@ -1,110 +1,70 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-	"pictorhack/backend/internal/auth"
-	"pictorhack/backend/internal/db"
+	"pictorhack/backend/internal/config"
+	"pictorhack/backend/internal/deepseek"
 	"pictorhack/backend/internal/handler"
-	appmw "pictorhack/backend/internal/middleware"
+	"pictorhack/backend/internal/httpapi"
+	"pictorhack/backend/internal/problems"
+	"pictorhack/backend/internal/runner"
+	"pictorhack/backend/internal/service"
+	"pictorhack/backend/internal/store"
 )
 
 func main() {
-	// Initialize SQLite database
-	if err := db.Init("kitcode.db"); err != nil {
-		log.Fatalf("Failed to initialize database: %v", err)
+	cfg := config.Load()
+
+	// Ensure database directory exists
+	dbDir := filepath.Dir(cfg.DatabasePath)
+	if _, err := os.Stat(dbDir); os.IsNotExist(err) {
+		if err := os.MkdirAll(dbDir, 0755); err != nil {
+			log.Fatalf("Failed to create database directory %q: %v", dbDir, err)
+		}
 	}
 
-	r := chi.NewRouter()
+	// Initialize problem library
+	if err := problems.Init(); err != nil {
+		log.Fatalf("Failed to initialize problems: %v", err)
+	}
 
-	// Middleware
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-	r.Use(middleware.StripSlashes)
+	// Initialize SQLite store
+	st, err := store.Open(cfg.DatabasePath)
+	if err != nil {
+		log.Fatalf("Failed to open store at %q: %v", cfg.DatabasePath, err)
+	}
+	defer st.Close()
 
-	// Global request logger for debugging
-	r.Use(func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			log.Printf("Request: %s %s", r.Method, r.URL.Path)
-			next.ServeHTTP(w, r)
-		})
-	})
+	// Initialize services
+	rc := runner.New(cfg.RunnerURL)
+	ds := deepseek.New(cfg)
+	tsvc := service.NewTraceService(ds)
+	runs := service.NewRunService(rc, ds, tsvc)
 
-	// Minimal CORS middleware for development
-	r.Use(func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	h := &handler.Handler{
+		Runs:         runs,
+		Hints:        service.NewHintService(ds, st),
+		Traces:       tsvc,
+		Sessions:     st,
+		Users:        st,
+		TokenSecret:  cfg.EmailTokenSecret,
+		Dashboard:    service.NewDashboardService(st),
+		MaxCodeBytes: cfg.MaxCodeBytes,
+		SecureCookies: cfg.SecureCookies,
+		Coach:         ds,
+	}
 
-			if r.Method == "OPTIONS" {
-				w.WriteHeader(http.StatusOK)
-				return
-			}
+	r := httpapi.NewRouter(h, cfg.CORSOrigins, cfg.RateLimitPerMinute)
 
-			next.ServeHTTP(w, r)
-		})
-	})
+	log.Printf("Kitkode backend listening on %s", cfg.HTTPAddr)
+	log.Printf("Runner URL: %s", cfg.RunnerURL)
+	log.Printf("Database: %s", cfg.DatabasePath)
 
-	// Health check
-	r.Get("/health", handler.Health)
-
-	// Auth routes
-	r.Group(func(r chi.Router) {
-		r.Use(appmw.IPRateLimit(5))
-		r.Post("/api/auth/register", handler.Register)
-		r.Post("/api/auth/signup", handler.Signup)
-		r.Post("/api/auth/verify", handler.Verify)
-		r.Get("/api/auth/verify", handler.Verify)
-		r.Post("/api/auth/login", handler.Login)
-	})
-	r.Post("/api/auth/logout", handler.Logout)
-	r.Get("/api/auth/me", func(w http.ResponseWriter, r *http.Request) {
-		token := ""
-		if c, err := r.Cookie("auth_token"); err == nil {
-			token = c.Value
-		}
-		if token == "" {
-			if authz := r.Header.Get("Authorization"); len(authz) > 7 && authz[:7] == "Bearer " {
-				token = authz[7:]
-			}
-		}
-
-		if token == "" {
-			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte(`{"user":null}`))
-			return
-		}
-
-		claims, err := auth.ParseJWT(auth.GetJWTSecret(), token)
-		if err != nil {
-			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte(`{"user":null}`))
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]any{
-			"user": map[string]any{
-				"id":    claims.UserID,
-				"email": claims.Username,
-			},
-		})
-	})
-
-	// Catch-all for debugging 404s
-	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("!!! 404 Not Found: %s %s", r.Method, r.URL.Path)
-		http.Error(w, `{"error":"not found"}`, http.StatusNotFound)
-	})
-
-	addr := ":8080"
-	log.Printf("Kitkode minimal backend listening on %s", addr)
-	if err := http.ListenAndServe(addr, r); err != nil {
+	if err := http.ListenAndServe(cfg.HTTPAddr, r); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
 }

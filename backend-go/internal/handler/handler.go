@@ -388,29 +388,35 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "invalid json body")
 		return
 	}
-	username := normalizeUsername(req.Username)
-	if username == "" {
-		username = normalizeIdentifier(req.Identifier)
+	identifier := normalizeUsername(req.Username)
+	if identifier == "" {
+		identifier = normalizeIdentifier(req.Identifier)
 	}
-	if username == "" || req.Password == "" {
-		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "username and password are required")
+	if identifier == "" {
+		identifier = normalizeEmail(req.Email)
+	}
+	if identifier == "" || req.Password == "" {
+		httpx.Error(w, http.StatusBadRequest, httpx.ErrBadRequest, "username or email and password are required")
 		return
 	}
-	user, hash, err := h.Users.GetUserByUsername(r.Context(), username)
+	user, hash, err := h.Users.GetUserByLogin(r.Context(), identifier)
 	if errors.Is(err, sql.ErrNoRows) || !auth.VerifyPassword(hash, req.Password) {
 		httpx.Error(w, http.StatusUnauthorized, httpx.ErrBadRequest, "invalid username or password")
 		return
 	}
 	if err != nil {
-		httpx.Error(w, http.StatusUnauthorized, httpx.ErrBadRequest, "could not log in")
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not log in")
 		return
 	}
-	token, err := auth.NewJWT(h.jwtSecret(), user.ID, user.Username, 7*24*time.Hour)
-	if err != nil {
-		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not create token")
+	if !user.EmailVerified {
+		httpx.Error(w, http.StatusForbidden, httpx.ErrBadRequest, "email verification required")
 		return
 	}
-	httpx.JSON(w, http.StatusOK, map[string]string{"token": token})
+	if err := h.issueSession(w, r, user.ID); err != nil {
+		httpx.Error(w, http.StatusInternalServerError, httpx.ErrInternal, "could not create session")
+		return
+	}
+	httpx.JSON(w, http.StatusOK, dto.AuthResponse{User: *user})
 }
 
 func (h *Handler) Verify(w http.ResponseWriter, r *http.Request) {
