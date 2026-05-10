@@ -30,6 +30,22 @@ func New(baseURL string) *Client {
 	}
 }
 
+func (c *Client) Health(ctx context.Context) error {
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodGet, c.baseURL+"/health", nil)
+	if err != nil {
+		return err
+	}
+	resp, err := c.httpClient.Do(httpReq)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return httpx.NewRunnerError("runner health returned %d", resp.StatusCode)
+	}
+	return nil
+}
+
 // generateTimeout is the maximum wall time for a DeepSeek-backed generation
 // call; the Python runner in turn uses a 90s timeout for the upstream API.
 const generateTimeout = 120 * time.Second

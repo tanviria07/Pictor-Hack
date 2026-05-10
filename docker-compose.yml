@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  runner:
+    build:
+      context: ./runner-python
+    restart: always
+    environment:
+      - PORT=8001
+    networks:
+      - kitkode-net
+
+  backend:
+    build:
+      context: ./backend-go
+    restart: always
+    depends_on:
+      - runner
+    volumes:
+      - ./data:/app/data
+    environment:
+      - HTTP_ADDR=:8080
+      - DATABASE_PATH=/app/data/pictorhack.db
+      - RUNNER_URL=http://runner:8001
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - SECURE_COOKIES=true
+    networks:
+      - kitkode-net
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - API_BASE=/api
+    restart: always
+    depends_on:
+      - backend
+    networks:
+      - kitkode-net
+
+  caddy:
+    image: caddy:2-alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - kitkode-net
+
+networks:
+  kitkode-net:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:

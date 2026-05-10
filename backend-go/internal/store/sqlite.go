@@ -227,6 +227,10 @@ func columnExists(db *sql.DB, table, column string) (bool, error) {
 // Close releases the database handle.
 func (s *Store) Close() error { return s.db.Close() }
 
+func (s *Store) Ping(ctx context.Context) error {
+	return s.db.PingContext(ctx)
+}
+
 func normStatus(st dto.PracticeStatus) dto.PracticeStatus {
 	switch st {
 	case dto.PracticeInProgress, dto.PracticeSolved, dto.PracticeNotStarted:

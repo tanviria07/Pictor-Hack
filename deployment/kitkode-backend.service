@@ -1,0 +1,24 @@
+# KitKode Go Backend Systemd Unit File
+# Location: /etc/systemd/system/kitkode-backend.service
+
+[Unit]
+Description=KitKode Go Backend
+After=network.target
+
+[Service]
+User=kitkode
+Group=kitkode
+WorkingDirectory=/opt/kitkode/backend-go
+EnvironmentFile=/opt/kitkode/.env
+ExecStart=/opt/kitkode/backend-go/bin/kitcode-server
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+# --- Instructions ---
+# 1. Create the kitkode user: sudo useradd -r -s /bin/false kitkode
+# 2. Set permissions: sudo chown -R kitkode:kitkode /opt/kitkode
+# 3. Reload systemd: sudo systemctl daemon-reload
+# 4. Enable and start: sudo systemctl enable --now kitkode-backend

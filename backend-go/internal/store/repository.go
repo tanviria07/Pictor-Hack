@@ -10,9 +10,11 @@ import (
 type SessionRepository interface {
 	SaveSession(ctx context.Context, req dto.SessionSaveRequest) error
 	GetSession(ctx context.Context, problemID string) (*dto.SessionState, error)
+	Ping(ctx context.Context) error
 }
 
 type UserRepository interface {
+	Ping(ctx context.Context) error
 	CreateUser(ctx context.Context, email, username, passwordHash string) (*dto.AuthUser, error)
 	CreateUsernameUser(ctx context.Context, username, fullName, passwordHash string) (*dto.AuthUser, error)
 	SetUserVerificationToken(ctx context.Context, email, token string) error

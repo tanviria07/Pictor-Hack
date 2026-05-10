@@ -1,0 +1,18 @@
+# KitKode Python Runner Systemd Unit File
+# Location: /etc/systemd/system/kitkode-runner.service
+
+[Unit]
+Description=KitKode Python Runner
+After=network.target
+
+[Service]
+User=kitkode
+Group=kitkode
+WorkingDirectory=/opt/kitkode/runner-python
+Environment=PORT=8001
+ExecStart=/opt/kitkode/runner-python/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8001
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

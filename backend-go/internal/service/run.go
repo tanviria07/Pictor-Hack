@@ -25,6 +25,10 @@ func NewRunService(r *runner.Client, d *deepseek.Client, t *TraceService) *RunSe
 	return &RunService{runner: r, deepseek: d, traces: t}
 }
 
+func (s *RunService) Health(ctx context.Context) error {
+	return s.runner.Health(ctx)
+}
+
 // Validate forwards stepwise validation to the runner.
 func (s *RunService) Validate(ctx context.Context, req dto.StepwiseValidateRequest) (*dto.StepwiseValidateResponse, error) {
 	return s.runner.Validate(ctx, req)

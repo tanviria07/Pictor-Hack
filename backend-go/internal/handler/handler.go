@@ -48,9 +48,37 @@ type Handler struct {
 
 const authCookieName = "kitkode_session"
 
-// Health returns process liveness.
-func (h *Handler) Health(w http.ResponseWriter, _ *http.Request) {
-	httpx.JSON(w, http.StatusOK, map[string]string{"status": "ok"})
+// Health returns process liveness and dependency readiness.
+func (h *Handler) Health(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
+	dbErr := h.Users.Ping(ctx)
+	runErr := h.Runs.Health(ctx)
+
+	status := http.StatusOK
+	if dbErr != nil || runErr != nil {
+		status = http.StatusServiceUnavailable
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(map[string]any{
+		"status": map[string]string{
+			"database": func() string {
+				if dbErr != nil {
+					return "error: " + dbErr.Error()
+				}
+				return "ok"
+			}(),
+			"runner": func() string {
+				if runErr != nil {
+					return "error: " + runErr.Error()
+				}
+				return "ok"
+			}(),
+		},
+	})
 }
 
 // ListCategories returns the NeetCode-style curriculum with live counts.
