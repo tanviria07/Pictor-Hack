@@ -21,6 +21,8 @@ func Init(path string) error {
 		password_hash TEXT,
 		email_verified INTEGER DEFAULT 0,
 		verification_token TEXT,
+		failed_login_attempts INTEGER DEFAULT 0,
+		locked_until DATETIME,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`)
 	return err

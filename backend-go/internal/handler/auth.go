@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -105,9 +107,18 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	var id int64
 	var hash string
 	var verified int
-	err := db.DB.QueryRow("SELECT id, password_hash, email_verified FROM users WHERE email = ?", req.Email).Scan(&id, &hash, &verified)
+	var failedAttempts int
+	var lockedUntil sql.NullTime
+	err := db.DB.QueryRow("SELECT id, password_hash, email_verified, failed_login_attempts, locked_until FROM users WHERE email = ?", req.Email).Scan(&id, &hash, &verified, &failedAttempts, &lockedUntil)
 	if err != nil {
 		http.Error(w, `{"error":"invalid email or password"}`, http.StatusUnauthorized)
+		return
+	}
+
+	if lockedUntil.Valid && lockedUntil.Time.After(time.Now()) {
+		remaining := time.Until(lockedUntil.Time).Round(time.Second)
+		w.Header().Set("Retry-After", strconv.Itoa(int(remaining.Seconds())))
+		http.Error(w, `{"error":"account locked", "remaining_seconds":` + strconv.Itoa(int(remaining.Seconds())) + `}`, http.StatusTooManyRequests)
 		return
 	}
 
@@ -118,9 +129,20 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(req.Password))
 	if err != nil {
-		http.Error(w, `{"error":"invalid email or password"}`, http.StatusUnauthorized)
+		failedAttempts++
+		if failedAttempts >= 5 {
+			lockedUntilTime := time.Now().Add(15 * time.Minute)
+			_, _ = db.DB.Exec("UPDATE users SET failed_login_attempts = ?, locked_until = ? WHERE id = ?", failedAttempts, lockedUntilTime, id)
+			http.Error(w, `{"error":"account locked for 15 minutes due to too many failed attempts"}`, http.StatusTooManyRequests)
+		} else {
+			_, _ = db.DB.Exec("UPDATE users SET failed_login_attempts = ? WHERE id = ?", failedAttempts, id)
+			http.Error(w, `{"error":"invalid email or password"}`, http.StatusUnauthorized)
+		}
 		return
 	}
+
+	// Reset on success
+	_, _ = db.DB.Exec("UPDATE users SET failed_login_attempts = 0, locked_until = NULL WHERE id = ?", id)
 
 	token, err := auth.NewJWT(auth.GetJWTSecret(), id, req.Email, 7*24*time.Hour)
 	if err != nil {

@@ -1,0 +1,10 @@
+
+> kitkode-frontend@0.1.0 dev
+> node ./scripts/run-with-local-temp.mjs parcel index.html --port 3000 --host 127.0.0.1
+
+Building...
+Bundling...
+Packaging & Optimizing...
+Server running at http://127.0.0.1:3000
+✨ Built in 1.52s
+[HPM] Proxy created: /api  -> http://127.0.0.1:8080
