@@ -27,6 +27,7 @@ type Config struct {
 
 	MaxCodeBytes       int
 	RateLimitPerMinute int
+	SecureCookies      bool
 }
 
 // Load reads environment variables with sensible defaults.
@@ -110,6 +111,7 @@ func Load() Config {
 
 		MaxCodeBytes:       maxCode,
 		RateLimitPerMinute: rpm,
+		SecureCookies:      envBool("SECURE_COOKIES", false),
 	}
 }
 

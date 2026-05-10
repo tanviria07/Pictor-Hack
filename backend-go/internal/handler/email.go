@@ -73,10 +73,18 @@ func verificationEmail(email, otp string) EmailMessage {
 	}
 }
 
+func verificationLinkEmail(email, token string) EmailMessage {
+	return EmailMessage{
+		To:      email,
+		Subject: "Verify your KitCode email",
+		Text:    fmt.Sprintf("Open this link to verify your KitCode account: http://localhost:3000/verify?token=%s", token),
+	}
+}
+
 func passwordResetEmail(email, token string) EmailMessage {
 	return EmailMessage{
 		To:      email,
-		Subject: "Reset your Kitkode password",
-		Text:    fmt.Sprintf("Use this password reset token within 30 minutes: %s", token),
+		Subject: "Reset your KitCode password",
+		Text:    fmt.Sprintf("Open this link within 30 minutes to reset your KitCode password: http://localhost:3000/reset-password?token=%s", token),
 	}
 }

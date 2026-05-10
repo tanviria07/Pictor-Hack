@@ -121,3 +121,14 @@ Most local defaults work out of the box. Use these when overriding defaults.
 - AI never judges correctness.
 - DeepSeek and voice/Gemini features may coach or phrase feedback only from runner context.
 - Preserve run/evaluation, visible/hidden tests, hints, inline hints, session restore, and problem navigation when refactoring.
+
+## Recent Audit & Hardening (April 2026)
+
+A comprehensive health check was performed, resulting in the following improvements:
+
+- **Data Integrity:** Fixed hint history loss for logged-in users by adding `hint_history_json` to `user_problem_progress`.
+- **Security:** Implemented session rotation on login/verification (old tokens are now invalidated).
+- **Security:** Hardened session cookies with `X-Forwarded-Proto` and `SECURE_COOKIES` config support.
+- **Stability:** Added `limitJSONBody` to all POST/PUT handlers to prevent memory exhaustion from large payloads.
+- **Performance:** Fixed memory leaks in IP-based rate limiters by implementing pruning for inactive entries.
+- **Reliability:** Verified persistence and handler logic with an expanded suite of Go tests.

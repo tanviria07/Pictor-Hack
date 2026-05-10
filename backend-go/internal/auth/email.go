@@ -35,6 +35,10 @@ func NewPasswordResetToken() (string, error) {
 	return base64.RawURLEncoding.EncodeToString(b), nil
 }
 
+func NewEmailVerificationToken() (string, error) {
+	return NewPasswordResetToken()
+}
+
 func HashEmailToken(secret, purpose, email, token string) (string, error) {
 	secret = strings.TrimSpace(secret)
 	purpose = strings.TrimSpace(purpose)

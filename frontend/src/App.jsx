@@ -5,6 +5,7 @@ import { Dashboard } from "./features/dashboard/Dashboard";
 import { Login } from "./features/auth/Login";
 import { Register } from "./features/auth/Register";
 import { getAuthToken, getMe, logout } from "./lib/api";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 function ProtectedRoute({ user, checkingSession, children }) {
     const location = useLocation();
@@ -66,7 +67,9 @@ function AppRoutes() {
 export default function App() {
     return (
         <BrowserRouter>
-            <AppRoutes />
+            <ErrorBoundary>
+                <AppRoutes />
+            </ErrorBoundary>
         </BrowserRouter>
     );
 }
