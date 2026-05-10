@@ -218,11 +218,15 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
             return;
         let cancelled = false;
         (async () => {
-            const remote = await getMyProgress();
-            if (!cancelled && remote) {
-                setProgressById((prev) => ({ ...prev, ...remote }));
+            try {
+                const remote = await getMyProgress();
+                if (!cancelled && remote) {
+                    setProgressById((prev) => ({ ...prev, ...remote }));
+                }
+            } catch (err) {
+                console.error("Failed to load progress:", err);
             }
-        })();
+        })().catch(err => console.error("Unhandled error in progress IIFE:", err));
         return () => {
             cancelled = true;
         };
@@ -269,7 +273,8 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                     const categoriesResponse = await listCategories();
                     categoryList = Array.isArray(categoriesResponse) ? categoriesResponse : [];
                 }
-                catch {
+                catch (e) {
+                    console.error("Failed to load categories:", e);
                     categoryList = [];
                 }
                 if (categoryList.length === 0 && problemList.length > 0) {
@@ -279,11 +284,16 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                 setProblemId((prev) => prev ?? problemList[0]?.id ?? null);
                 setErr(null);
             }
+            catch (e) {
+                if (!cancelled) {
+                    setErr(formatThrownError(e));
+                }
+            }
             finally {
                 if (!cancelled)
                     setCatalogLoading(false);
             }
-        })();
+        })().catch((err) => console.error("Unhandled error in catalog IIFE:", err));
         return () => {
             cancelled = true;
         };
@@ -303,41 +313,43 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                 setErr(null);
 
                 if (demo?.problemId === problemId && demo.step === DEMO_STEPS.INITIAL) {
-                  const demoCode = getDemoCode(DEMO_STEPS.LOADED);
-                  setCode(demoCode);
-                  setDemo(prev => ({ ...prev, step: DEMO_STEPS.LOADED }));
-                  setHintHistory([]);
-                } else {
-                  const starter = isCodingProblem(problemDetail) ? buildStarter(problemDetail) : "";
-                  let session = null;
-                  if (user) {
-                      try {
-                          session = await loadMySession(problemId);
-                      }
-                      catch (sessionErr) {
-                          console.error(sessionErr);
-                          setErr("Couldn't load your previous code. Check your connection and try again.");
-                      }
-                  }
-                  if (session?.code) {
-                      setCode(session.code);
-                      setHintHistory(session.hint_history || []);
-                  }
-                  else {
-                      setCode(starter);
-                      setHintHistory([]);
-                  }
+                    const demoCode = getDemoCode(DEMO_STEPS.LOADED);
+                    setCode(demoCode);
+                    setDemo((prev) => ({ ...prev, step: DEMO_STEPS.LOADED }));
+                    setHintHistory([]);
+                }
+                else {
+                    const starter = isCodingProblem(problemDetail) ? buildStarter(problemDetail) : "";
+                    let session = null;
+                    if (user) {
+                        try {
+                            session = await loadMySession(problemId);
+                        }
+                        catch (sessionErr) {
+                            console.error("Failed to load session:", sessionErr);
+                            setErr("Couldn't load your previous code. Check your connection and try again.");
+                        }
+                    }
+                    if (session?.code) {
+                        setCode(session.code);
+                        setHintHistory(session.hint_history || []);
+                    }
+                    else {
+                        setCode(starter);
+                        setHintHistory([]);
+                    }
                 }
                 const mergedProgress = mergeProgress(loadLocalProgress()[problemId] ?? "not_started", null);
                 setProgressById((prev) => ({ ...prev, [problemId]: mergedProgress }));
             }
             catch (e) {
+                console.error("Failed to load problem detail:", e);
                 setErr(formatThrownError(e));
             }
             finally {
                 setLoading("idle");
             }
-        })();
+        })().catch((err) => console.error("Unhandled error in problem detail IIFE:", err));
     }, [problemId, demo?.problemId, demo?.step, user]);
 
     const starterForCompare = useMemo(() => (detail && isCodingProblem(detail) ? buildStarter(detail) : ""), [detail]);
@@ -358,7 +370,8 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
             if (user)
                 await saveMySession(payload);
         }
-        catch {
+        catch (e) {
+            console.error("Failed to persist session:", e);
             /* non-fatal */
         }
     }, [problemId, run, starterForCompare, demo, user]);
@@ -411,7 +424,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
             setStepwise(null);
             setStepwiseCode("");
             if (demo && demo.step === DEMO_STEPS.LOADED) {
-              setDemo(prev => ({ ...prev, step: DEMO_STEPS.AFTER_RUN }));
+                setDemo((prev) => ({ ...prev, step: DEMO_STEPS.AFTER_RUN }));
             }
             const derivedStatus = deriveProgress(response, code, starterForCompare, hintHistory.length > 0);
             await persist(code, hintHistory, derivedStatus);
@@ -424,6 +437,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
             });
         }
         catch (e) {
+            console.error("Run failed:", e);
             setErr(formatThrownError(e));
         }
         finally {
@@ -460,6 +474,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
             await persist(code, nextHints, "in_progress");
         }
         catch (e) {
+            console.error("Hint failed:", e);
             setErr(formatThrownError(e));
         }
         finally {
@@ -487,7 +502,8 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                 });
                 setInlineHint(hint);
             }
-            catch {
+            catch (e) {
+                console.error("Inline hint failed:", e);
                 setInlineHint(null);
             }
         }, 500);
@@ -511,6 +527,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
             setInlineHint(hint);
         }
         catch (e) {
+            console.error("Inline hint refresh failed:", e);
             setErr(formatThrownError(e));
         }
     }, [problemId, detail, code, cursorLine, cursorColumn, role]);
@@ -587,25 +604,27 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
     }, [detail]);
 
     const toggleDemo = () => {
-      if (demo) {
-        setDemo(null);
-        setRole("");
-        setTrackFilter("all");
-      } else {
-        const d = startDemo();
-        setDemo(d);
-        setProblemId(d.problemId);
-        setRole("swe_intern");
-      }
+        if (demo) {
+            setDemo(null);
+            setRole("");
+            setTrackFilter("all");
+        }
+        else {
+            const d = startDemo();
+            setDemo(d);
+            setProblemId(d.problemId);
+            setRole("swe_intern");
+        }
     };
 
     const handleDemoAction = () => {
-      if (demo.step === DEMO_STEPS.AFTER_RUN) {
-        setDemo(prev => ({ ...prev, step: DEMO_STEPS.AFTER_TRACE }));
-      } else if (demo.step === DEMO_STEPS.AFTER_TRACE) {
-        setCode(getDemoCorrectedCode());
-        setDemo(prev => ({ ...prev, step: DEMO_STEPS.CORRECTED }));
-      }
+        if (demo.step === DEMO_STEPS.AFTER_RUN) {
+            setDemo((prev) => ({ ...prev, step: DEMO_STEPS.AFTER_TRACE }));
+        }
+        else if (demo.step === DEMO_STEPS.AFTER_TRACE) {
+            setCode(getDemoCorrectedCode());
+            setDemo((prev) => ({ ...prev, step: DEMO_STEPS.CORRECTED }));
+        }
     };
 
     const onEditorCursorChange = useCallback((lineNumber, columnNumber = 1) => {
@@ -650,24 +669,22 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                 : trackFilter === "dsa"
                     ? "Classic DSA interview set. You write the solution; we run tests and give structured feedback."
                     : trackFilter === "cloud-architect-prep"
-                            ? "Cloud architecture, debugging, automation, and customer explanation practice for CSA internships."
-            : learningPath
-                ? `${learningPath.name}: ${learningPath.target_problems} target problems in a role-specific order.`
-                : "Pick a track below, or browse everything."}
+                        ? "Cloud architecture, debugging, automation, and customer explanation practice for CSA internships."
+                        : learningPath
+                            ? `${learningPath.name}: ${learningPath.target_problems} target problems in a role-specific order.`
+                            : "Pick a track below, or browse everything."}
             </p>
           </div>
           <div className="ws-header-meta">
-              <div className="ws-meta-row" style={{gap: '1rem'}}>
+              <div className="ws-meta-row" style={{ gap: '1rem' }}>
                 <button type="button" className="btn-dashboard" onClick={onDashboard}>Dashboard</button>
-                <DemoButton active={!!demo} onToggle={toggleDemo} />
-                <RoleSelector value={role} onChange={setRole} disabled={loading === 'run'} />
+                <DemoButton active={!!demo} onToggle={toggleDemo}/>
+                <RoleSelector value={role} onChange={setRole} disabled={loading === 'run'}/>
                 {user ? (<div className="user-menu"><span>{user.username || user.email}</span><button type="button" onClick={onLogout}>Log out</button></div>) : (<div className="user-menu"><button type="button" onClick={() => onAuth?.("login")}>Log in</button><button type="button" onClick={() => onAuth?.("signup")}>Sign up</button></div>)}
-                {detail && (
-                  <>
+                {detail && (<>
                     {detail.track_title && (<span className="track-pill">{detail.track_title}</span>)}
                     <DifficultyBadge difficulty={detail.difficulty} trackId={detail.track_id}/>
-                  </>
-                )}
+                  </>)}
               </div>
               {detail && <span className="ws-meta-cat">{detail.category_title}</span>}
             </div>
@@ -709,15 +726,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
       {err && (<div className="ws-alert" role="alert">{err}</div>)}
       {!user && (<div className="save-notice">Log in to save progress across sessions.</div>)}
 
-      {demo && (
-        <DemoBanner
-          step={demo.step}
-          instructions={getDemoInstructions(demo.step)}
-          onAction={demo.step !== DEMO_STEPS.LOADED && demo.step !== DEMO_STEPS.CORRECTED ? handleDemoAction : undefined}
-          actionLabel={demo.step === DEMO_STEPS.AFTER_RUN ? "See AI Trace" : demo.step === DEMO_STEPS.AFTER_TRACE ? "Apply Optimized" : undefined}
-          cloudPrompt={demo.step === DEMO_STEPS.CORRECTED ? getDemoCloudPrompt() : undefined}
-        />
-      )}
+      {demo && (<DemoBanner step={demo.step} instructions={getDemoInstructions(demo.step)} onAction={demo.step !== DEMO_STEPS.LOADED && demo.step !== DEMO_STEPS.CORRECTED ? handleDemoAction : undefined} actionLabel={demo.step === DEMO_STEPS.AFTER_RUN ? "See AI Trace" : demo.step === DEMO_STEPS.AFTER_TRACE ? "Apply Optimized" : undefined} cloudPrompt={demo.step === DEMO_STEPS.CORRECTED ? getDemoCloudPrompt() : undefined}/>)}
 
       <div className="ws-body">
         <ProblemExplorer categories={categories} problems={roleProblems} progress={progressById} selectedId={problemId} onSelectProblem={setProblemId} loading={catalogLoading} trackFilter={trackFilter} role={role}/>
@@ -745,8 +754,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
             <div className="pp-body">
               {detail && (<>
                   <p className="pp-block pp-desc">{detail.description}</p>
-                  {isCoding && detail.examples && detail.examples.length > 0 && (
-                  <div className="pp-block">
+                  {isCoding && detail.examples && detail.examples.length > 0 && (<div className="pp-block">
                     <SectionTitle>Examples</SectionTitle>
                     <ul className="pp-examples">
                       {detail.examples.map((example, index) => (<li key={index} className="pp-example">
@@ -761,16 +769,13 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                             </div>)}
                         </li>))}
                     </ul>
-                  </div>
-                  )}
-                  {detail.constraints && detail.constraints.length > 0 && (
-                  <div className="pp-block">
+                  </div>)}
+                  {detail.constraints && detail.constraints.length > 0 && (<div className="pp-block">
                     <SectionTitle>Constraints</SectionTitle>
                     <ul className="pp-constraints">
                       {detail.constraints.map((constraint, index) => (<li key={index}>{constraint}</li>))}
                     </ul>
-                  </div>
-                  )}
+                  </div>)}
                 </>)}
               {loading === "load" && !detail && (<p className="pp-loading">Loading problem...</p>)}
             </div>
@@ -826,15 +831,9 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
                     <span>{interviewerMessages.length} messages</span>
                   </div>
                   <div className="interviewer-panel-list">
-                    {interviewerMessages.length === 0 ? (
-                      <p className="interviewer-panel-empty">No proactive hints yet.</p>
-                    ) : (
-                      interviewerMessages.map((message) => (
-                        <div key={message.id} className="interviewer-message">
+                    {interviewerMessages.length === 0 ? (<p className="interviewer-panel-empty">No proactive hints yet.</p>) : (interviewerMessages.map((message) => (<div key={message.id} className="interviewer-message">
                           {message.text}
-                        </div>
-                      ))
-                    )}
+                        </div>)))}
                   </div>
                 </div>
               </div>
@@ -843,7 +842,7 @@ export function Workspace({ user, onAuth, onDashboard, onLogout }) {
           </main>
         </div>
       </div>
-      <div className="ws-disclaimer" style={{fontSize: "10px", padding: "4px 1rem", color: "var(--text-muted)", textAlign: "center", borderTop: "1px solid var(--border-hairline)"}}>
+      <div className="ws-disclaimer" style={{ fontSize: "10px", padding: "4px 1rem", color: "var(--text-muted)", textAlign: "center", borderTop: "1px solid var(--border-hairline)" }}>
         {trackFilter === "cloud-architect-prep"
             ? "Unofficial cloud interview preparation practice, designed around common CSA internship skills."
             : "Kitkode: Local interview practice for Python."}
