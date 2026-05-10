@@ -33,7 +33,7 @@ type UserRepository interface {
 	GetUserIDBySessionHash(ctx context.Context, tokenHash string) (int64, error)
 	DeleteAuthSession(ctx context.Context, tokenHash string) error
 	DeleteUserSessions(ctx context.Context, userID int64) error
-	DeleteExpiredAuthSessions(ctx context.Context) error
+	DeleteExpiredAuthSessions(ctx context.Context) (int64, error)
 	SaveUserSession(ctx context.Context, userID int64, req dto.SessionSaveRequest) error
 	GetUserSession(ctx context.Context, userID int64, problemID string) (*dto.SessionState, error)
 	RecordAttempt(ctx context.Context, userID int64, problem dto.ProblemSummary, req dto.RunRequest, res dto.RunResponse) error

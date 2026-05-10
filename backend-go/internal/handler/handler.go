@@ -961,7 +961,7 @@ func (h *Handler) issueSession(w http.ResponseWriter, r *http.Request, userID in
 		return err
 	}
 	expires := time.Now().UTC().Add(7 * 24 * time.Hour)
-	if err := h.Users.CreateAuthSession(r.Context(), userID, hash, expires.Format(time.RFC3339)); err != nil {
+	if err := h.Users.CreateAuthSession(r.Context(), userID, hash, expires.Format("2006-01-02 15:04:05")); err != nil {
 		return err
 	}
 	http.SetCookie(w, &http.Cookie{

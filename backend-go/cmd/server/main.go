@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"pictorhack/backend/internal/config"
 	"pictorhack/backend/internal/deepseek"
@@ -34,6 +37,7 @@ func main() {
 		log.Fatal(err)
 	}
 	defer st.Close()
+	startExpiredSessionCleanup(context.Background(), st)
 
 	rc := runner.New(cfg.RunnerURL)
 	ds := deepseek.New(cfg)
@@ -60,4 +64,37 @@ func main() {
 	srv := httpapi.NewRouter(h, cfg.CORSOrigins, cfg.RateLimitPerMinute)
 	log.Println("KitCode API listening on", cfg.HTTPAddr)
 	log.Fatal(http.ListenAndServe(cfg.HTTPAddr, srv))
+}
+
+type expiredSessionCleaner interface {
+	DeleteExpiredAuthSessions(ctx context.Context) (int64, error)
+}
+
+func startExpiredSessionCleanup(ctx context.Context, cleaner expiredSessionCleaner) {
+	const interval = time.Hour
+	logger := slog.Default().With("component", "auth_session_cleanup")
+
+	run := func() {
+		deleted, err := cleaner.DeleteExpiredAuthSessions(ctx)
+		if err != nil {
+			logger.Error("failed to delete expired auth sessions", "error", err)
+			return
+		}
+		logger.Info("deleted expired auth sessions", "deleted", deleted)
+	}
+
+	go func() {
+		run()
+		ticker := time.NewTicker(interval)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ctx.Done():
+				logger.Info("stopping auth session cleanup")
+				return
+			case <-ticker.C:
+				run()
+			}
+		}
+	}()
 }

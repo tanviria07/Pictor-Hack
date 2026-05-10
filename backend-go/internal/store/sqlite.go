@@ -86,6 +86,7 @@ CREATE TABLE IF NOT EXISTS auth_sessions (
 );
 CREATE INDEX IF NOT EXISTS idx_auth_sessions_token ON auth_sessions(token_hash);
 CREATE INDEX IF NOT EXISTS idx_auth_sessions_user ON auth_sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_auth_sessions_expires_at ON auth_sessions(expires_at);
 CREATE TABLE IF NOT EXISTS user_problem_progress (
   user_id INTEGER NOT NULL,
   problem_id TEXT NOT NULL,
@@ -167,6 +168,9 @@ CREATE TABLE IF NOT EXISTS progress (
 	if err := addColumnIfMissing(s.db, "users", "updated_at", `ALTER TABLE users ADD COLUMN updated_at TEXT NOT NULL DEFAULT ''`); err != nil {
 		return err
 	}
+	if err := addColumnIfMissing(s.db, "auth_sessions", "expires_at", `ALTER TABLE auth_sessions ADD COLUMN expires_at TEXT NOT NULL DEFAULT '1970-01-01 00:00:00'`); err != nil {
+		return err
+	}
 	if err := addColumnIfMissing(s.db, "sessions", "user_id", `ALTER TABLE sessions ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0`); err != nil {
 		return err
 	}
@@ -180,6 +184,7 @@ CREATE TABLE IF NOT EXISTS progress (
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email_lower ON users(lower(email));
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username_lower ON users(lower(username)) WHERE username != '';
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_verification_token ON users(verification_token) WHERE verification_token != '';
+CREATE INDEX IF NOT EXISTS idx_auth_sessions_expires_at ON auth_sessions(expires_at);
 CREATE INDEX IF NOT EXISTS idx_sessions_user_problem ON sessions(user_id, problem_id);`)
 	return err
 }
@@ -457,7 +462,7 @@ func (s *Store) CreateAuthSession(_ context.Context, userID int64, tokenHash str
 }
 
 func (s *Store) GetUserIDBySessionHash(_ context.Context, tokenHash string) (int64, error) {
-	row := s.db.QueryRow(`SELECT user_id FROM auth_sessions WHERE token_hash=? AND expires_at > ?`, tokenHash, time.Now().UTC().Format(time.RFC3339))
+	row := s.db.QueryRow(`SELECT user_id FROM auth_sessions WHERE token_hash=? AND expires_at > datetime('now')`, tokenHash)
 	var userID int64
 	if err := row.Scan(&userID); err != nil {
 		return 0, err
@@ -475,9 +480,12 @@ func (s *Store) DeleteUserSessions(_ context.Context, userID int64) error {
 	return err
 }
 
-func (s *Store) DeleteExpiredAuthSessions(_ context.Context) error {
-	_, err := s.db.Exec(`DELETE FROM auth_sessions WHERE expires_at <= ?`, time.Now().UTC().Format(time.RFC3339))
-	return err
+func (s *Store) DeleteExpiredAuthSessions(_ context.Context) (int64, error) {
+	res, err := s.db.Exec(`DELETE FROM auth_sessions WHERE expires_at < datetime('now')`)
+	if err != nil {
+		return 0, err
+	}
+	return res.RowsAffected()
 }
 
 func (s *Store) SaveUserSession(ctx context.Context, userID int64, req dto.SessionSaveRequest) error {
