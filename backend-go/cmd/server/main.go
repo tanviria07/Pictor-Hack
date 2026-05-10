@@ -10,6 +10,7 @@ import (
 	"pictorhack/backend/internal/auth"
 	"pictorhack/backend/internal/db"
 	"pictorhack/backend/internal/handler"
+	appmw "pictorhack/backend/internal/middleware"
 )
 
 func main() {
@@ -53,11 +54,14 @@ func main() {
 	r.Get("/health", handler.Health)
 
 	// Auth routes
-	r.Post("/api/auth/register", handler.Register)
-	r.Post("/api/auth/signup", handler.Signup)
-	r.Post("/api/auth/verify", handler.Verify)
-	r.Get("/api/auth/verify", handler.Verify)
-	r.Post("/api/auth/login", handler.Login)
+	r.Group(func(r chi.Router) {
+		r.Use(appmw.IPRateLimit(5))
+		r.Post("/api/auth/register", handler.Register)
+		r.Post("/api/auth/signup", handler.Signup)
+		r.Post("/api/auth/verify", handler.Verify)
+		r.Get("/api/auth/verify", handler.Verify)
+		r.Post("/api/auth/login", handler.Login)
+	})
 	r.Post("/api/auth/logout", handler.Logout)
 	r.Get("/api/auth/me", func(w http.ResponseWriter, r *http.Request) {
 		token := ""
