@@ -70,6 +70,21 @@ def test_run_in_subprocess_nonzero_exit(monkeypatch: pytest.MonkeyPatch) -> None
     assert out.evaluation.error_type == "SubprocessError"
 
 
+def test_run_in_subprocess_resource_limit_signal(monkeypatch: pytest.MonkeyPatch) -> None:
+    proc = MagicMock()
+    proc.returncode = -9
+    proc.stdout = b""
+    proc.stderr = b""
+    monkeypatch.setattr("app.execution.subprocess.run", MagicMock(return_value=proc))
+    monkeypatch.setattr("app.execution.os.name", "posix")
+
+    req = RunRequest(problem_id="two-sum", language="python", code="x")
+    out = _run_in_subprocess(req)
+    assert out.status == "runtime_error"
+    assert out.evaluation.error_type == "ResourceLimitExceeded"
+    assert out.evaluation.error_message == "Your code exceeded memory/CPU limits"
+
+
 def test_run_in_subprocess_invalid_stdout_json(monkeypatch: pytest.MonkeyPatch) -> None:
     proc = MagicMock()
     proc.returncode = 0

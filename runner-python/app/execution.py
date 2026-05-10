@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import signal
 import subprocess
 import sys
 import tempfile
@@ -16,6 +17,7 @@ from app.models import RunRequest, RunResponse, StructuredEvaluation
 from app.problems import ProblemLoadError, load_problem, problem_path
 
 ROOT = Path(__file__).resolve().parent.parent
+RESOURCE_LIMIT_MESSAGE = "Your code exceeded memory/CPU limits"
 
 
 def _problem_test_counts(problem_id: str) -> tuple[int, int]:
@@ -94,6 +96,14 @@ def _run_in_subprocess(req: RunRequest) -> RunResponse:
         )
 
     if proc.returncode != 0:
+        if _resource_limit_returncode(proc.returncode):
+            ev = _resource_limit_evaluation(tv, th)
+            return RunResponse(
+                status="runtime_error",
+                evaluation=ev,
+                visible_test_results=[],
+                interviewer_feedback=deterministic_interviewer_note(ev),
+            )
         err = proc.stderr.decode("utf-8", errors="replace")[:2000]
         ev = StructuredEvaluation(
             status="runtime_error",
@@ -123,4 +133,37 @@ def _run_in_subprocess(req: RunRequest) -> RunResponse:
         problem_id=req.problem_id,
         visible_count=tv,
         hidden_count=th,
+    )
+
+
+def _resource_limit_returncode(returncode: int) -> bool:
+    if os.name == "nt" or returncode >= 0:
+        return False
+    limit_signals = {
+        6,  # SIGABRT
+        9,  # SIGKILL
+        24,  # SIGXCPU on Linux
+        getattr(signal, "SIGABRT", None),
+        getattr(signal, "SIGKILL", None),
+        getattr(signal, "SIGXCPU", None),
+    }
+    return -returncode in {int(sig) for sig in limit_signals if sig is not None}
+
+
+def _resource_limit_evaluation(visible_count: int, hidden_count: int) -> StructuredEvaluation:
+    return StructuredEvaluation(
+        status="runtime_error",
+        syntax_ok=True,
+        function_found=True,
+        signature_ok=True,
+        passed_visible_tests=0,
+        total_visible_tests=visible_count,
+        passed_hidden_tests=0,
+        total_hidden_tests=hidden_count,
+        error_type="ResourceLimitExceeded",
+        error_message=RESOURCE_LIMIT_MESSAGE,
+        failing_case_summary=None,
+        likely_stage="resource_limit",
+        feedback_targets=["Reduce memory use, avoid infinite loops, and keep recursion shallow."],
+        visible_test_results=[],
     )
